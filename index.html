@@ -20,7 +20,6 @@
   --panel3:#231b12;
   --text:#eadfc7;
   --muted:#8f8269;
-  --muted2:#625844;
   --gold:#d1aa38;
   --gold2:#8f7426;
   --line:#33291d;
@@ -29,27 +28,24 @@
   --blue:#5f7fe0;
   --danger:#d35c69;
   --shadow:0 16px 40px rgba(0,0,0,.5);
-  font-family:"Spectral",serif;
 }
 
 *{box-sizing:border-box}
 
-html{background:var(--bg)}
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+}
 
 body{
-  margin:0;
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 15% -10%,rgba(177,130,42,.13),transparent 38%),
-    radial-gradient(circle at 90% 0%,rgba(70,90,150,.12),transparent 35%),
-    var(--bg);
   color:var(--text);
   padding:20px 14px 80px;
+  font-family:"Spectral",serif;
   -webkit-tap-highlight-color:transparent;
 }
 
 button,input{font:inherit}
-
 button{cursor:pointer}
 
 .wrap{
@@ -96,7 +92,6 @@ button{cursor:pointer}
   font-size:10px;
   letter-spacing:1px;
   text-transform:uppercase;
-  transition:.15s;
 }
 
 .btn:hover{
@@ -171,7 +166,9 @@ button{cursor:pointer}
   font-size:10px;
 }
 
-.status-item b{color:var(--gold)}
+.status-item b{
+  color:var(--gold);
+}
 
 .notice{
   border:1px solid #55441d;
@@ -204,7 +201,6 @@ button{cursor:pointer}
 }
 
 .card{
-  position:relative;
   overflow:hidden;
   background:linear-gradient(180deg,var(--panel),var(--panel2));
   border:1px solid var(--line);
@@ -326,7 +322,9 @@ button{cursor:pointer}
   border-radius:3px;
 }
 
-.match:last-child{margin-bottom:0}
+.match:last-child{
+  margin-bottom:0;
+}
 
 .match-top{
   display:flex;
@@ -385,13 +383,11 @@ button{cursor:pointer}
 }
 
 .empty p{
-  max-width:480px;
+  max-width:520px;
   margin:0 auto 18px;
   line-height:1.6;
   font-size:13px;
 }
-
-/* TABLE */
 
 .table-wrap{
   overflow:auto;
@@ -425,7 +421,9 @@ td{
   font-size:13px;
 }
 
-tr:last-child td{border-bottom:0}
+tr:last-child td{
+  border-bottom:0;
+}
 
 .player-cell{
   display:flex;
@@ -463,8 +461,6 @@ tr:last-child td{border-bottom:0}
   font-family:"IBM Plex Mono",monospace;
 }
 
-/* DIAGNOSTIC */
-
 .diagnostic{
   display:none;
   margin-top:18px;
@@ -474,7 +470,9 @@ tr:last-child td{border-bottom:0}
   overflow:hidden;
 }
 
-.diagnostic.open{display:block}
+.diagnostic.open{
+  display:block;
+}
 
 .diag-head{
   padding:11px 13px;
@@ -509,7 +507,7 @@ pre{
 .overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.78);
+  background:rgba(0,0,0,.82);
   z-index:100;
   display:flex;
   align-items:center;
@@ -519,8 +517,8 @@ pre{
 
 .modal{
   width:100%;
-  max-width:520px;
-  max-height:90vh;
+  max-width:540px;
+  max-height:92vh;
   overflow:auto;
   background:var(--panel);
   border:1px solid var(--gold2);
@@ -617,7 +615,51 @@ input:focus{
   margin-top:18px;
 }
 
-/* DETAIL */
+/* LOADING */
+
+.loading-box{
+  margin-top:15px;
+  border:1px solid var(--line);
+  background:#0e0c09;
+  padding:15px;
+  border-radius:4px;
+}
+
+.loading-title{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+  letter-spacing:1px;
+  color:var(--gold);
+  margin-bottom:11px;
+}
+
+.progress-track{
+  height:7px;
+  background:#292118;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#8b691d,#d1aa38);
+  transition:width .25s ease;
+}
+
+.loading-text{
+  margin-top:9px;
+  color:#a39780;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+  line-height:1.5;
+}
+
+.loading-result{
+  margin-top:10px;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+}
 
 .detail-grid{
   display:grid;
@@ -648,7 +690,9 @@ input:focus{
 }
 
 @media(max-width:720px){
-  body{padding:14px 10px 70px}
+  body{
+    padding:14px 10px 70px;
+  }
 
   .header{
     align-items:flex-start;
@@ -679,9 +723,10 @@ input:focus{
 <div class="wrap">
 
 <header class="header">
+
   <div class="logo">
     <h1>РЕЕСТР ФЭНТЕЗИ</h1>
-    <p>Fantasy League · OpenDota · последние матчи · лучшие 2</p>
+    <p>OpenDota · последние 2 матча · лучшие 2 · Fantasy Points</p>
   </div>
 
   <div class="actions">
@@ -689,12 +734,23 @@ input:focus{
     <button class="btn" id="diagBtn">⌘ API</button>
     <button class="btn primary" id="joinBtn">＋ Игрок</button>
   </div>
+
 </header>
 
 <nav class="tabs">
-  <button class="tab active" data-tab="players">Игроки</button>
-  <button class="tab" data-tab="rating">Рейтинг</button>
-  <button class="tab" data-tab="diagnostics">Диагностика</button>
+
+  <button class="tab active" data-tab="players">
+    Игроки
+  </button>
+
+  <button class="tab" data-tab="rating">
+    Рейтинг
+  </button>
+
+  <button class="tab" data-tab="diagnostics">
+    Диагностика
+  </button>
+
 </nav>
 
 <div id="status"></div>
@@ -702,11 +758,23 @@ input:focus{
 <div id="content"></div>
 
 <div id="diagnosticPanel" class="diagnostic">
+
   <div class="diag-head">
-    <strong>ПОСЛЕДНИЙ ОТВЕТ API</strong>
-    <button class="btn" id="clearDiag">Очистить</button>
+
+    <strong>
+      OPEN DOTA / API DIAGNOSTICS
+    </strong>
+
+    <button class="btn" id="clearDiag">
+      Очистить
+    </button>
+
   </div>
-  <pre id="diagOutput">Пока запросов нет.</pre>
+
+  <pre id="diagOutput">
+Пока запросов нет.
+  </pre>
+
 </div>
 
 </div>
@@ -714,6 +782,7 @@ input:focus{
 <div id="modalRoot"></div>
 
 <script>
+
 /* ============================================================
    TELEGRAM
 ============================================================ */
@@ -721,17 +790,33 @@ input:focus{
 let tgUser = null;
 
 try{
-  if(window.Telegram && Telegram.WebApp){
+
+  if(
+    window.Telegram &&
+    Telegram.WebApp
+  ){
+
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 
-    tgUser = Telegram.WebApp.initDataUnsafe &&
-             Telegram.WebApp.initDataUnsafe.user
-             ? Telegram.WebApp.initDataUnsafe.user
-             : null;
+    tgUser =
+      Telegram.WebApp.initDataUnsafe &&
+      Telegram.WebApp.initDataUnsafe.user
+        ?Telegram.WebApp.initDataUnsafe.user
+        :null;
+
+    console.log(
+      "Telegram user:",
+      tgUser
+    );
   }
-}catch(e){
-  console.warn("Telegram init:",e);
+
+}catch(error){
+
+  console.warn(
+    "Telegram:",
+    error
+  );
 }
 
 /* ============================================================
@@ -739,244 +824,183 @@ try{
 ============================================================ */
 
 const FIREBASE_CONFIG = {
+
   apiKey:"AIzaSyDiji-w6g6x-lqu6-LlI68wBVIjqB_-3BI",
-  authDomain:"fantasy-218c8.firebaseapp.com",
-  projectId:"fantasy-218c8",
-  storageBucket:"fantasy-218c8.firebasestorage.app",
-  messagingSenderId:"122819799870",
-  appId:"1:122819799870:web:e47df878140ed305671a6f",
-  measurementId:"G-9LZC0EZ0Y5"
+
+  authDomain:
+    "fantasy-218c8.firebaseapp.com",
+
+  projectId:
+    "fantasy-218c8",
+
+  storageBucket:
+    "fantasy-218c8.firebasestorage.app",
+
+  messagingSenderId:
+    "122819799870",
+
+  appId:
+    "1:122819799870:web:e47df878140ed305671a6f",
+
+  measurementId:
+    "G-9LZC0EZ0Y5"
 };
 
-let db = null;
+let db=null;
 
 try{
-  firebase.initializeApp(FIREBASE_CONFIG);
-  db = firebase.firestore();
+
+  firebase.initializeApp(
+    FIREBASE_CONFIG
+  );
+
+  db=firebase.firestore();
 
   db.enablePersistence({
     synchronizeTabs:true
-  }).catch(err=>{
-    console.warn("Firestore persistence:",err);
-  });
+  }).catch(
+    error=>{
+      console.warn(
+        "Firestore persistence:",
+        error
+      );
+    }
+  );
 
-  console.log("Firebase инициализирован");
-}catch(e){
-  console.error("Firebase:",e);
+  console.log(
+    "Firebase инициализирован"
+  );
+
+}catch(error){
+
+  console.error(
+    "Firebase init:",
+    error
+  );
 }
 
 /* ============================================================
    CONFIG
 ============================================================ */
 
-const API = "https://api.opendota.com/api";
+const API =
+  "https://api.opendota.com/api";
 
-const START_TOKENS = 20;
+const CACHE_KEY =
+  "fantasy_registry_players_v7";
 
-const ROLES = {
+const MY_ID_KEY =
+  "fantasy_registry_my_id_v7";
+
+const START_TOKENS=20;
+
+/*
+  ВАЖНО:
+
+  Эти коэффициенты применяются к ПОЛНОМУ
+  объекту игрока из /matches/{match_id}.
+
+  Это не данные из recentMatches.
+*/
+
+const FANTASY={
+
+  kills:.3,
+
+  deaths:-.3,
+
+  assists:0,
+
+  last_hits:.003,
+
+  gold_per_min:.002,
+
+  xp_per_min:0,
+
+  tower_kills:1,
+
+  tower_damage:0,
+
+  hero_damage:0,
+
+  courier_kills:0,
+
+  observer_kills:0,
+
+  sentry_kills:0,
+
+  roshan_kills:1,
+
+  teamfight:3,
+
+  observer_placed:.5,
+
+  sentry_placed:0,
+
+  camps_stacked:.5,
+
+  runes_grabbed:.25,
+
+  first_blood:4,
+
+  stuns:.05,
+
+  hero_healing:0,
+
+  deaths_base:3
+};
+
+const ROLES={
+
   carry:{
-    label:"ОСНОВА",
-    slots:["red","red","red","green","green"]
+    label:"ОСНОВА"
   },
 
   mid:{
-    label:"ЦЕНТР",
-    slots:["green","green","blue","red","red"]
+    label:"ЦЕНТР"
   },
 
   support:{
-    label:"ПОДДЕРЖКА",
-    slots:["blue","blue","blue","green","green"]
+    label:"ПОДДЕРЖКА"
   }
-};
-
-const COLORS = {
-  red:"КРАСНЫЙ",
-  blue:"СИНИЙ",
-  green:"ЗЕЛЁНЫЙ"
-};
-
-const STATS = {
-
-  red:[
-    {
-      key:"kills",
-      label:"Убийства",
-      value:m=>m.kills,
-      mult:.3
-    },
-    {
-      key:"deaths",
-      label:"Смерти",
-      value:m=>m.deaths,
-      mult:-.3,
-      base:3
-    },
-    {
-      key:"last_hits",
-      label:"Крипы",
-      value:m=>(m.last_hits||0)+(m.denies||0),
-      mult:.003
-    },
-    {
-      key:"gpm",
-      label:"GPM",
-      value:m=>m.gold_per_min||0,
-      mult:.002
-    },
-    {
-      key:"towers",
-      label:"Башни",
-      value:m=>m.tower_kills||0,
-      mult:1
-    }
-  ],
-
-  blue:[
-    {
-      key:"runes",
-      label:"Руны",
-      value:m=>m.rune_pickups||0,
-      mult:.25
-    },
-    {
-      key:"camps",
-      label:"Стаки",
-      value:m=>m.camps_stacked||0,
-      mult:.5
-    },
-    {
-      key:"obs",
-      label:"Observer Wards",
-      value:m=>m.obs_placed||0,
-      mult:.5
-    },
-    {
-      key:"sentry",
-      label:"Sentry Wards",
-      value:m=>m.sen_placed||0,
-      mult:0
-    },
-    {
-      key:"courier",
-      label:"Курьеры",
-      value:m=>m.courier_kills||0,
-      mult:0
-    }
-  ],
-
-  green:[
-    {
-      key:"teamfight",
-      label:"Teamfight",
-      value:m=>m.teamfight_participation||0,
-      mult:3
-    },
-    {
-      key:"stuns",
-      label:"Оглушения",
-      value:m=>m.stuns||0,
-      mult:.05
-    },
-    {
-      key:"firstblood",
-      label:"Первая кровь",
-      value:m=>m.firstblood_claimed?1:0,
-      mult:4
-    },
-    {
-      key:"roshan",
-      label:"Roshan",
-      value:m=>m.roshan_kills||0,
-      mult:1
-    },
-    {
-      key:"hero_healing",
-      label:"Лечение",
-      value:m=>m.hero_healing||0,
-      mult:0
-    }
-  ]
-};
-
-/*
-  Это стандартные fantasy multipliers из pyopendota.
-  Они используются OpenDota fantasy implementation.
-*/
-
-const FANTASY = {
-  kills:.3,
-  deaths:-.3,
-  assists:0,
-  last_hits:.003,
-  gold_per_min:.002,
-  xp_per_min:0,
-  tower_kills:1,
-  tower_damage:0,
-  hero_damage:0,
-  courier_kills:0,
-  observer_kills:0,
-  sentry_kills:0,
-  roshan_kills:1,
-  teamfight:3,
-  observer_placed:.5,
-  sentry_placed:0,
-  camps_stacked:.5,
-  runes_grabbed:.25,
-  first_blood:4,
-  stuns:.05,
-  hero_healing:0,
-  deaths_base:3
 };
 
 /* ============================================================
    STATE
 ============================================================ */
 
-let PLAYERS = [];
-let MY_ID = null;
-let ACTIVE_TAB = "players";
+let PLAYERS=[];
 
-let diagnosticLogs = [];
+let MY_ID=null;
 
-const content = document.getElementById("content");
-const status = document.getElementById("status");
-const modalRoot = document.getElementById("modalRoot");
-const diagnosticPanel = document.getElementById("diagnosticPanel");
-const diagOutput = document.getElementById("diagOutput");
+let ACTIVE_TAB="players";
 
-/* ============================================================
-   LOCAL CACHE
-============================================================ */
+let diagnosticLogs=[];
 
-const CACHE_KEY = "fantasy_registry_players_v5";
-const MY_ID_KEY = "fantasy_registry_my_id_v5";
+const content=
+  document.getElementById(
+    "content"
+  );
 
-function saveLocal(){
+const status=
+  document.getElementById(
+    "status"
+  );
 
-  try{
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify(PLAYERS)
-    );
-  }catch(e){}
-}
+const modalRoot=
+  document.getElementById(
+    "modalRoot"
+  );
 
-function loadLocal(){
+const diagnosticPanel=
+  document.getElementById(
+    "diagnosticPanel"
+  );
 
-  try{
-    const x = localStorage.getItem(CACHE_KEY);
-
-    if(!x) return [];
-
-    const data = JSON.parse(x);
-
-    return Array.isArray(data) ? data : [];
-
-  }catch(e){
-    return [];
-  }
-}
+const diagOutput=
+  document.getElementById(
+    "diagOutput"
+  );
 
 /* ============================================================
    HELPERS
@@ -984,49 +1008,73 @@ function loadLocal(){
 
 function esc(value){
 
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
+  return String(
+    value ?? ""
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;");
 }
 
-function fmt(n){
+function fmt(value){
 
-  return Number(n||0).toLocaleString("ru-RU",{
-    maximumFractionDigits:2
-  });
-}
+  const n=Number(value);
 
-function initials(name){
+  if(!Number.isFinite(n))
+    return "0";
 
-  return (name || "?")
-    .trim()
-    .slice(0,1)
-    .toUpperCase();
-}
-
-function accountIdFrom(value){
-
-  const matches = String(value||"").match(/\d+/g);
-
-  if(!matches || !matches.length)
-    return null;
-
-  return matches[matches.length-1];
+  return n.toLocaleString(
+    "ru-RU",
+    {
+      maximumFractionDigits:2
+    }
+  );
 }
 
 function sleep(ms){
 
-  return new Promise(resolve=>setTimeout(resolve,ms));
+  return new Promise(
+    resolve=>setTimeout(
+      resolve,
+      ms
+    )
+  );
+}
+
+function initials(name){
+
+  return String(
+    name || "?"
+  )
+  .trim()
+  .slice(0,1)
+  .toUpperCase();
+}
+
+function accountIdFrom(value){
+
+  const numbers=
+    String(value || "")
+      .match(/\d+/g);
+
+  if(
+    !numbers ||
+    !numbers.length
+  )
+    return null;
+
+  return numbers[
+    numbers.length-1
+  ];
 }
 
 function tgPhoto(){
 
-  if(!tgUser)
-    return null;
-
-  return tgUser.photo_url || null;
+  return tgUser &&
+    tgUser.photo_url
+      ?tgUser.photo_url
+      :null;
 }
 
 function tgName(){
@@ -1034,13 +1082,14 @@ function tgName(){
   if(!tgUser)
     return "";
 
-  let name = tgUser.first_name || "";
+  let name=
+    tgUser.first_name || "";
 
   if(tgUser.last_name)
-    name += " " + tgUser.last_name;
+    name+=" "+tgUser.last_name;
 
   if(tgUser.username)
-    name += " @" + tgUser.username;
+    name+=" @"+tgUser.username;
 
   return name.trim();
 }
@@ -1051,98 +1100,152 @@ function tgName(){
 
 function diag(title,data){
 
-  const item = {
-    time:new Date().toLocaleTimeString("ru-RU"),
+  diagnosticLogs.unshift({
+
+    time:
+      new Date()
+        .toLocaleTimeString(
+          "ru-RU"
+        ),
+
     title,
+
     data
-  };
+  });
 
-  diagnosticLogs.unshift(item);
-
-  diagnosticLogs = diagnosticLogs.slice(0,20);
+  diagnosticLogs=
+    diagnosticLogs.slice(
+      0,
+      30
+    );
 
   renderDiagnostics();
 
-  console.log("[Fantasy Registry]",title,data);
+  console.log(
+    "[Fantasy]",
+    title,
+    data
+  );
 }
 
 function renderDiagnostics(){
 
   if(!diagnosticLogs.length){
-    diagOutput.textContent = "Пока запросов нет.";
+
+    diagOutput.textContent=
+      "Пока запросов нет.";
+
     return;
   }
 
-  diagOutput.textContent = diagnosticLogs
-    .map(x=>{
-      return (
-        "["+x.time+"] "+x.title+"\n"+
-        JSON.stringify(x.data,null,2)
+  diagOutput.textContent=
+    diagnosticLogs
+      .map(item=>
+
+        `[${item.time}] ${item.title}\n`+
+        JSON.stringify(
+          item.data,
+          null,
+          2
+        )
+
+      )
+      .join(
+        "\n\n------------------------------\n\n"
       );
-    })
-    .join("\n\n--------------------------------\n\n");
 }
 
-document.getElementById("clearDiag").onclick=()=>{
-  diagnosticLogs=[];
-  renderDiagnostics();
-};
+document
+  .getElementById("clearDiag")
+  .onclick=()=>{
+
+    diagnosticLogs=[];
+
+    renderDiagnostics();
+  };
 
 /* ============================================================
-   API
+   API REQUEST
 ============================================================ */
 
-async function apiFetch(path,options={}){
+async function apiFetch(path){
 
-  const url = API + path;
+  const url=
+    API+path;
 
-  diag("API → "+path,{
-    url
-  });
+  diag(
+    "REQUEST",
+    {
+      url
+    }
+  );
 
   let response;
 
   try{
 
-    response = await fetch(url,{
-      method:"GET",
-      cache:"no-store",
-      ...options
-    });
+    response=
+      await fetch(
+        url,
+        {
+          method:"GET",
+          cache:"no-store",
+          headers:{
+            "Accept":
+              "application/json"
+          }
+        }
+      );
 
   }catch(error){
 
-    diag("API CONNECTION ERROR",{
-      url,
-      name:error.name,
-      message:error.message
-    });
+    diag(
+      "CONNECTION ERROR",
+      {
+        url,
+        name:error.name,
+        message:error.message
+      }
+    );
 
     throw new Error(
-      "OpenDota недоступна из браузера: "+error.message
+      "Браузер не смог подключиться к OpenDota. "+
+      error.message
     );
   }
 
-  const text = await response.text();
+  const text=
+    await response.text();
 
-  diag("API ← "+path,{
-    status:response.status,
-    ok:response.ok,
-    bodyPreview:text.slice(0,5000)
-  });
+  diag(
+    "RESPONSE",
+    {
+      url,
+      status:response.status,
+      ok:response.ok,
+      preview:text.slice(
+        0,
+        3000
+      )
+    }
+  );
 
   if(!response.ok){
 
     throw new Error(
-      "OpenDota HTTP "+response.status
+      "OpenDota HTTP "+
+      response.status
     );
   }
 
   let json;
 
   try{
-    json = JSON.parse(text);
-  }catch(e){
+
+    json=
+      JSON.parse(text);
+
+  }catch(error){
 
     throw new Error(
       "OpenDota вернула не JSON"
@@ -1153,36 +1256,29 @@ async function apiFetch(path,options={}){
 }
 
 /* ============================================================
-   PLAYER MATCH HISTORY
+   RECENT MATCHES
 ============================================================ */
 
 async function getRecentMatches(accountId){
 
   /*
-    Сначала recentMatches.
-    Если он не отвечает — fallback на /matches.
+    recentMatches содержит историю,
+    но НЕ полную статистику Fantasy.
   */
+
+  let history=null;
 
   try{
 
-    const recent = await apiFetch(
-      `/players/${accountId}/recentMatches`
-    );
-
-    if(Array.isArray(recent) && recent.length){
-
-      diag("Получена история recentMatches",{
-        accountId,
-        count:recent.length
-      });
-
-      return recent;
-    }
+    history=
+      await apiFetch(
+        `/players/${accountId}/recentMatches`
+      );
 
   }catch(error){
 
     diag(
-      "recentMatches недоступен — используем fallback",
+      "recentMatches FAILED",
       {
         accountId,
         error:error.message
@@ -1190,434 +1286,797 @@ async function getRecentMatches(accountId){
     );
   }
 
-  /*
-    Fallback.
-    OpenDota поддерживает /players/{id}/matches.
-  */
+  if(
+    !Array.isArray(history) ||
+    !history.length
+  ){
 
-  const fallback = await apiFetch(
-    `/players/${accountId}/matches?limit=10`
+    /*
+      fallback
+    */
+
+    history=
+      await apiFetch(
+        `/players/${accountId}/matches?limit=10`
+      );
+  }
+
+  if(
+    !Array.isArray(history) ||
+    !history.length
+  ){
+
+    throw new Error(
+      "OpenDota не вернула историю матчей"
+    );
+  }
+
+  const sorted=
+    history
+      .filter(
+        item=>item.match_id
+      )
+      .sort(
+        (a,b)=>
+          Number(
+            b.start_time || 0
+          )-
+          Number(
+            a.start_time || 0
+          )
+      );
+
+  diag(
+    "RECENT MATCHES",
+    {
+      accountId,
+      count:sorted.length,
+      ids:sorted
+        .slice(0,5)
+        .map(
+          x=>x.match_id
+        )
+    }
   );
 
-  if(!Array.isArray(fallback))
-    throw new Error("Некорректная история матчей");
-
-  diag("Получена история fallback /matches",{
-    accountId,
-    count:fallback.length
-  });
-
-  return fallback;
+  return sorted;
 }
 
 /* ============================================================
-   FANTASY
+   FANTASY CALCULATION
 ============================================================ */
 
-function fantasyBreakdown(p){
+function calculateFantasy(player){
 
-  const values = {
+  /*
+    Проверяем реальные поля.
+  */
 
-    kills:{
-      value:p.kills||0,
-      score:FANTASY.kills*(p.kills||0)
-    },
+  const kills=
+    Number(player.kills)||0;
 
-    deaths:{
-      value:p.deaths||0,
-      score:FANTASY.deaths_base+
-            FANTASY.deaths*(p.deaths||0)
-    },
+  const deaths=
+    Number(player.deaths)||0;
 
-    assists:{
-      value:p.assists||0,
-      score:FANTASY.assists*(p.assists||0)
-    },
+  const assists=
+    Number(player.assists)||0;
 
-    last_hits:{
-      value:(p.last_hits||0)+(p.denies||0),
-      score:FANTASY.last_hits*
-            ((p.last_hits||0)+(p.denies||0))
-    },
+  const lastHits=
+    Number(player.last_hits)||0;
 
-    gold_per_min:{
-      value:p.gold_per_min||0,
-      score:FANTASY.gold_per_min*
-            (p.gold_per_min||0)
-    },
+  const denies=
+    Number(player.denies)||0;
 
-    xp_per_min:{
-      value:p.xp_per_min||0,
-      score:FANTASY.xp_per_min*
-            (p.xp_per_min||0)
-    },
+  const gpm=
+    Number(player.gold_per_min)||0;
 
-    tower_kills:{
-      value:p.tower_kills||0,
-      score:FANTASY.tower_kills*
-            (p.tower_kills||0)
-    },
+  const xpm=
+    Number(player.xp_per_min)||0;
 
-    tower_damage:{
-      value:p.tower_damage||0,
-      score:FANTASY.tower_damage*
-            (p.tower_damage||0)
-    },
+  const towerKills=
+    Number(player.tower_kills)||0;
 
-    hero_damage:{
-      value:p.hero_damage||0,
-      score:FANTASY.hero_damage*
-            (p.hero_damage||0)
-    },
+  const towerDamage=
+    Number(player.tower_damage)||0;
 
-    courier_kills:{
-      value:p.courier_kills||0,
-      score:FANTASY.courier_kills*
-            (p.courier_kills||0)
-    },
+  const heroDamage=
+    Number(player.hero_damage)||0;
 
-    observer_kills:{
-      value:p.observer_kills||0,
-      score:FANTASY.observer_kills*
-            (p.observer_kills||0)
-    },
+  const courierKills=
+    Number(player.courier_kills)||0;
 
-    sentry_kills:{
-      value:p.sentry_kills||0,
-      score:FANTASY.sentry_kills*
-            (p.sentry_kills||0)
-    },
+  const observerKills=
+    Number(player.observer_kills)||0;
 
-    roshan_kills:{
-      value:p.roshan_kills||0,
-      score:FANTASY.roshan_kills*
-            (p.roshan_kills||0)
-    },
+  const sentryKills=
+    Number(player.sentry_kills)||0;
 
-    teamfight:{
-      value:p.teamfight_participation||0,
-      score:FANTASY.teamfight*
-            (p.teamfight_participation||0)
-    },
+  const roshanKills=
+    Number(player.roshan_kills)||0;
 
-    observer_placed:{
-      value:p.obs_placed||0,
-      score:FANTASY.observer_placed*
-            (p.obs_placed||0)
-    },
+  const teamfight=
+    Number(
+      player.teamfight_participation
+    )||0;
 
-    sentry_placed:{
-      value:p.sen_placed||0,
-      score:FANTASY.sentry_placed*
-            (p.sen_placed||0)
-    },
+  const obsPlaced=
+    Number(player.obs_placed)||0;
 
-    camps_stacked:{
-      value:p.camps_stacked||0,
-      score:FANTASY.camps_stacked*
-            (p.camps_stacked||0)
-    },
+  const sentryPlaced=
+    Number(player.sen_placed)||0;
 
-    runes_grabbed:{
-      value:p.rune_pickups||0,
-      score:FANTASY.runes_grabbed*
-            (p.rune_pickups||0)
-    },
+  const camps=
+    Number(player.camps_stacked)||0;
 
-    first_blood:{
-      value:p.firstblood_claimed?1:0,
-      score:FANTASY.first_blood*
-            (p.firstblood_claimed?1:0)
-    },
+  const runes=
+    Number(player.rune_pickups)||0;
 
-    stuns:{
-      value:p.stuns||0,
-      score:FANTASY.stuns*
-            (p.stuns||0)
-    },
+  const firstBlood=
+    player.firstblood_claimed
+      ?1
+      :0;
 
-    hero_healing:{
-      value:p.hero_healing||0,
-      score:FANTASY.hero_healing*
-            (p.hero_healing||0)
-    }
+  const stuns=
+    Number(player.stuns)||0;
+
+  const healing=
+    Number(player.hero_healing)||0;
+
+  /*
+    ВАЖНО:
+    deaths_base = +3 базовых очка матча,
+    после чего идут штрафы за смерти.
+  */
+
+  const parts={
+
+    kills:
+      kills*
+      FANTASY.kills,
+
+    deaths:
+      FANTASY.deaths_base+
+      deaths*
+      FANTASY.deaths,
+
+    assists:
+      assists*
+      FANTASY.assists,
+
+    last_hits:
+      (lastHits+denies)*
+      FANTASY.last_hits,
+
+    gold_per_min:
+      gpm*
+      FANTASY.gold_per_min,
+
+    xp_per_min:
+      xpm*
+      FANTASY.xp_per_min,
+
+    tower_kills:
+      towerKills*
+      FANTASY.tower_kills,
+
+    tower_damage:
+      towerDamage*
+      FANTASY.tower_damage,
+
+    hero_damage:
+      heroDamage*
+      FANTASY.hero_damage,
+
+    courier_kills:
+      courierKills*
+      FANTASY.courier_kills,
+
+    observer_kills:
+      observerKills*
+      FANTASY.observer_kills,
+
+    sentry_kills:
+      sentryKills*
+      FANTASY.sentry_kills,
+
+    roshan_kills:
+      roshanKills*
+      FANTASY.roshan_kills,
+
+    teamfight:
+      teamfight*
+      FANTASY.teamfight,
+
+    observer_placed:
+      obsPlaced*
+      FANTASY.observer_placed,
+
+    sentry_placed:
+      sentryPlaced*
+      FANTASY.sentry_placed,
+
+    camps_stacked:
+      camps*
+      FANTASY.camps_stacked,
+
+    runes_grabbed:
+      runes*
+      FANTASY.runes_grabbed,
+
+    first_blood:
+      firstBlood*
+      FANTASY.first_blood,
+
+    stuns:
+      stuns*
+      FANTASY.stuns,
+
+    hero_healing:
+      healing*
+      FANTASY.hero_healing
   };
 
   let total=0;
 
-  Object.values(values).forEach(x=>{
-    total += Number(x.score||0);
-  });
+  Object.values(parts)
+    .forEach(
+      value=>{
+        total+=Number(value)||0;
+      }
+    );
 
   return {
-    values,
-    total
+    total,
+    parts,
+    source:{
+      kills,
+      deaths,
+      assists,
+      lastHits,
+      denies,
+      gpm,
+      xpm,
+      towerKills,
+      towerDamage,
+      heroDamage,
+      courierKills,
+      observerKills,
+      sentryKills,
+      roshanKills,
+      teamfight,
+      obsPlaced,
+      sentryPlaced,
+      camps,
+      runes,
+      firstBlood,
+      stuns,
+      healing
+    }
   };
 }
 
 /* ============================================================
-   MATCH DETAILS
+   FULL MATCH
 ============================================================ */
 
-async function getMatchFantasy(matchId,accountId){
+async function getMatchFantasy(
+  matchId,
+  accountId
+){
 
-  const match = await apiFetch(
-    `/matches/${matchId}`
-  );
+  const match=
+    await apiFetch(
+      `/matches/${matchId}`
+    );
 
-  if(!match || !Array.isArray(match.players)){
+  if(
+    !match ||
+    !Array.isArray(
+      match.players
+    )
+  ){
 
     throw new Error(
-      "Матч "+matchId+" не распарсен OpenDota"
+      "Матч "+matchId+
+      " не содержит players"
     );
   }
 
-  const player = match.players.find(
-    p=>String(p.account_id)===String(accountId)
-  );
+  const player=
+    match.players.find(
+      p=>
+        String(
+          p.account_id
+        )===
+        String(accountId)
+    );
 
   if(!player){
 
     throw new Error(
-      "Игрок не найден в матче "+matchId
+      "Игрок "+
+      accountId+
+      " не найден в матче "+
+      matchId
     );
   }
 
-  const fantasy = fantasyBreakdown(player);
+  const fantasy=
+    calculateFantasy(
+      player
+    );
 
-  const radiant =
-    Number(player.player_slot) < 128;
+  const isRadiant=
+    Number(
+      player.player_slot
+    )<128;
 
-  const won =
-    Boolean(match.radiant_win) === radiant;
+  const win=
+    Boolean(
+      match.radiant_win
+    )===
+    isRadiant;
 
-  const result = {
-
-    matchId:String(match.match_id),
-
-    startTime:match.start_time || null,
-
-    duration:match.duration || 0,
-
-    heroId:player.hero_id,
-
-    kills:player.kills||0,
-
-    deaths:player.deaths||0,
-
-    assists:player.assists||0,
-
-    lastHits:player.last_hits||0,
-
-    denies:player.denies||0,
-
-    gpm:player.gold_per_min||0,
-
-    xpm:player.xp_per_min||0,
-
-    teamfight:player.teamfight_participation||0,
-
-    stuns:player.stuns||0,
-
-    runes:player.rune_pickups||0,
-
-    camps:player.camps_stacked||0,
-
-    obsPlaced:player.obs_placed||0,
-
-    sentryPlaced:player.sen_placed||0,
-
-    firstBlood:Boolean(player.firstblood_claimed),
-
-    towerKills:player.tower_kills||0,
-
-    roshanKills:player.roshan_kills||0,
-
-    heroDamage:player.hero_damage||0,
-
-    heroHealing:player.hero_healing||0,
-
-    radiantWin:Boolean(match.radiant_win),
-
-    isRadiant:radiant,
-
-    win:won,
-
-    fantasy:fantasy.total,
-
-    fantasyBreakdown:fantasy.values,
-
-    rawPlayer:player
-  };
+  /*
+    Диагностика показывает именно то,
+    что OpenDota прислала для игрока.
+  */
 
   diag(
-    "Fantasy рассчитан для "+matchId,
+    "FANTASY MATCH "+matchId,
     {
       accountId,
-      fantasy:result.fantasy,
-      breakdown:result.fantasyBreakdown
+      fantasy:fantasy.total,
+      raw:{
+        kills:player.kills,
+        deaths:player.deaths,
+        assists:player.assists,
+        last_hits:player.last_hits,
+        denies:player.denies,
+        gold_per_min:player.gold_per_min,
+        xp_per_min:player.xp_per_min,
+        tower_kills:player.tower_kills,
+        roshan_kills:player.roshan_kills,
+        teamfight_participation:
+          player.teamfight_participation,
+        obs_placed:player.obs_placed,
+        sen_placed:player.sen_placed,
+        camps_stacked:player.camps_stacked,
+        rune_pickups:player.rune_pickups,
+        firstblood_claimed:
+          player.firstblood_claimed,
+        stuns:player.stuns,
+        hero_healing:player.hero_healing
+      },
+      calculation:
+        fantasy.parts
     }
   );
 
-  return result;
+  return {
+
+    matchId:String(
+      match.match_id
+    ),
+
+    startTime:
+      Number(
+        match.start_time
+      )||0,
+
+    duration:
+      Number(
+        match.duration
+      )||0,
+
+    heroId:
+      player.hero_id,
+
+    kills:
+      Number(player.kills)||0,
+
+    deaths:
+      Number(player.deaths)||0,
+
+    assists:
+      Number(player.assists)||0,
+
+    lastHits:
+      Number(player.last_hits)||0,
+
+    denies:
+      Number(player.denies)||0,
+
+    gpm:
+      Number(player.gold_per_min)||0,
+
+    xpm:
+      Number(player.xp_per_min)||0,
+
+    teamfight:
+      Number(
+        player.teamfight_participation
+      )||0,
+
+    stuns:
+      Number(player.stuns)||0,
+
+    runes:
+      Number(player.rune_pickups)||0,
+
+    camps:
+      Number(player.camps_stacked)||0,
+
+    obsPlaced:
+      Number(player.obs_placed)||0,
+
+    sentryPlaced:
+      Number(player.sen_placed)||0,
+
+    firstBlood:
+      Boolean(
+        player.firstblood_claimed
+      ),
+
+    towerKills:
+      Number(player.tower_kills)||0,
+
+    roshanKills:
+      Number(player.roshan_kills)||0,
+
+    heroDamage:
+      Number(player.hero_damage)||0,
+
+    heroHealing:
+      Number(player.hero_healing)||0,
+
+    radiantWin:
+      Boolean(
+        match.radiant_win
+      ),
+
+    isRadiant,
+
+    win,
+
+    fantasy:
+      Number(
+        fantasy.total.toFixed(2)
+      ),
+
+    fantasyBreakdown:
+      fantasy.parts,
+
+    rawPlayer:player
+  };
 }
 
 /* ============================================================
    REFRESH PLAYER
 ============================================================ */
 
-async function refreshPlayer(player){
+async function refreshPlayer(
+  player,
+  progressCallback=null
+){
 
-  const accountId = player.accountId;
+  const accountId=
+    String(
+      player.accountId
+    );
 
   if(!accountId)
-    throw new Error("Нет Account ID");
+    throw new Error(
+      "Нет Account ID"
+    );
 
-  const history =
-    await getRecentMatches(accountId);
+  const history=
+    await getRecentMatches(
+      accountId
+    );
 
   /*
-    Берём только реально сыгранные/завершённые матчи.
+    Берём только последние 2.
   */
 
-  const candidates = history
-    .filter(m=>m.match_id)
-    .sort(
-      (a,b)=>
-        Number(b.start_time||0)-
-        Number(a.start_time||0)
-    )
-    .slice(0,8);
+  const candidates=
+    history
+      .filter(
+        x=>x.match_id
+      )
+      .slice(0,2);
 
   if(!candidates.length){
 
     throw new Error(
-      "OpenDota не вернула матчи"
+      "Нет матчей"
     );
   }
 
-  const oldMatches =
-    Array.isArray(player.matches)
-      ? player.matches
-      : [];
+  const oldMatches=
+    Array.isArray(
+      player.matches
+    )
+      ?player.matches
+      :[];
 
-  const oldMap =
+  const oldMap=
     new Map(
-      oldMatches.map(m=>[
-        String(m.matchId),
-        m
-      ])
+      oldMatches.map(
+        m=>[
+          String(m.matchId),
+          m
+        ]
+      )
     );
 
-  let parsed=0;
+  let completed=0;
 
-  /*
-    Не долбим API одновременно.
-    Один матч → запрос → пауза.
-  */
+  for(
+    let i=0;
+    i<candidates.length;
+    i++
+  ){
 
-  for(const item of candidates){
+    const item=
+      candidates[i];
 
-    const id=String(item.match_id);
+    const id=
+      String(
+        item.match_id
+      );
 
-    if(oldMap.has(id))
+    if(progressCallback){
+
+      progressCallback({
+        current:i,
+        total:candidates.length,
+        text:
+          `Загружаю матч ${i+1}/${candidates.length} · ${id}`
+      });
+    }
+
+    /*
+      Даже если матч уже есть,
+      не нужно заново долбить API.
+    */
+
+    if(
+      oldMap.has(id) &&
+      typeof oldMap.get(id).fantasy===
+        "number"
+    ){
+
+      completed++;
+
+      if(progressCallback){
+
+        progressCallback({
+          current:i+1,
+          total:candidates.length,
+          text:
+            `Матч ${i+1}/${candidates.length} уже сохранён`
+        });
+      }
+
       continue;
+    }
 
     try{
 
-      const match =
+      const result=
         await getMatchFantasy(
           id,
           accountId
         );
 
-      oldMap.set(id,match);
+      oldMap.set(
+        id,
+        result
+      );
 
-      parsed++;
+      completed++;
 
-      await sleep(350);
+      if(progressCallback){
+
+        progressCallback({
+          current:i+1,
+          total:candidates.length,
+          text:
+            `Матч ${i+1}/${candidates.length} загружен · Fantasy ${fmt(result.fantasy)}`
+        });
+      }
 
     }catch(error){
 
       diag(
-        "Ошибка обработки матча "+id,
+        "MATCH ERROR",
         {
+          matchId:id,
           accountId,
           error:error.message
         }
       );
+
+      /*
+        Если матч не загрузился,
+        продолжаем второй.
+      */
+
+      if(progressCallback){
+
+        progressCallback({
+          current:i+1,
+          total:candidates.length,
+          text:
+            `Ошибка матча ${i+1}/${candidates.length}: ${error.message}`,
+          error:true
+        });
+      }
     }
 
     /*
-      Достаточно получить несколько новых матчей.
+      Небольшая пауза,
+      чтобы браузер не делал несколько
+      запросов подряд.
     */
 
-    if(parsed>=4)
-      break;
+    if(
+      i<
+      candidates.length-1
+    ){
+
+      await sleep(250);
+    }
   }
 
-  const matches =
-    Array.from(oldMap.values())
-      .sort(
-        (a,b)=>
-          Number(b.startTime||0)-
-          Number(a.startTime||0)
-      )
-      .slice(0,10);
+  player.matches=
+    Array.from(
+      oldMap.values()
+    )
+    .sort(
+      (a,b)=>
+        Number(b.startTime||0)-
+        Number(a.startTime||0)
+    )
+    .slice(0,10);
 
-  player.matches=matches;
-
-  player.lastRefresh=Date.now();
+  player.lastRefresh=
+    Date.now();
 
   /*
-    Сохраняем даже если новых матчей нет.
+    ВАЖНО:
+    сначала обновляем PLAYERS,
+    потом сохраняем localStorage.
   */
 
-  await savePlayer(player);
+  saveLocal();
+
+  await savePlayer(
+    player
+  );
+
+  if(progressCallback){
+
+    progressCallback({
+      current:candidates.length,
+      total:candidates.length,
+      text:
+        `Готово · загружено ${completed}/${candidates.length}`
+    });
+  }
 
   return {
-    newMatches:parsed,
-    totalMatches:matches.length
+    newMatches:completed,
+    totalMatches:
+      player.matches.length
   };
 }
 
 /* ============================================================
-   BEST 2
+   BEST TWO
 ============================================================ */
 
 function bestTwo(player){
 
-  const matches =
-    Array.isArray(player.matches)
-      ? player.matches
-      : [];
+  const matches=
+    Array.isArray(
+      player.matches
+    )
+      ?player.matches
+      :[];
 
-  const sorted =
+  const sorted=
     matches
-      .filter(m=>
-        typeof m.fantasy==="number"
+      .filter(
+        m=>
+          typeof m.fantasy===
+          "number"
       )
       .slice()
       .sort(
-        (a,b)=>b.fantasy-a.fantasy
+        (a,b)=>
+          b.fantasy-
+          a.fantasy
       );
 
-  const best=sorted.slice(0,2);
+  const best=
+    sorted.slice(0,2);
 
   return {
     matches:best,
-    total:best.reduce(
-      (sum,m)=>sum+(Number(m.fantasy)||0),
-      0
-    )
+    total:
+      best.reduce(
+        (sum,m)=>
+          sum+
+          Number(m.fantasy||0),
+        0
+      )
   };
+}
+
+/* ============================================================
+   LOCAL STORAGE
+============================================================ */
+
+function saveLocal(){
+
+  try{
+
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify(
+        PLAYERS
+      )
+    );
+
+  }catch(error){
+
+    console.warn(
+      "localStorage save:",
+      error
+    );
+  }
+}
+
+function loadLocal(){
+
+  try{
+
+    const raw=
+      localStorage.getItem(
+        CACHE_KEY
+      );
+
+    if(!raw)
+      return [];
+
+    const parsed=
+      JSON.parse(raw);
+
+    return Array.isArray(
+      parsed
+    )
+      ?parsed
+      :[];
+
+  }catch(error){
+
+    return [];
+  }
 }
 
 /* ============================================================
    FIRESTORE
 ============================================================ */
 
-async function savePlayer(player){
+async function savePlayer(
+  player
+){
+
+  /*
+    Сначала local.
+  */
 
   saveLocal();
 
@@ -1627,15 +2086,39 @@ async function savePlayer(player){
   try{
 
     await db
-      .collection("v5-players")
-      .doc(String(player.accountId))
-      .set(player);
+      .collection("v7-players")
+      .doc(
+        String(
+          player.accountId
+        )
+      )
+      .set(
+        player,
+        {
+          merge:true
+        }
+      );
+
+    diag(
+      "FIRESTORE SAVE",
+      {
+        accountId:
+          player.accountId
+      }
+    );
 
   }catch(error){
 
     console.warn(
       "Firestore save:",
       error
+    );
+
+    diag(
+      "FIRESTORE SAVE ERROR",
+      {
+        error:error.message
+      }
     );
   }
 }
@@ -1647,13 +2130,15 @@ async function getPlayersFirestore(){
 
   try{
 
-    const snap =
+    const snap=
       await db
-        .collection("v5-players")
+        .collection(
+          "v7-players"
+        )
         .get();
 
     return snap.docs.map(
-      d=>d.data()
+      doc=>doc.data()
     );
 
   }catch(error){
@@ -1663,52 +2148,67 @@ async function getPlayersFirestore(){
       error
     );
 
-    return null;
-  }
-}
-
-async function getMyId(){
-
-  try{
-
-    const local =
-      localStorage.getItem(
-        MY_ID_KEY
-      );
-
-    return local || null;
-
-  }catch(e){
-
-    return null;
-  }
-}
-
-async function setMyId(id){
-
-  MY_ID=String(id);
-
-  try{
-    localStorage.setItem(
-      MY_ID_KEY,
-      String(id)
+    diag(
+      "FIRESTORE READ ERROR",
+      {
+        error:error.message
+      }
     );
-  }catch(e){}
+
+    return null;
+  }
 }
 
 /* ============================================================
-   RENDER STATUS
+   MY ID
+============================================================ */
+
+function getMyId(){
+
+  try{
+
+    return localStorage.getItem(
+      MY_ID_KEY
+    );
+
+  }catch(error){
+
+    return null;
+  }
+}
+
+function setMyId(id){
+
+  MY_ID=
+    String(id);
+
+  try{
+
+    localStorage.setItem(
+      MY_ID_KEY,
+      MY_ID
+    );
+
+  }catch(error){}
+}
+
+/* ============================================================
+   STATUS
 ============================================================ */
 
 function renderStatus(){
 
-  const allMatches =
+  const matches=
     PLAYERS.reduce(
-      (n,p)=>
-        n+
-        (Array.isArray(p.matches)
-          ?p.matches.length
-          :0),
+      (sum,p)=>
+        sum+
+        (
+          Array.isArray(
+            p.matches
+          )
+            ?p.matches.length
+            :0
+        ),
       0
     );
 
@@ -1719,7 +2219,7 @@ function renderStatus(){
     </div>
 
     <div class="status-item">
-      СОХРАНЕНО МАТЧЕЙ <b>${allMatches}</b>
+      МАТЧЕЙ <b>${matches}</b>
     </div>
 
     <div class="status-item">
@@ -1734,35 +2234,51 @@ function renderStatus(){
 
     <div class="status-item">
       FANTASY
-      <b>OpenDota formula</b>
+      <b>OPEN DOTA</b>
     </div>
 
   `;
 }
 
 /* ============================================================
-   AVATAR
+   AVATARS
 ============================================================ */
 
 function avatar(player){
 
-  const photo =
-    player.photo ||
-    null;
-
-  if(photo){
+  if(player.photo){
 
     return `
       <img
-        src="${esc(photo)}"
-        onerror="this.parentElement.innerHTML='<div class=&quot;photo-placeholder&quot;>${esc(initials(player.name))}</div>'"
+        src="${esc(player.photo)}"
+        onerror="
+          this.style.display='none';
+          this.parentElement
+            .querySelector('.photo-placeholder')
+            .style.display='flex';
+        "
       >
+
+      <div
+        class="photo-placeholder"
+        style="display:none"
+      >
+        ${esc(
+          initials(
+            player.name
+          )
+        )}
+      </div>
     `;
   }
 
   return `
     <div class="photo-placeholder">
-      ${esc(initials(player.name))}
+      ${esc(
+        initials(
+          player.name
+        )
+      )}
     </div>
   `;
 }
@@ -1772,16 +2288,24 @@ function smallAvatar(player){
   if(player.photo){
 
     return `
-      <img src="${esc(player.photo)}"
-           onerror="this.style.display='none'">
+      <img
+        src="${esc(player.photo)}"
+        onerror="
+          this.style.display='none'
+        "
+      >
     `;
   }
 
-  return esc(initials(player.name));
+  return esc(
+    initials(
+      player.name
+    )
+  );
 }
 
 /* ============================================================
-   PLAYER CARD
+   PLAYER CARDS
 ============================================================ */
 
 function renderPlayers(){
@@ -1792,157 +2316,209 @@ function renderPlayers(){
 
       <div class="empty">
 
-        <h2>Реестр пока пуст</h2>
+        <h2>
+          Реестр пока пуст
+        </h2>
 
         <p>
-          Добавь первого игрока.
-          Account ID можно взять из Dotabuff.
-          Если приложение открыто в Telegram,
-          имя и аватар будут подставлены автоматически,
-          когда Telegram передаёт photo_url.
+          Добавь игрока через кнопку
+          «Игрок». После сохранения приложение
+          автоматически загрузит последние 2
+          матча и рассчитает Fantasy Points.
         </p>
 
-        <button class="btn primary"
-                id="emptyJoin">
+        <button
+          class="btn primary"
+          id="emptyJoin"
+        >
           ＋ Добавить игрока
         </button>
 
       </div>
     `;
 
-    document.getElementById("emptyJoin")
-      .onclick=openJoinModal;
+    document
+      .getElementById(
+        "emptyJoin"
+      )
+      .onclick=
+      ()=>openJoinModal();
 
     return;
   }
 
   content.innerHTML=`
+
     <div class="cards">
-      ${PLAYERS.map(renderPlayerCard).join("")}
+
+      ${PLAYERS
+        .map(
+          renderPlayerCard
+        )
+        .join("")}
+
     </div>
   `;
 
   document
-    .querySelectorAll("[data-detail]")
-    .forEach(btn=>{
+    .querySelectorAll(
+      "[data-detail]"
+    )
+    .forEach(
+      button=>{
 
-      btn.onclick=()=>{
+        button.onclick=()=>{
 
-        const player=
-          PLAYERS.find(
-            p=>String(p.accountId)===
-               String(btn.dataset.detail)
-          );
+          const player=
+            PLAYERS.find(
+              p=>
+                String(
+                  p.accountId
+                )===
+                String(
+                  button.dataset.detail
+                )
+            );
 
-        if(player)
-          openPlayerDetail(player);
-      };
-    });
+          if(player)
+            openPlayerDetail(
+              player
+            );
+        };
+      }
+    );
 
   document
-    .querySelectorAll("[data-edit]")
-    .forEach(btn=>{
+    .querySelectorAll(
+      "[data-edit]"
+    )
+    .forEach(
+      button=>{
 
-      btn.onclick=()=>{
+        button.onclick=()=>{
 
-        const player=
-          PLAYERS.find(
-            p=>String(p.accountId)===
-               String(btn.dataset.edit)
+          openJoinModal(
+            button.dataset.edit
           );
-
-        if(player)
-          openJoinModal(player.accountId);
-      };
-    });
+        };
+      }
+    );
 }
 
-function renderPlayerCard(player){
+function renderPlayerCard(
+  player
+){
 
-  const mine =
-    String(player.accountId)===
+  const mine=
+    String(
+      player.accountId
+    )===
     String(MY_ID);
 
-  const best=bestTwo(player);
+  const best=
+    bestTwo(player);
 
-  const latest =
+  const latest=
     (player.matches||[])
       .slice()
       .sort(
         (a,b)=>
-          Number(b.startTime||0)-
-          Number(a.startTime||0)
+          Number(
+            b.startTime||0
+          )-
+          Number(
+            a.startTime||0
+          )
       )
       .slice(0,2);
 
-  const matchesHtml =
+  const matchesHtml=
     latest.length
-      ? latest.map(m=>`
 
-        <div class="match">
+      ?latest.map(
+        m=>`
 
-          <div class="match-top">
+          <div class="match">
 
-            <span class="match-id">
-              #${esc(m.matchId)}
-            </span>
+            <div class="match-top">
 
-            <span class="match-score">
-              ${fmt(m.fantasy)}
-            </span>
+              <span class="match-id">
+                #${esc(m.matchId)}
+              </span>
+
+              <span class="match-score">
+                ${fmt(m.fantasy)}
+              </span>
+
+            </div>
+
+            <div class="match-info">
+
+              <span
+                class="${m.win?"win":"loss"}"
+              >
+                ${m.win
+                  ?"ПОБЕДА"
+                  :"ПОРАЖЕНИЕ"
+                }
+              </span>
+
+              <span>
+                ${m.kills}/${m.deaths}/${m.assists}
+              </span>
+
+              <span>
+                GPM ${fmt(m.gpm)}
+              </span>
+
+              <span>
+                Fantasy ${fmt(m.fantasy)}
+              </span>
+
+            </div>
 
           </div>
 
-          <div class="match-info">
+        `
+      ).join("")
 
-            <span class="${m.win?"win":"loss"}">
-              ${m.win?"ПОБЕДА":"ПОРАЖЕНИЕ"}
-            </span>
-
-            <span>
-              ${m.kills}/${m.deaths}/${m.assists}
-            </span>
-
-            <span>
-              GPM ${m.gpm}
-            </span>
-
-            <span>
-              TF ${Math.round(
-                (m.teamfight||0)*100
-              )}%
-            </span>
-
-          </div>
-
-        </div>
-
-      `).join("")
       :`
+
         <div class="match">
+
           <div class="match-info">
-            Матчи ещё не загружены
+            Матчи ещё не загружены.
           </div>
+
         </div>
       `;
 
   return `
 
-    <article class="card ${mine?"mine":""}">
+    <article
+      class="card ${mine?"mine":""}"
+    >
 
       <div class="card-head">
 
         <span class="role">
-          ${esc(
+          ${
             ROLES[player.role]
-              ?ROLES[player.role].label
+              ?ROLES[
+                player.role
+              ].label
               :"ИГРОК"
-          )}
+          }
         </span>
 
-        ${mine
-          ?`<span class="mine">МОЁ</span>`
-          :""
+        ${
+          mine
+            ?`
+              <span class="mine">
+                МОЁ
+              </span>
+            `
+            :""
         }
 
       </div>
@@ -1958,7 +2534,10 @@ function renderPlayerCard(player){
           </strong>
 
           <span>
-            ACCOUNT ${esc(player.accountId)}
+            ACCOUNT
+            ${esc(
+              player.accountId
+            )}
           </span>
 
         </div>
@@ -1973,9 +2552,12 @@ function renderPlayerCard(player){
             ЛУЧШИЕ 2 МАТЧА
           </div>
 
-          <div class="score-title"
-               style="margin-top:4px">
-            ${best.matches.length}/2 загружено
+          <div
+            class="score-title"
+            style="margin-top:4px"
+          >
+            ${best.matches.length}/2
+            загружено
           </div>
 
         </div>
@@ -1994,19 +2576,28 @@ function renderPlayerCard(player){
 
       <div class="card-footer">
 
-        <button class="btn"
-                data-detail="${esc(player.accountId)}">
+        <button
+          class="btn"
+          data-detail="${esc(
+            player.accountId
+          )}"
+        >
           Данные
         </button>
 
-        ${mine
-          ?`
-            <button class="btn"
-                    data-edit="${esc(player.accountId)}">
-              Изменить
-            </button>
-          `
-          :""
+        ${
+          mine
+            ?`
+              <button
+                class="btn"
+                data-edit="${esc(
+                  player.accountId
+                )}"
+              >
+                Изменить
+              </button>
+            `
+            :""
         }
 
       </div>
@@ -2021,29 +2612,40 @@ function renderPlayerCard(player){
 
 function renderRating(){
 
-  const ranked =
+  const ranked=
     PLAYERS
-      .map(player=>{
+      .map(
+        player=>({
 
-        const best=bestTwo(player);
-
-        return {
           player,
-          best
-        };
 
-      })
+          best:
+            bestTwo(
+              player
+            )
+
+        })
+      )
       .sort(
         (a,b)=>
-          b.best.total-a.best.total
+          b.best.total-
+          a.best.total
       );
 
   if(!ranked.length){
 
     content.innerHTML=`
+
       <div class="empty">
-        <h2>Рейтинг пуст</h2>
-        <p>Добавь игроков и обнови их матчи.</p>
+
+        <h2>
+          Рейтинг пуст
+        </h2>
+
+        <p>
+          Добавь игроков.
+        </p>
+
       </div>
     `;
 
@@ -2061,8 +2663,8 @@ function renderRating(){
           <tr>
             <th>#</th>
             <th>Игрок</th>
-            <th>Матч 1</th>
-            <th>Матч 2</th>
+            <th>Последний</th>
+            <th>Второй</th>
             <th>Лучшие 2</th>
             <th>Матчей</th>
           </tr>
@@ -2071,75 +2673,111 @@ function renderRating(){
 
         <tbody>
 
-          ${ranked.map((row,index)=>{
+          ${ranked
+            .map(
+              (row,index)=>{
 
-            const p=row.player;
+                const p=
+                  row.player;
 
-            const best=row.best.matches;
+                const best=
+                  row.best.matches;
 
-            return `
+                return `
 
-              <tr>
+                  <tr>
 
-                <td>
-                  <span class="rank-number">
-                    ${index+1}
-                  </span>
-                </td>
+                    <td>
+                      <span
+                        class="rank-number"
+                      >
+                        ${index+1}
+                      </span>
+                    </td>
 
-                <td>
+                    <td>
 
-                  <div class="player-cell">
+                      <div
+                        class="player-cell"
+                      >
 
-                    <div class="small-avatar">
-                      ${smallAvatar(p)}
-                    </div>
+                        <div
+                          class="small-avatar"
+                        >
+                          ${smallAvatar(p)}
+                        </div>
 
-                    <div>
-                      <strong>
-                        ${esc(p.name)}
-                      </strong>
+                        <div>
 
-                      <div style="
-                        color:#665b49;
-                        font-family:IBM Plex Mono,monospace;
-                        font-size:8px;
-                        margin-top:2px">
-                        ${esc(p.accountId)}
+                          <strong>
+                            ${esc(p.name)}
+                          </strong>
+
+                          <div
+                            style="
+                            color:#665b49;
+                            font-family:IBM Plex Mono,monospace;
+                            font-size:8px;
+                            margin-top:2px"
+                          >
+                            ${esc(
+                              p.accountId
+                            )}
+                          </div>
+
+                        </div>
+
                       </div>
-                    </div>
 
-                  </div>
+                    </td>
 
-                </td>
+                    <td
+                      class="table-score"
+                    >
+                      ${
+                        best[0]
+                          ?fmt(
+                            best[0].fantasy
+                          )
+                          :"—"
+                      }
+                    </td>
 
-                <td class="table-score">
-                  ${best[0]
-                    ?fmt(best[0].fantasy)
-                    :"—"
-                  }
-                </td>
+                    <td
+                      class="table-score"
+                    >
+                      ${
+                        best[1]
+                          ?fmt(
+                            best[1].fantasy
+                          )
+                          :"—"
+                      }
+                    </td>
 
-                <td class="table-score">
-                  ${best[1]
-                    ?fmt(best[1].fantasy)
-                    :"—"
-                  }
-                </td>
+                    <td
+                      class="table-score"
+                      style="font-size:15px"
+                    >
+                      ${fmt(
+                        row.best.total
+                      )}
+                    </td>
 
-                <td class="table-score"
-                    style="font-size:15px">
-                  ${fmt(row.best.total)}
-                </td>
+                    <td>
+                      ${
+                        (
+                          p.matches||[]
+                        ).length
+                      }
+                    </td>
 
-                <td>
-                  ${(p.matches||[]).length}
-                </td>
+                  </tr>
 
-              </tr>
-            `;
-
-          }).join("")}
+                `;
+              }
+            )
+            .join("")}
 
         </tbody>
 
@@ -2150,21 +2788,28 @@ function renderRating(){
 }
 
 /* ============================================================
-   DETAIL MODAL
+   DETAIL
 ============================================================ */
 
-function openPlayerDetail(player){
+function openPlayerDetail(
+  player
+){
 
-  const matches =
+  const matches=
     (player.matches||[])
       .slice()
       .sort(
         (a,b)=>
-          Number(b.startTime||0)-
-          Number(a.startTime||0)
+          Number(
+            b.startTime||0
+          )-
+          Number(
+            a.startTime||0
+          )
       );
 
-  const best=bestTwo(player);
+  const best=
+    bestTwo(player);
 
   modalRoot.innerHTML=`
 
@@ -2172,8 +2817,10 @@ function openPlayerDetail(player){
 
       <div class="modal">
 
-        <button class="close"
-                id="modalClose">
+        <button
+          class="close"
+          id="modalClose"
+        >
           ×
         </button>
 
@@ -2182,76 +2829,197 @@ function openPlayerDetail(player){
         </h2>
 
         <div class="modal-desc">
+
           Account ID:
-          <b>${esc(player.accountId)}</b>
-          <br>
-          Fantasy:
-          <b style="color:var(--gold)">
-            ${fmt(best.total)}
+          <b>
+            ${esc(
+              player.accountId
+            )}
           </b>
-          · лучшие 2 матча
+
+          <br>
+
+          Лучшие 2:
+          <b
+            style="color:var(--gold)"
+          >
+            ${fmt(
+              best.total
+            )}
+          </b>
+
         </div>
 
         ${
           matches.length
-          ?matches.map(m=>`
 
-            <div class="match"
-                 style="margin-bottom:10px">
+          ?matches.map(
+            m=>`
 
-              <div class="match-top">
+              <div
+                class="match"
+                style="margin-bottom:10px"
+              >
 
-                <span class="match-id">
-                  MATCH ${esc(m.matchId)}
-                </span>
+                <div
+                  class="match-top"
+                >
 
-                <span class="match-score">
-                  ${fmt(m.fantasy)}
-                </span>
+                  <span
+                    class="match-id"
+                  >
+                    MATCH
+                    ${esc(
+                      m.matchId
+                    )}
+                  </span>
+
+                  <span
+                    class="match-score"
+                  >
+                    ${fmt(
+                      m.fantasy
+                    )}
+                  </span>
+
+                </div>
+
+                <div
+                  class="match-info"
+                  style="margin-bottom:9px"
+                >
+
+                  <span
+                    class="${
+                      m.win
+                        ?"win"
+                        :"loss"
+                    }"
+                  >
+                    ${
+                      m.win
+                        ?"ПОБЕДА"
+                        :"ПОРАЖЕНИЕ"
+                    }
+                  </span>
+
+                  <span>
+                    ${m.kills}/
+                    ${m.deaths}/
+                    ${m.assists}
+                  </span>
+
+                </div>
+
+                <div
+                  class="detail-grid"
+                >
+
+                  ${detail(
+                    "Fantasy",
+                    fmt(m.fantasy)
+                  )}
+
+                  ${detail(
+                    "Kills",
+                    m.kills
+                  )}
+
+                  ${detail(
+                    "Deaths",
+                    m.deaths
+                  )}
+
+                  ${detail(
+                    "Assists",
+                    m.assists
+                  )}
+
+                  ${detail(
+                    "Last Hits",
+                    m.lastHits
+                  )}
+
+                  ${detail(
+                    "Denies",
+                    m.denies
+                  )}
+
+                  ${detail(
+                    "GPM",
+                    m.gpm
+                  )}
+
+                  ${detail(
+                    "XPM",
+                    m.xpm
+                  )}
+
+                  ${detail(
+                    "Teamfight",
+                    Math.round(
+                      (m.teamfight||0)*
+                      100
+                    )+"%"
+                  )}
+
+                  ${detail(
+                    "Stuns",
+                    Number(
+                      m.stuns||0
+                    ).toFixed(1)
+                  )}
+
+                  ${detail(
+                    "Runes",
+                    m.runes
+                  )}
+
+                  ${detail(
+                    "Camps",
+                    m.camps
+                  )}
+
+                  ${detail(
+                    "Observer",
+                    m.obsPlaced
+                  )}
+
+                  ${detail(
+                    "Sentry",
+                    m.sentryPlaced
+                  )}
+
+                  ${detail(
+                    "Towers",
+                    m.towerKills
+                  )}
+
+                  ${detail(
+                    "Roshan",
+                    m.roshanKills
+                  )}
+
+                  ${detail(
+                    "First Blood",
+                    m.firstBlood
+                      ?"Да"
+                      :"Нет"
+                  )}
+
+                </div>
 
               </div>
 
-              <div class="match-info"
-                   style="margin-bottom:9px">
+            `
+          ).join("")
 
-                <span class="${m.win?"win":"loss"}">
-                  ${m.win?"ПОБЕДА":"ПОРАЖЕНИЕ"}
-                </span>
-
-                <span>
-                  ${m.kills}/${m.deaths}/${m.assists}
-                </span>
-
-              </div>
-
-              <div class="detail-grid">
-
-                ${detail("Kills",m.kills)}
-                ${detail("Deaths",m.deaths)}
-                ${detail("Assists",m.assists)}
-                ${detail("Last Hits",m.lastHits)}
-                ${detail("Denies",m.denies)}
-                ${detail("GPM",m.gpm)}
-                ${detail("XPM",m.xpm)}
-                ${detail("Teamfight",Math.round((m.teamfight||0)*100)+"%")}
-                ${detail("Stuns",Number(m.stuns||0).toFixed(1))}
-                ${detail("Runes",m.runes)}
-                ${detail("Camps",m.camps)}
-                ${detail("Observer",m.obsPlaced)}
-                ${detail("Sentry",m.sentryPlaced)}
-                ${detail("Towers",m.towerKills)}
-                ${detail("Roshan",m.roshanKills)}
-                ${detail("First Blood",m.firstBlood?"Да":"Нет")}
-
-              </div>
-
-            </div>
-
-          `).join("")
           :`
+
             <div class="empty">
               Нет данных матчей.
             </div>
+
           `
         }
 
@@ -2260,19 +3028,32 @@ function openPlayerDetail(player){
     </div>
   `;
 
-  document.getElementById("modalClose")
-    .onclick=closeModal;
+  document
+    .getElementById(
+      "modalClose"
+    )
+    .onclick=
+    closeModal;
 }
 
-function detail(name,value){
+function detail(
+  name,
+  value
+){
 
   return `
 
-    <div class="detail-stat">
+    <div
+      class="detail-stat"
+    >
 
-      <small>${esc(name)}</small>
+      <small>
+        ${esc(name)}
+      </small>
 
-      <b>${esc(value)}</b>
+      <b>
+        ${esc(value)}
+      </b>
 
     </div>
   `;
@@ -2284,30 +3065,163 @@ function closeModal(){
 }
 
 /* ============================================================
+   LOADING MODAL
+============================================================ */
+
+function updateLoading(
+  current,
+  total,
+  text,
+  error=false
+){
+
+  const bar=
+    document.getElementById(
+      "loadingBar"
+    );
+
+  const label=
+    document.getElementById(
+      "loadingText"
+    );
+
+  const result=
+    document.getElementById(
+      "loadingResult"
+    );
+
+  if(bar){
+
+    const percent=
+      total
+        ?Math.min(
+          100,
+          Math.round(
+            current/
+            total*
+            100
+          )
+        )
+        :0;
+
+    bar.style.width=
+      percent+"%";
+  }
+
+  if(label){
+
+    label.textContent=
+      text || "";
+  }
+
+  if(result){
+
+    result.textContent=
+      error
+        ?"⚠ "+text
+        :"";
+  }
+}
+
+function showLoadingModal(
+  name
+){
+
+  modalRoot.innerHTML=`
+
+    <div class="overlay">
+
+      <div
+        class="modal"
+        style="max-width:480px"
+      >
+
+        <h2>
+          Загружаю игрока
+        </h2>
+
+        <div class="modal-desc">
+
+          ${esc(name)}
+
+          <br>
+
+          OpenDota получает последние
+          матчи и полную статистику игрока.
+
+        </div>
+
+        <div
+          class="loading-box"
+        >
+
+          <div
+            class="loading-title"
+          >
+            ЗАГРУЗКА FANTASY
+          </div>
+
+          <div
+            class="progress-track"
+          >
+
+            <div
+              class="progress-bar"
+              id="loadingBar"
+            ></div>
+
+          </div>
+
+          <div
+            class="loading-text"
+            id="loadingText"
+          >
+            Подключение к OpenDota...
+          </div>
+
+          <div
+            class="loading-result"
+            id="loadingResult"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+/* ============================================================
    JOIN MODAL
 ============================================================ */
 
-function openJoinModal(editId=null){
+function openJoinModal(
+  editId=null
+){
 
-  const existing =
+  const existing=
     editId
       ?PLAYERS.find(
-        p=>String(p.accountId)===
-           String(editId)
+        p=>
+          String(
+            p.accountId
+          )===
+          String(editId)
       )
       :null;
 
-  let selectedRole =
+  let selectedRole=
     existing
       ?existing.role
       :"";
 
-  let selectedPhoto =
+  let selectedPhoto=
     existing
       ?existing.photo
       :tgPhoto();
 
-  const defaultName =
+  let defaultName=
     existing
       ?existing.name
       :tgName();
@@ -2318,28 +3232,39 @@ function openJoinModal(editId=null){
 
       <div class="modal">
 
-        <button class="close"
-                id="modalClose">
+        <button
+          class="close"
+          id="modalClose"
+        >
           ×
         </button>
 
         <h2>
-          ${existing
-            ?"Изменить игрока"
-            :"Добавить игрока"
+          ${
+            existing
+              ?"Изменить игрока"
+              :"Добавить игрока"
           }
         </h2>
 
         <div class="modal-desc">
+
           Укажи имя и Account ID.
           Можно вставить ссылку Dotabuff.
-          Если Telegram передал аватар,
-          он будет использован автоматически.
+
+          <br><br>
+
+          После сохранения приложение
+          автоматически загрузит
+          последние 2 матча.
+
         </div>
 
         <div class="field">
 
-          <label>ИМЯ</label>
+          <label>
+            ИМЯ
+          </label>
 
           <input
             id="playerName"
@@ -2352,14 +3277,19 @@ function openJoinModal(editId=null){
 
         <div class="field">
 
-          <label>DOTABUFF / ACCOUNT ID</label>
+          <label>
+            DOTABUFF / ACCOUNT ID
+          </label>
 
           <input
             id="playerId"
             type="text"
-            value="${existing
-              ?esc(existing.accountId)
-              :""
+            value="${
+              existing
+                ?esc(
+                  existing.accountId
+                )
+                :""
             }"
             placeholder="117905733"
           >
@@ -2368,29 +3298,46 @@ function openJoinModal(editId=null){
 
         <div class="field">
 
-          <label>РОЛЬ</label>
+          <label>
+            РОЛЬ
+          </label>
 
           <div class="roles">
 
-            ${Object.entries(ROLES)
-              .map(([key,value])=>`
+            ${
+              Object.entries(
+                ROLES
+              )
+              .map(
+                ([key,value])=>
 
-                <div
-                  class="role-option ${selectedRole===key?"selected":""}"
-                  data-role="${key}"
-                >
+                  `
 
-                  <strong>
-                    ${value.label}
-                  </strong>
+                    <div
+                      class="
+                        role-option
+                        ${
+                          selectedRole===key
+                            ?"selected"
+                            :""
+                        }
+                      "
+                      data-role="${key}"
+                    >
 
-                  <span>
-                    ${value.slots.join(" · ")}
-                  </span>
+                      <strong>
+                        ${value.label}
+                      </strong>
 
-                </div>
+                      <span>
+                        Fantasy Registry
+                      </span>
 
-              `).join("")
+                    </div>
+
+                  `
+              )
+              .join("")
             }
 
           </div>
@@ -2399,21 +3346,24 @@ function openJoinModal(editId=null){
 
         <div class="field">
 
-          <label>TELEGRAM AVATAR</label>
+          <label>
+            TELEGRAM AVATAR
+          </label>
 
-          <div style="
+          <div
+            style="
             border:1px solid var(--line);
             padding:10px;
             background:#0e0c09;
             border-radius:3px;
             color:#817660;
-            font-size:11px;
-          ">
+            font-size:11px;"
+          >
 
             ${
               selectedPhoto
-              ?"✓ Аватар Telegram найден"
-              :"Telegram photo_url недоступен"
+                ?"✓ Аватар Telegram найден"
+                :"Telegram photo_url недоступен"
             }
 
           </div>
@@ -2424,14 +3374,22 @@ function openJoinModal(editId=null){
 
         <div class="modal-actions">
 
-          <button class="btn"
-                  id="cancelJoin">
+          <button
+            class="btn"
+            id="cancelJoin"
+          >
             Отмена
           </button>
 
-          <button class="btn primary"
-                  id="saveJoin">
-            Сохранить
+          <button
+            class="btn primary"
+            id="saveJoin"
+          >
+            ${
+              existing
+                ?"Сохранить"
+                :"Создать и загрузить"
+            }
           </button>
 
         </div>
@@ -2441,60 +3399,94 @@ function openJoinModal(editId=null){
     </div>
   `;
 
-  document.getElementById("modalClose")
-    .onclick=closeModal;
-
-  document.getElementById("cancelJoin")
-    .onclick=closeModal;
+  document
+    .getElementById(
+      "modalClose"
+    )
+    .onclick=
+    closeModal;
 
   document
-    .querySelectorAll(".role-option")
-    .forEach(el=>{
+    .getElementById(
+      "cancelJoin"
+    )
+    .onclick=
+    closeModal;
 
-      el.onclick=()=>{
+  document
+    .querySelectorAll(
+      ".role-option"
+    )
+    .forEach(
+      element=>{
 
-        selectedRole=el.dataset.role;
+        element.onclick=()=>{
 
-        document
-          .querySelectorAll(".role-option")
-          .forEach(x=>
-            x.classList.remove("selected")
+          selectedRole=
+            element.dataset.role;
+
+          document
+            .querySelectorAll(
+              ".role-option"
+            )
+            .forEach(
+              x=>
+                x.classList.remove(
+                  "selected"
+                )
+            );
+
+          element.classList.add(
+            "selected"
           );
+        };
+      }
+    );
 
-        el.classList.add("selected");
-      };
+  document
+    .getElementById(
+      "saveJoin"
+    )
+    .onclick=
+    async()=>{
 
-    });
-
-  document.getElementById("saveJoin")
-    .onclick=async()=>{
-
-      const name =
+      const name=
         document
-          .getElementById("playerName")
+          .getElementById(
+            "playerName"
+          )
           .value
           .trim();
 
-      const rawId =
+      const rawId=
         document
-          .getElementById("playerId")
+          .getElementById(
+            "playerId"
+          )
           .value
           .trim();
 
       const accountId=
-        accountIdFrom(rawId);
+        accountIdFrom(
+          rawId
+        );
 
       const error=
-        document.getElementById("joinError");
+        document
+          .getElementById(
+            "joinError"
+          );
 
       error.innerHTML="";
 
       if(!name){
 
         error.innerHTML=`
+
           <div class="notice error">
             Укажи имя.
           </div>
+
         `;
 
         return;
@@ -2503,9 +3495,11 @@ function openJoinModal(editId=null){
       if(!accountId){
 
         error.innerHTML=`
+
           <div class="notice error">
             Не удалось определить Account ID.
           </div>
+
         `;
 
         return;
@@ -2514,71 +3508,212 @@ function openJoinModal(editId=null){
       if(!selectedRole){
 
         error.innerHTML=`
+
           <div class="notice error">
             Выбери роль.
           </div>
+
         `;
 
         return;
       }
 
-      const duplicate =
+      const duplicate=
         PLAYERS.find(
           p=>
-            String(p.accountId)===
+            String(
+              p.accountId
+            )===
             String(accountId) &&
-            (!existing ||
-             String(p.accountId)!==
-             String(existing.accountId))
+            (
+              !existing ||
+              String(
+                p.accountId
+              )!==
+              String(
+                existing.accountId
+              )
+            )
         );
 
       if(duplicate){
 
         error.innerHTML=`
+
           <div class="notice error">
-            Этот игрок уже есть в реестре.
+            Этот игрок уже есть.
           </div>
+
         `;
 
         return;
       }
 
-      const player =
+      const player=
         existing
           ?existing
           :{
-            accountId:String(accountId),
-            name,
-            photo:selectedPhoto,
-            role:selectedRole,
-            tokens:START_TOKENS,
-            matches:[],
-            lastRefresh:null,
-            joinedAt:Date.now()
-          };
 
-      player.name=name;
-      player.photo=selectedPhoto;
-      player.role=selectedRole;
+              accountId:
+                String(accountId),
+
+              name,
+
+              photo:
+                selectedPhoto,
+
+              role:
+                selectedRole,
+
+              tokens:
+                START_TOKENS,
+
+              matches:[],
+
+              lastRefresh:null,
+
+              joinedAt:
+                Date.now()
+
+            };
+
+      player.name=
+        name;
+
+      player.photo=
+        selectedPhoto;
+
+      player.role=
+        selectedRole;
+
+      /*
+        Для нового игрока
+        сначала добавляем в state.
+      */
 
       if(!existing){
 
-        PLAYERS.push(player);
+        PLAYERS.push(
+          player
+        );
 
-        await setMyId(accountId);
+        setMyId(
+          accountId
+        );
       }
 
-      await savePlayer(player);
-
-      closeModal();
-
-      renderAll();
+      saveLocal();
 
       /*
-        Сразу пробуем загрузить матчи.
+        Показываем отдельное окно
+        загрузки.
       */
 
-      await refreshSinglePlayer(player);
+      showLoadingModal(
+        name
+      );
+
+      try{
+
+        const result=
+          await refreshPlayer(
+            player,
+            updateLoading
+          );
+
+        /*
+          Если ни один матч
+          не загрузился — не скрываем
+          проблему.
+        */
+
+        if(
+          result.newMatches<=0
+        ){
+
+          throw new Error(
+            "OpenDota не вернула данные ни по одному из последних матчей"
+          );
+        }
+
+        /*
+          Сначала закрываем loading.
+        */
+
+        closeModal();
+
+        renderAll();
+
+        showNotice(
+          `✓ ${name}: загружено ${result.newMatches} матчей. Fantasy Points получены.`,
+          "ok"
+        );
+
+      }catch(error){
+
+        console.error(
+          "CREATE PLAYER:",
+          error
+        );
+
+        /*
+          Не закрываем окно,
+          чтобы пользователь видел ошибку.
+        */
+
+        updateLoading(
+          2,
+          2,
+          error.message,
+          true
+        );
+
+        const result=
+          document.getElementById(
+            "loadingResult"
+          );
+
+        if(result){
+
+          result.innerHTML=
+            `⚠ ${esc(
+              error.message
+            )}<br><br>
+            Открой вкладку «Диагностика»
+            и посмотри ответ OpenDota.`;
+        }
+
+        diag(
+          "PLAYER LOAD FAILED",
+          {
+            accountId,
+            error:error.message
+          }
+        );
+
+        /*
+          Если новый игрок совсем
+          не загрузился — удаляем его
+          из списка, чтобы не оставался
+          пустой карточкой.
+        */
+
+        if(!existing){
+
+          PLAYERS=
+            PLAYERS.filter(
+              p=>
+                String(
+                  p.accountId
+                )!==
+                String(accountId)
+            );
+
+          saveLocal();
+
+          renderAll();
+        }
+      }
     };
 }
 
@@ -2586,32 +3721,48 @@ function openJoinModal(editId=null){
    REFRESH SINGLE
 ============================================================ */
 
-async function refreshSinglePlayer(player){
+async function refreshSinglePlayer(
+  player
+){
 
-  showNotice(
-    `Загрузка матчей ${player.name}...`,
-    "normal"
+  showLoadingModal(
+    player.name
   );
 
   try{
 
     const result=
-      await refreshPlayer(player);
+      await refreshPlayer(
+        player,
+        updateLoading
+      );
+
+    closeModal();
 
     renderAll();
 
     showNotice(
-      `✓ ${player.name}: новых матчей ${result.newMatches}, сохранено ${result.totalMatches}`,
+      `✓ ${player.name}: ${result.newMatches} матчей обновлено.`,
       "ok"
     );
 
   }catch(error){
 
-    console.error(error);
+    updateLoading(
+      2,
+      2,
+      error.message,
+      true
+    );
 
-    showNotice(
-      `Ошибка ${player.name}: ${error.message}`,
-      "error"
+    diag(
+      "REFRESH FAILED",
+      {
+        accountId:
+          player.accountId,
+        error:
+          error.message
+      }
     );
   }
 }
@@ -2633,28 +3784,39 @@ async function refreshAll(){
   }
 
   const button=
-    document.getElementById("refreshBtn");
+    document.getElementById(
+      "refreshBtn"
+    );
 
   button.disabled=true;
 
-  button.textContent="⏳ ОБНОВЛЕНИЕ...";
+  button.textContent=
+    "⏳ ЗАГРУЗКА...";
 
   let success=0;
+
   let errors=0;
 
   try{
 
-    /*
-      Последовательно, а не Promise.all.
-      Это сильно уменьшает вероятность rate-limit/
-      connection errors.
-    */
-
-    for(const player of PLAYERS){
+    for(
+      const player of PLAYERS
+    ){
 
       try{
 
-        await refreshPlayer(player);
+        await refreshPlayer(
+          player,
+          data=>{
+
+            showNotice(
+              `${player.name}: ${data.text}`,
+              data.error
+                ?"error"
+                :"normal"
+            );
+          }
+        );
 
         success++;
 
@@ -2663,29 +3825,34 @@ async function refreshAll(){
         errors++;
 
         diag(
-          "Ошибка обновления "+player.name,
+          "REFRESH ALL ERROR",
           {
-            accountId:player.accountId,
-            error:error.message
+            accountId:
+              player.accountId,
+            error:
+              error.message
           }
         );
       }
 
       renderAll();
 
-      await sleep(500);
+      await sleep(300);
     }
 
     showNotice(
       `Обновление завершено: ${success} успешно, ${errors} ошибок.`,
-      errors ? "normal" : "ok"
+      errors
+        ?"normal"
+        :"ok"
     );
 
   }finally{
 
     button.disabled=false;
 
-    button.textContent="↻ Обновить";
+    button.textContent=
+      "↻ Обновить";
   }
 }
 
@@ -2693,53 +3860,105 @@ async function refreshAll(){
    NOTICE
 ============================================================ */
 
-function showNotice(text,type="normal"){
+function showNotice(
+  text,
+  type="normal"
+){
+
+  const old=
+    document.getElementById(
+      "temporaryNotice"
+    );
+
+  if(old)
+    old.remove();
 
   status.insertAdjacentHTML(
     "afterend",
     `
-      <div class="notice ${type==="error"?"error":type==="ok"?"ok":""}"
-           id="temporaryNotice">
+
+      <div
+        class="
+          notice
+          ${
+            type==="error"
+              ?"error"
+              :type==="ok"
+                ?"ok"
+                :""
+          }
+        "
+        id="temporaryNotice"
+      >
         ${esc(text)}
       </div>
+
     `
   );
 
-  setTimeout(()=>{
+  setTimeout(
+    ()=>{
 
-    const el=
-      document.getElementById(
-        "temporaryNotice"
-      );
+      const el=
+        document.getElementById(
+          "temporaryNotice"
+        );
 
-    if(el)
-      el.remove();
+      if(el)
+        el.remove();
 
-  },7000);
+    },
+    7000
+  );
 }
 
 /* ============================================================
-   RENDER
+   RENDER ALL
 ============================================================ */
 
 function renderAll(){
 
   renderStatus();
 
-  if(ACTIVE_TAB==="players")
+  if(
+    ACTIVE_TAB===
+    "players"
+  )
     renderPlayers();
 
-  if(ACTIVE_TAB==="rating")
+  if(
+    ACTIVE_TAB===
+    "rating"
+  )
     renderRating();
 
-  if(ACTIVE_TAB==="diagnostics"){
-    diagnosticPanel.classList.add("open");
+  if(
+    ACTIVE_TAB===
+    "diagnostics"
+  ){
+
+    diagnosticPanel
+      .classList
+      .add("open");
+
     renderDiagnostics();
 
     content.innerHTML=`
+
       <div class="notice">
-        Здесь отображаются последние запросы к OpenDota,
-        HTTP-коды, ответы API и рассчитанные Fantasy Points.
+
+        Здесь видны:
+        <br>
+        • запросы к OpenDota
+        <br>
+        • HTTP status
+        <br>
+        • реальные поля игрока
+        <br>
+        • рассчитанные Fantasy Points
+        <br>
+        • ошибки подключения
+
       </div>
     `;
   }
@@ -2750,61 +3969,99 @@ function renderAll(){
 ============================================================ */
 
 document
-  .querySelectorAll(".tab")
-  .forEach(tab=>{
+  .querySelectorAll(
+    ".tab"
+  )
+  .forEach(
+    tab=>{
 
-    tab.onclick=()=>{
+      tab.onclick=()=>{
 
-      document
-        .querySelectorAll(".tab")
-        .forEach(x=>
-          x.classList.remove("active")
+        document
+          .querySelectorAll(
+            ".tab"
+          )
+          .forEach(
+            x=>
+              x.classList.remove(
+                "active"
+              )
+          );
+
+        tab.classList.add(
+          "active"
         );
 
-      tab.classList.add("active");
+        ACTIVE_TAB=
+          tab.dataset.tab;
 
-      ACTIVE_TAB=tab.dataset.tab;
+        diagnosticPanel
+          .classList
+          .toggle(
+            "open",
+            ACTIVE_TAB===
+            "diagnostics"
+          );
 
-      diagnosticPanel.classList.toggle(
-        "open",
-        ACTIVE_TAB==="diagnostics"
-      );
-
-      renderAll();
-    };
-  });
+        renderAll();
+      };
+    }
+  );
 
 /* ============================================================
    BUTTONS
 ============================================================ */
 
-document.getElementById("joinBtn")
-  .onclick=()=>openJoinModal();
+document
+  .getElementById(
+    "joinBtn"
+  )
+  .onclick=
+  ()=>openJoinModal();
 
-document.getElementById("refreshBtn")
-  .onclick=refreshAll;
+document
+  .getElementById(
+    "refreshBtn"
+  )
+  .onclick=
+  refreshAll;
 
-document.getElementById("diagBtn")
+document
+  .getElementById(
+    "diagBtn"
+  )
   .onclick=()=>{
 
-    ACTIVE_TAB="diagnostics";
+    ACTIVE_TAB=
+      "diagnostics";
 
     document
-      .querySelectorAll(".tab")
-      .forEach(x=>
-        x.classList.remove("active")
+      .querySelectorAll(
+        ".tab"
+      )
+      .forEach(
+        x=>
+          x.classList.remove(
+            "active"
+          )
       );
 
     document
-      .querySelector('[data-tab="diagnostics"]')
-      .classList.add("active");
+      .querySelector(
+        '[data-tab="diagnostics"]'
+      )
+      .classList
+      .add("active");
 
-    diagnosticPanel.classList.add("open");
+    diagnosticPanel
+      .classList
+      .add("open");
 
     renderAll();
 
     window.scrollTo({
-      top:document.body.scrollHeight,
+      top:
+        document.body.scrollHeight,
       behavior:"smooth"
     });
   };
@@ -2816,43 +4073,53 @@ document.getElementById("diagBtn")
 async function bootstrap(){
 
   /*
-    1. Сначала local cache.
+    Сначала локальные данные.
   */
 
-  PLAYERS=loadLocal();
+  PLAYERS=
+    loadLocal();
 
-  MY_ID=await getMyId();
+  MY_ID=
+    getMyId();
 
   renderAll();
 
   /*
-    2. Затем Firebase.
+    Потом Firebase.
   */
 
   const remote=
     await getPlayersFirestore();
 
-  if(remote && remote.length){
+  if(
+    remote &&
+    remote.length
+  ){
 
-    PLAYERS=remote;
+    PLAYERS=
+      remote;
 
     saveLocal();
 
     renderAll();
-
   }
 
   console.log(
     "Fantasy Registry запущен",
     {
-      players:PLAYERS.length,
-      telegramUser:tgUser
+      players:
+        PLAYERS.length,
+
+      telegramUser:
+        tgUser
     }
   );
 
   /*
-    Не запускаем автоматический API polling.
-    Иначе браузер может постоянно бомбить OpenDota.
+    ВАЖНО:
+    API автоматически не вызываем.
+    Загрузка начинается при добавлении
+    или кнопке Обновить.
   */
 }
 
