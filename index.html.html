@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Реестр Фэнтези</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@500;600;700&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f0c09; --panel:#171310; --panel2:#1e1811;
+  --parchment:#e8dcc2; --gold:#c9a227; --gold-dim:#8a7326;
+  --red:#a8384a; --red-dim:#5c2530;
+  --blue:#4c6fdc; --blue-dim:#2c3a66;
+  --green:#3f8a5c; --green-dim:#254a34;
+  --line:#332a1e; --shadow:0 12px 30px rgba(0,0,0,.55); --radius:4px;
+  font-family:'Spectral',serif;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 20% -10%,#241b10 0%,transparent 55%),
+    radial-gradient(ellipse at 90% 0%,#1a1f2b 0%,transparent 45%),
+    var(--ink);
+  color:var(--parchment); min-height:100vh; padding:22px 14px 90px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wrap{max-width:1180px;margin:0 auto;}
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap;gap:14px;}
+.masthead h1{font-family:'Spectral SC',serif;font-weight:700;font-size:26px;letter-spacing:1.5px;margin:0 0 4px;}
+.masthead p{margin:0;color:#9b8f77;font-size:12.5px;letter-spacing:.4px;}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+.btn{background:var(--panel2);border:1px solid var(--gold-dim);color:var(--parchment);padding:9px 15px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:.15s;}
+.btn:hover{border-color:var(--gold);background:#241d13;}
+.btn.primary{background:linear-gradient(180deg,#8a6a1c,#6b5216);border-color:var(--gold);color:#141005;font-weight:600;}
+.btn.primary:hover{filter:brightness(1.1);}
+.btn:disabled{opacity:.45;cursor:default;}
+.btn.small{padding:6px 10px;font-size:10px;}
+.btn.ghost{background:transparent;border-color:var(--line);color:#a99c80;}
+.btn.ghost:hover{border-color:var(--gold-dim);color:var(--parchment);}
+
+.tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--line);}
+.tab{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8f8265;background:none;border:none;padding:10px 4px 12px;cursor:pointer;position:relative;margin-right:22px;}
+.tab.active{color:var(--gold);}
+.tab.active::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--gold);}
+
+.status-strip{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:22px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8f8265;}
+.status-strip span b{color:var(--gold);font-weight:600;}
+.config-banner{background:#3a1f1f;border:1px solid #a8384a;color:#f0c8ce;padding:12px 16px;border-radius:var(--radius);font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.6;margin-bottom:18px;}
+.config-banner b{color:#f5a5b0;}
+
+.empty-state{border:1px dashed var(--line);border-radius:var(--radius);padding:48px 24px;text-align:center;color:#8f8265;}
+.empty-state h3{font-family:'Spectral SC',serif;color:var(--parchment);font-size:19px;margin:0 0 8px;}
+.empty-state p{font-size:13px;max-width:420px;margin:0 auto 18px;line-height:1.6;}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.card{position:relative;background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.card.mine{border-color:var(--gold-dim);}
+.card-top{padding:14px 16px 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.card-role{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);}
+.mine-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#141005;background:var(--gold);padding:2px 7px;border-radius:2px;font-weight:600;}
+.card-tokens{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8f8265;}
+.card-tokens b{color:var(--parchment);}
+
+.photo-wrap{position:relative;height:190px;overflow:hidden;background:#0c0a07;}
+.photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
+.photo-wrap .initials{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Spectral SC',serif;font-size:52px;color:#4a4030;}
+
+.theme-electric .photo-wrap img,.theme-electric .initials{filter:saturate(1.05) contrast(1.05);}
+.theme-electric .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,transparent 40%,rgba(120,200,255,.16) 60%,transparent 78%),linear-gradient(to top,rgba(10,14,20,.85) 0%,transparent 45%);mix-blend-mode:screen;}
+.theme-electric .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(160,220,255,.35);pointer-events:none;}
+
+.theme-crimson .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,4,8,0) 35%,rgba(120,10,22,.45) 100%),linear-gradient(100deg,rgba(15,0,0,.35) 0%,transparent 40%);}
+.theme-crimson .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(190,40,55,.45);pointer-events:none;}
+
+.theme-mono .photo-wrap img,.theme-mono .initials{filter:grayscale(1) contrast(1.12) brightness(.98);}
+.theme-mono .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 50%);}
+.theme-mono .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(220,220,220,.3);pointer-events:none;}
+
+.theme-emerald .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,transparent 40%,rgba(90,200,140,.18) 60%,transparent 78%),linear-gradient(to top,rgba(6,16,10,.85) 0%,transparent 45%);mix-blend-mode:screen;}
+.theme-emerald .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(120,220,170,.35);pointer-events:none;}
+
+.theme-violet .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,transparent 40%,rgba(160,120,230,.18) 60%,transparent 78%),linear-gradient(to top,rgba(14,8,20,.85) 0%,transparent 45%);mix-blend-mode:screen;}
+.theme-violet .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(190,160,240,.35);pointer-events:none;}
+
+.theme-amber .photo-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,transparent 40%,rgba(230,170,80,.2) 60%,transparent 78%),linear-gradient(to top,rgba(20,13,4,.85) 0%,transparent 45%);mix-blend-mode:screen;}
+.theme-amber .photo-wrap::before{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(230,190,110,.35);pointer-events:none;}
+
+.name-plate{position:absolute;left:13px;bottom:9px;z-index:2;}
+.name-plate .name{font-family:'Spectral SC',serif;font-weight:600;font-size:19px;color:#f4ecd8;text-shadow:0 2px 6px rgba(0,0,0,.8);}
+.name-plate .sub{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.3px;color:#c9bfa2;text-shadow:0 1px 4px rgba(0,0,0,.8);}
+.card-menu{position:absolute;top:10px;right:10px;z-index:3;display:flex;gap:6px;}
+
+.emblems{padding:12px 14px 14px;display:flex;flex-direction:column;gap:7px;}
+.emblem{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:9px;padding:8px 9px;border-radius:var(--radius);background:#141019;border:1px solid var(--line);transition:.15s;}
+.emblem.clickable{cursor:pointer;}
+.emblem.clickable:hover{border-color:var(--gold-dim);transform:translateY(-1px);}
+.emblem .rank-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11.5px;border:2px solid;flex-shrink:0;}
+.emblem.color-red .rank-dot{border-color:var(--red);color:#e39aa5;background:radial-gradient(circle,var(--red-dim),#1c0e10);}
+.emblem.color-blue .rank-dot{border-color:var(--blue);color:#aebdf2;background:radial-gradient(circle,var(--blue-dim),#0f1220);}
+.emblem.color-green .rank-dot{border-color:var(--green);color:#a9d6ba;background:radial-gradient(circle,var(--green-dim),#0f1a13);}
+.emblem .info{min-width:0;}
+.emblem .stat-name{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.8px;color:#d8cdb0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.emblem .prop-name{font-size:9px;color:#79705a;margin-top:1px;}
+.emblem .value{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12.5px;text-align:right;}
+.emblem.color-red .value{color:#e08b98;}
+.emblem.color-blue .value{color:#9fb2f0;}
+.emblem.color-green .value{color:#94cfa9;}
+.emblem .value.untracked{color:#5f5744;font-size:9px;font-weight:400;}
+
+.match-toggle{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#6b6350;background:none;border:none;cursor:pointer;padding:6px 14px;text-transform:uppercase;}
+.match-toggle:hover{color:var(--gold-dim);}
+.match-log{display:none;padding:0 14px 10px;}
+.match-log.open{display:block;}
+.match-row{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8f8265;padding:6px 0;border-bottom:1px solid var(--line);}
+.match-row b{color:var(--gold);}
+.match-row span.win{color:#79c58f;}
+.match-row span.loss{color:#c17b83;}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;padding:12px 15px 15px;border-top:1px solid var(--line);}
+.card-footer .score-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.3px;color:#8f8265;}
+.card-footer .score-val{font-family:'Spectral SC',serif;font-weight:700;font-size:21px;color:var(--gold);}
+
+/* Leaderboard */
+.board{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.board-row{display:grid;grid-template-columns:44px 46px 1fr 110px 120px;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel);}
+.board-row:last-child{border-bottom:none;}
+.board-row.head{background:var(--panel2);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:#8f8265;text-transform:uppercase;}
+.board-rank{font-family:'Spectral SC',serif;font-weight:700;font-size:16px;color:#8f8265;}
+.board-rank.gold{color:#e3c258;}
+.board-rank.silver{color:#c7cbd1;}
+.board-rank.bronze{color:#c98a55;}
+.board-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#241d13;display:flex;align-items:center;justify-content:center;font-family:'Spectral SC',serif;font-size:14px;color:#4a4030;}
+.board-avatar img{width:100%;height:100%;object-fit:cover;}
+.board-name{font-size:14px;color:var(--parchment);}
+.board-name a{color:#8f8265;text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:10px;}
+.board-name a:hover{color:var(--gold);}
+.board-role{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-dim);letter-spacing:1px;}
+.board-score{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;color:var(--gold);text-align:right;}
+@media(max-width:640px){.board-row{grid-template-columns:32px 36px 1fr 70px;}.board-role{display:none;}}
+
+.chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:6px 12px;border:1px solid var(--line);border-radius:20px;color:#8f8265;cursor:pointer;background:none;text-transform:uppercase;}
+.chip.active{border-color:var(--gold);color:var(--gold);}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(6,4,2,.8);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;}
+.modal{background:var(--panel);border:1px solid var(--gold-dim);border-radius:var(--radius);max-width:460px;width:100%;padding:22px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;position:relative;}
+.modal h2{font-family:'Spectral SC',serif;font-size:18px;margin:0 0 6px;}
+.modal p.desc{color:#a99c80;font-size:12.5px;line-height:1.5;margin:0 0 16px;}
+.role-options{display:flex;flex-direction:column;gap:9px;}
+.role-opt{border:1px solid var(--line);background:#141019;border-radius:var(--radius);padding:12px 13px;cursor:pointer;transition:.15s;}
+.role-opt:hover,.role-opt.sel{border-color:var(--gold);}
+.role-opt .rt{font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:1.3px;font-size:11.5px;color:var(--gold);}
+.role-opt .rd{font-size:11.5px;color:#9b8f77;margin-top:4px;}
+.dot-row{display:flex;gap:5px;margin-top:7px;}
+.dot-row span{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.dot-row .r{background:var(--red);}.dot-row .b{background:var(--blue);}.dot-row .g{background:var(--green);}
+
+.candidate{border:1px solid var(--line);background:#141019;border-radius:var(--radius);padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:.15s;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.candidate:hover{border-color:var(--gold);background:#1a1510;}
+.candidate .cname{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--parchment);}
+.candidate .cprop{font-size:10px;color:#877a5e;margin-top:3px;}
+.candidate .cval{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--gold);font-size:13px;}
+
+.field{margin-bottom:13px;}
+.field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:#9b8f77;margin-bottom:6px;}
+.field input[type=text]{width:100%;background:#0f0c09;border:1px solid var(--line);color:var(--parchment);padding:9px 10px;border-radius:var(--radius);font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
+.field input:focus{outline:none;border-color:var(--gold-dim);}
+.field .hint{font-size:10.5px;color:#6b6350;margin-top:5px;line-height:1.4;}
+.photo-picker{display:flex;align-items:center;gap:12px;}
+.photo-preview{width:64px;height:64px;border-radius:50%;overflow:hidden;background:#0f0c09;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Spectral SC',serif;color:#4a4030;font-size:22px;flex-shrink:0;}
+.photo-preview img{width:100%;height:100%;object-fit:cover;}
+.file-btn{position:relative;overflow:hidden;}
+.file-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.modal-actions{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;}
+.close-x{position:absolute;top:12px;right:14px;background:none;border:none;color:#8f8265;font-size:20px;cursor:pointer;line-height:1;}
+.err-note{font-size:11px;color:#c46b6b;font-family:'IBM Plex Mono',monospace;margin-top:8px;}
+
+.legend{margin-top:34px;border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8f8265;}
+@media(max-width:900px){.legend{grid-template-columns:1fr;}}
+.legend h4{color:#c9bfa2;font-size:10.5px;letter-spacing:1.3px;margin:0 0 8px;font-weight:600;}
+.legend div div{margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <div>
+      <h1>РЕЕСТР ФЭНТЕЗИ</h1>
+      <p>Открытая лига &middot; подключи свой Dotabuff &middot; 20 жетонов замены на старте</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnRefresh">Обновить все матчи</button>
+      <button class="btn primary" id="btnJoin">Присоединиться</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="cards">Знамёна</button>
+    <button class="tab" data-tab="board">Рейтинг</button>
+  </div>
+
+  <div id="configBanner"></div>
+  <div class="status-strip" id="statusStrip"></div>
+
+  <div id="viewCards"></div>
+  <div id="viewBoard" style="display:none;"></div>
+
+  <div class="legend">
+    <div><h4>КРАСНЫЕ ПОКАЗАТЕЛИ</h4><div id="legendRed"></div></div>
+    <div><h4>СИНИЕ ПОКАЗАТЕЛИ</h4><div id="legendBlue"></div></div>
+    <div><h4>ЗЕЛЁНЫЕ ПОКАЗАТЕЛИ</h4><div id="legendGreen"></div></div>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+try{ window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }catch(e){}
+
+/* ================= FIREBASE (замени на свои ключи из console.firebase.google.com) ================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDiji-w6g6x-lqu6-LlI68wBVIjqB_-3BI",
+  authDomain: "fantasy-218c8.firebaseapp.com",
+  projectId: "fantasy-218c8",
+  storageBucket: "fantasy-218c8.firebasestorage.app",
+  messagingSenderId: "122819799870",
+  appId: "1:122819799870:web:e47df878140ed305671a6f",
+  measurementId: "G-9LZC0EZ0Y5"
+};
+const FIREBASE_READY = FIREBASE_CONFIG.apiKey !== "ВСТАВЬ_СЮДА";
+let db = null;
+if(FIREBASE_READY){
+  try{ firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); }
+  catch(e){ console.error('Firebase init failed', e); }
+}
+
+/* ================= DATA DEFINITIONS ================= */
+
+const ROLES = {
+  carry:   {label:'ОСНОВА',    slots:['red','red','red','green','green']},
+  mid:     {label:'ЦЕНТР',     slots:['green','green','blue','red','red']},
+  support: {label:'ПОДДЕРЖКА', slots:['blue','blue','blue','green','green']},
+};
+
+const STAT_POOL = {
+  red: [
+    {key:'kills',    label:'УБИЙСТВА', tracked:true,  calc:(m)=> m.kills*107,          desc:'+107 за убийство'},
+    {key:'deaths',   label:'СМЕРТИ',   tracked:true,  calc:(m)=> 1950 - m.deaths*195,  desc:'1950 – 195 за каждую смерть'},
+    {key:'lasthits', label:'КРИПЫ',    tracked:true,  calc:(m)=> m.lastHits*3,         desc:'+3 за добитого крипа'},
+    {key:'gpm',      label:'З/М',      tracked:true,  calc:(m)=> m.gpm*2,              desc:'золото в минуту × 2'},
+    {key:'towers',   label:'БАШНИ',    tracked:false, calc:(m)=> 0,                    desc:'+352 за башню (нет в API)'},
+  ],
+  blue: [
+    {key:'runes', label:'РУНЫ',             tracked:true,  calc:(m)=> m.runes*141,     desc:'+141 за руну'},
+    {key:'camps', label:'СТАК ЛАГЕРЕЙ',     tracked:true,  calc:(m)=> m.camps*234,     desc:'+234 за стак'},
+    {key:'wards', label:'УСТАНОВКА ВАРДОВ', tracked:true,  calc:(m)=> m.obsPlaced*117, desc:'+117 за вард'},
+    {key:'watch', label:'СМОТРИТЕЛИ',       tracked:false, calc:(m)=> 0,               desc:'+147 за смотрителя (нет в API)'},
+    {key:'smoke', label:'SMOKE OF DECEIT',  tracked:false, calc:(m)=> 0,               desc:'+293 за применение (нет в API)'},
+  ],
+  green: [
+    {key:'teamfight', label:'КОМАНДНЫЕ СРАЖЕНИЯ', tracked:true,  calc:(m)=> Math.round(m.teamfight*2124), desc:'до 2124 за участие'},
+    {key:'stuns',     label:'ОГЛУШЕНИЯ',          tracked:true,  calc:(m)=> Math.round(m.stuns*10),       desc:'+10 за секунду стана'},
+    {key:'fb',        label:'ПЕРВАЯ КРОВЬ',       tracked:true,  calc:(m)=> m.firstblood ? 1934 : 0,      desc:'1934 за первую кровь'},
+    {key:'tormentor', label:'УБИЙСТВА ТЕРЗАТЕЛЕЙ',tracked:false, calc:(m)=> 0,                             desc:'+879 (нет в API)'},
+    {key:'courier',   label:'УБИЙСТВА КУРЬЕРОВ',  tracked:false, calc:(m)=> 0,                             desc:'+703 (нет в API)'},
+  ],
+};
+
+const RANKS = [
+  {tier:1, roman:'I',   bonus:0.10, weight:40},
+  {tier:2, roman:'II',  bonus:0.30, weight:30},
+  {tier:3, roman:'III', bonus:0.60, weight:15},
+  {tier:4, roman:'IV',  bonus:1.00, weight:10},
+  {tier:5, roman:'V',   bonus:1.50, weight:5},
+];
+
+const PROPERTIES = [
+  {key:'fractal',    label:'ФРАКТАЛЬНАЯ',  desc:'+60%, если у всех эмблем на знамени разные разряды'},
+  {key:'benevolent', label:'БЛАГОТВОРНАЯ', desc:'+20% соседним эмблемам'},
+  {key:'vampiric',   label:'ВАМПИРСКАЯ',   desc:'+50% себе, –10% соседям'},
+  {key:'unique',     label:'УНИКАЛЬНАЯ',   desc:'+30%, если на знамени нет других уникальных'},
+  {key:'friendly',   label:'ДРУЖЕЛЮБНАЯ',  desc:'+50%, если на знамени ≥3 дружелюбных эмблем'},
+];
+
+const THEMES = ['electric','crimson','mono','emerald','violet','amber'];
+const START_TOKENS = 20;
+const NS = 'v2';
+
+/* ================= STORAGE ================= */
+
+async function getIndex(){
+  if(!db) return [];
+  try{ const doc = await db.collection(NS+'-meta').doc('index').get(); return doc.exists ? (doc.data().ids||[]) : []; }
+  catch(e){ console.error(e); return []; }
+}
+async function setIndex(arr){
+  if(!db) return;
+  try{ await db.collection(NS+'-meta').doc('index').set({ids: arr}); }catch(e){ console.error(e); }
+}
+async function getPlayer(id){
+  if(!db) return null;
+  try{ const doc = await db.collection(NS+'-players').doc(id).get(); return doc.exists ? doc.data() : null; }
+  catch(e){ console.error(e); return null; }
+}
+async function savePlayer(p){
+  if(!db) return;
+  try{ await db.collection(NS+'-players').doc(p.accountId).set(p); }catch(e){ console.error(e); }
+}
+/* "Моя карточка" — личный указатель. Внутри Telegram хранится в облаке Telegram
+   (CloudStorage, привязано к аккаунту пользователя), вне Telegram — в localStorage браузера. */
+function tgCloud(){
+  try{ return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage) || null; }
+  catch(e){ return null; }
+}
+async function getMyId(){
+  const cs = tgCloud();
+  if(cs){ return new Promise(res => cs.getItem('my-id', (err,val)=> res(err ? null : (val||null)))); }
+  try{ return localStorage.getItem(NS+'-my-id'); }catch(e){ return null; }
+}
+async function setMyId(id){
+  const cs = tgCloud();
+  if(cs){ cs.setItem('my-id', id, ()=>{}); return; }
+  try{ localStorage.setItem(NS+'-my-id', id); }catch(e){}
+}
+
+async function loadAllPlayers(){
+  const idx = await getIndex();
+  const list = await Promise.all(idx.map(id => getPlayer(id)));
+  return list.filter(Boolean);
+}
+
+/* ================= HELPERS ================= */
+
+function extractAccountId(input){
+  const digits = (input.match(/\d+/g) || []);
+  if(!digits.length) return null;
+  return digits[digits.length-1];
+}
+function themeFor(id){
+  let h = 0;
+  for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) >>> 0;
+  return THEMES[h % THEMES.length];
+}
+function initialsFor(name){
+  return (name||'?').trim().slice(0,1).toUpperCase();
+}
+function weightedRank(){
+  const total = RANKS.reduce((a,r)=>a+r.weight,0);
+  let n = Math.random()*total;
+  for(const r of RANKS){ if(n < r.weight) return r; n -= r.weight; }
+  return RANKS[0];
+}
+function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function rankByTier(t){ return RANKS.find(r=>r.tier===t); }
+function statByKey(color,key){ return STAT_POOL[color].find(s=>s.key===key); }
+function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+
+function freshEmblem(color){
+  const stat = randChoice(STAT_POOL[color]);
+  const rank = weightedRank();
+  const prop = randChoice(PROPERTIES);
+  return {color, stat: stat.key, rankTier: rank.tier, prop: prop.key};
+}
+
+function resizeImage(file, maxDim){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if(w > h){ if(w > maxDim){ h = Math.round(h*maxDim/w); w = maxDim; } }
+        else { if(h > maxDim){ w = Math.round(w*maxDim/h); h = maxDim; } }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.78));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ================= SCORING ================= */
+
+function computeEmblemValue(playerState, idx, matchStats){
+  const em = playerState.emblems[idx];
+  const stat = statByKey(em.color, em.stat);
+  const rank = rankByTier(em.rankTier);
+  let base = stat.calc(matchStats);
+  let mult = 1 + rank.bonus;
+  const all = playerState.emblems;
+  if(em.prop === 'vampiric') mult += 0.50;
+  if(em.prop === 'fractal'){
+    const tiers = all.map(e=>e.rankTier);
+    if(new Set(tiers).size === tiers.length) mult += 0.60;
+  }
+  if(em.prop === 'unique'){
+    const uniques = all.filter(e=>e.prop==='unique').length;
+    if(uniques <= 1) mult += 0.30;
+  }
+  if(em.prop === 'friendly'){
+    const friendlies = all.filter(e=>e.prop==='friendly').length;
+    if(friendlies >= 3) mult += 0.50;
+  }
+  const left = all[idx-1], right = all[idx+1];
+  [left,right].forEach(n=>{
+    if(!n) return;
+    if(n.prop==='benevolent') mult += 0.20;
+    if(n.prop==='vampiric') mult -= 0.10;
+  });
+  return base * mult;
+}
+function gameScore(playerState, matchStats){
+  return playerState.emblems.reduce((sum, em, idx) => sum + computeEmblemValue(playerState, idx, matchStats), 0);
+}
+function totalScore(playerState){
+  if(!playerState || !playerState.matches || !playerState.matches.length) return 0;
+  const scores = playerState.matches.map(m => gameScore(playerState, m)).sort((a,b)=>b-a);
+  return scores.slice(0,2).reduce((a,b)=>a+b,0);
+}
+
+/* ================= OPENDOTA ================= */
+
+async function refreshPlayer(ps){
+  if(!ps.accountId) return {ok:false, msg:'нет Dotabuff ID'};
+  try{
+    const recentRes = await fetch(`https://api.opendota.com/api/players/${ps.accountId}/recentMatches`);
+    if(!recentRes.ok) throw new Error('HTTP '+recentRes.status);
+    const recent = await recentRes.json();
+    if(!Array.isArray(recent)) throw new Error('профиль не найден или закрыт');
+    const candidates = recent.slice(0,5);
+    let newCount = 0;
+    for(const rm of candidates){
+      if(ps.parsedIds.includes(rm.match_id)) continue;
+      const detRes = await fetch(`https://api.opendota.com/api/matches/${rm.match_id}`);
+      if(!detRes.ok) continue;
+      const det = await detRes.json();
+      const me = (det.players||[]).find(p => p.account_id === Number(ps.accountId));
+      if(!me) continue;
+      const stats = {
+        matchId: rm.match_id,
+        kills: me.kills||0, deaths: me.deaths||0, assists: me.assists||0,
+        lastHits: me.last_hits||0, gpm: me.gold_per_min||0,
+        runes: me.rune_pickups||0, camps: me.camps_stacked||0, obsPlaced: me.obs_placed||0,
+        teamfight: me.teamfight_participation||0, stuns: me.stuns||0,
+        firstblood: !!me.firstblood_claimed,
+        radiantWin: det.radiant_win,
+        isRadiant: me.player_slot < 128,
+        duration: det.duration, startTime: det.start_time,
+      };
+      ps.matches = (ps.matches||[]).filter(m => m.matchId !== stats.matchId);
+      ps.matches.push(stats);
+      ps.parsedIds.push(rm.match_id);
+      newCount++;
+    }
+    ps.matches = ps.matches.slice(-10);
+    ps.lastRefresh = Date.now();
+    await savePlayer(ps);
+    return {ok:true, newCount};
+  }catch(e){ return {ok:false, msg: e.message}; }
+}
+
+/* ================= STATE ================= */
+
+let PLAYERS = [];
+let MY_ID = null;
+let ACTIVE_TAB = 'cards';
+let BOARD_FILTER = 'all';
+const openLogs = new Set();
+
+const viewCards = document.getElementById('viewCards');
+const viewBoard = document.getElementById('viewBoard');
+const modalRoot = document.getElementById('modalRoot');
+const statusStrip = document.getElementById('statusStrip');
+
+function renderLegend(){
+  const map = {red:'legendRed', blue:'legendBlue', green:'legendGreen'};
+  Object.entries(map).forEach(([color, elId])=>{
+    document.getElementById(elId).innerHTML =
+      STAT_POOL[color].map(s=>`<div>${s.label} <span style="color:#5f5744">— ${s.desc}</span></div>`).join('');
+  });
+}
+
+function avatarHtml(p, size){
+  if(p.photo) return `<img src="${p.photo}">`;
+  return `<div class="initials" style="font-size:${size?Math.round(size*0.5):22}px">${initialsFor(p.name)}</div>`;
+}
+
+function renderCards(){
+  if(!PLAYERS.length){
+    viewCards.innerHTML = `
+      <div class="empty-state">
+        <h3>Реестр пуст</h3>
+        <p>Ещё никто не подключил свой профиль. Нажми «Присоединиться», вставь ссылку на свой Dotabuff/OpenDota и выбери фото — знамя появится здесь и будет обновляться из реальных матчей.</p>
+        <button class="btn primary" id="emptyJoin">Присоединиться</button>
+      </div>`;
+    const b = document.getElementById('emptyJoin');
+    if(b) b.onclick = openJoinModal;
+    return;
+  }
+  viewCards.innerHTML = `<div class="cards" id="cardsGrid"></div>`;
+  const grid = document.getElementById('cardsGrid');
+
+  PLAYERS.forEach(ps => {
+    const isMine = ps.accountId === MY_ID;
+    const roleInfo = ROLES[ps.role];
+    const latestMatch = ps.matches[ps.matches.length-1];
+    const card = document.createElement('div');
+    card.className = `card theme-${ps.theme}${isMine ? ' mine' : ''}`;
+
+    const emblemsHtml = ps.emblems.map((em, idx) => {
+      const stat = statByKey(em.color, em.stat);
+      const rank = rankByTier(em.rankTier);
+      const prop = PROPERTIES.find(x=>x.key===em.prop);
+      let valHtml;
+      if(!latestMatch) valHtml = `<span class="value untracked">нет данных</span>`;
+      else if(!stat.tracked) valHtml = `<span class="value untracked">не в API</span>`;
+      else valHtml = `<span class="value">${fmt(computeEmblemValue(ps, idx, latestMatch))}</span>`;
+      return `
+        <div class="emblem color-${em.color}${isMine?' clickable':''}" data-slot="${idx}">
+          <div class="rank-dot">${rank.roman}</div>
+          <div class="info">
+            <div class="stat-name">${stat.label}</div>
+            <div class="prop-name">${prop.label.toLowerCase()}</div>
+          </div>
+          ${valHtml}
+        </div>`;
+    }).join('');
+
+    const logOpen = openLogs.has(ps.accountId);
+    const matchLogHtml = (ps.matches||[]).slice().reverse().map(m=>{
+      const win = (m.isRadiant === m.radiantWin);
+      const date = m.startTime ? new Date(m.startTime*1000).toLocaleDateString('ru-RU') : '';
+      return `<div class="match-row"><span class="${win?'win':'loss'}">${win?'Победа':'Поражение'} · ${date}</span><b>${m.kills}/${m.deaths}/${m.assists}</b></div>`;
+    }).join('') || `<div class="match-row">Матчи ещё не распарсены</div>`;
+
+    card.innerHTML = `
+      <div class="card-menu">
+        ${isMine ? `<button class="btn ghost small" data-edit="${ps.accountId}">Изменить</button>` : ''}
+      </div>
+      <div class="card-top">
+        <span class="card-role">${roleInfo.label}</span>
+        <span style="display:flex;align-items:center;gap:8px;">
+          ${isMine ? '<span class="mine-badge">МОЁ</span>' : ''}
+          <span class="card-tokens">жетоны: <b>${ps.tokens}</b>/${START_TOKENS}</span>
+        </span>
+      </div>
+      <div class="photo-wrap">
+        ${avatarHtml(ps)}
+        <div class="name-plate">
+          <div class="name">${ps.name}</div>
+          <div class="sub">DOTABUFF ${ps.accountId}</div>
+        </div>
+      </div>
+      <div class="emblems">${emblemsHtml}</div>
+      <button class="match-toggle" data-log="${ps.accountId}">${logOpen?'скрыть':'показать'} последние матчи</button>
+      <div class="match-log${logOpen?' open':''}">${matchLogHtml}</div>
+      <div class="card-footer">
+        <span class="score-label">СЧЁТ (2 лучшие игры)</span>
+        <span class="score-val">${fmt(totalScore(ps))}</span>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    if(isMine){
+      card.querySelectorAll('.emblem.clickable').forEach(elm=>{
+        elm.onclick = () => openRerollModal(ps.accountId, Number(elm.dataset.slot));
+      });
+      const editBtn = card.querySelector('[data-edit]');
+      if(editBtn) editBtn.onclick = () => openJoinModal(ps.accountId);
+    }
+    card.querySelector('[data-log]').onclick = (e) => {
+      if(openLogs.has(ps.accountId)) openLogs.delete(ps.accountId); else openLogs.add(ps.accountId);
+      renderCards();
+    };
+  });
+}
+
+function renderBoard(){
+  const filtered = BOARD_FILTER==='all' ? PLAYERS : PLAYERS.filter(p=>p.role===BOARD_FILTER);
+  const ranked = filtered.map(p=>({p, score: totalScore(p)})).sort((a,b)=>b.score-a.score);
+
+  let html = `
+    <div class="chips">
+      <button class="chip ${BOARD_FILTER==='all'?'active':''}" data-f="all">Все</button>
+      <button class="chip ${BOARD_FILTER==='carry'?'active':''}" data-f="carry">Основа</button>
+      <button class="chip ${BOARD_FILTER==='mid'?'active':''}" data-f="mid">Центр</button>
+      <button class="chip ${BOARD_FILTER==='support'?'active':''}" data-f="support">Поддержка</button>
+    </div>`;
+
+  if(!ranked.length){
+    html += `<div class="empty-state"><h3>Пока некого ранжировать</h3><p>Как только игроки подключат профили, здесь появится общий рейтинг.</p></div>`;
+    viewBoard.innerHTML = html;
+    wireChips();
+    return;
+  }
+
+  html += `<div class="board">
+    <div class="board-row head"><span>#</span><span></span><span>Игрок</span><span>Роль</span><span style="text-align:right">Счёт</span></div>`;
+  ranked.forEach((r, i)=>{
+    const rankCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    html += `<div class="board-row">
+      <span class="board-rank ${rankCls}">${i+1}</span>
+      <span class="board-avatar">${avatarHtml(r.p, 36)}</span>
+      <span class="board-name">${r.p.name}<br><a href="https://www.dotabuff.com/players/${r.p.accountId}" target="_blank" rel="noopener">dotabuff →</a></span>
+      <span class="board-role">${ROLES[r.p.role].label}</span>
+      <span class="board-score">${fmt(r.score)}</span>
+    </div>`;
+  });
+  html += `</div>`;
+  viewBoard.innerHTML = html;
+  wireChips();
+
+  function wireChips(){
+    viewBoard.querySelectorAll('[data-f]').forEach(el=>{
+      el.onclick = () => { BOARD_FILTER = el.dataset.f; renderBoard(); };
+    });
+  }
+}
+
+function renderStatus(){
+  const lastRefresh = PLAYERS.reduce((max,p)=> p.lastRefresh && p.lastRefresh>max ? p.lastRefresh : max, 0);
+  statusStrip.innerHTML = `
+    <span>Знамён в реестре: <b>${PLAYERS.length}</b></span>
+    <span>Последнее обновление: <b>${lastRefresh ? new Date(lastRefresh).toLocaleString('ru-RU') : 'ещё не было'}</b></span>
+    <span>Учитываются 2 лучшие игры из последних распарсенных матчей</span>
+  `;
+}
+
+async function renderAll(){
+  renderStatus();
+  if(ACTIVE_TAB==='cards') renderCards(); else renderBoard();
+}
+
+/* ---- tabs ---- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    ACTIVE_TAB = t.dataset.tab;
+    viewCards.style.display = ACTIVE_TAB==='cards' ? '' : 'none';
+    viewBoard.style.display = ACTIVE_TAB==='board' ? '' : 'none';
+    renderAll();
+  };
+});
+
+/* ---- Join / edit modal ---- */
+function openJoinModal(editId){
+  const existing = editId ? PLAYERS.find(p=>p.accountId===editId) : null;
+  let tgUser = null;
+  try{ tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user; }catch(e){}
+  const defaultName = existing ? existing.name : (tgUser ? (tgUser.first_name||'') + (tgUser.username ? ' ('+tgUser.username+')' : '') : '');
+  let chosenPhoto = existing ? existing.photo : null;
+  let chosenRole = existing ? existing.role : null;
+
+  modalRoot.innerHTML = `
+    <div class="overlay"><div class="modal">
+      <button class="close-x" id="mClose">×</button>
+      <h2>${existing ? 'Изменить знамя' : 'Присоединиться к реестру'}</h2>
+      <p class="desc">Вставь ссылку на свой профиль Dotabuff или OpenDota (или просто Account ID), выбери фото и роль — знамя будет обновляться из твоих реальных матчей.</p>
+      <div class="field">
+        <label>Имя</label>
+        <input type="text" id="fName" value="${defaultName}" placeholder="Как тебя подписать">
+      </div>
+      <div class="field">
+        <label>Dotabuff / OpenDota</label>
+        <input type="text" id="fLink" value="${existing?existing.accountId:''}" placeholder="dotabuff.com/players/123456789">
+        <div class="hint">Подойдёт полная ссылка или просто число — Account ID.</div>
+      </div>
+      <div class="field">
+        <label>Фото</label>
+        <div class="photo-picker">
+          <div class="photo-preview" id="photoPreview">${chosenPhoto ? `<img src="${chosenPhoto}">` : (defaultName ? initialsFor(defaultName) : '?')}</div>
+          <button class="btn small file-btn">Выбрать файл<input type="file" id="fPhoto" accept="image/*"></button>
+        </div>
+        <div class="hint">Необязательно — без фото будет знак с инициалом.</div>
+      </div>
+      <div class="field">
+        <label>Роль</label>
+        <div class="role-options" id="roleOpts">
+          <div class="role-opt${chosenRole==='carry'?' sel':''}" data-role="carry">
+            <div class="rt">ОСНОВА (КЕРРИ)</div><div class="rd">3 красных, 2 зелёных показателя</div>
+            <div class="dot-row"><span class="r"></span><span class="r"></span><span class="r"></span><span class="g"></span><span class="g"></span></div>
+          </div>
+          <div class="role-opt${chosenRole==='mid'?' sel':''}" data-role="mid">
+            <div class="rt">ЦЕНТР (МИД)</div><div class="rd">2 зелёных, 1 синий, 2 красных показателя</div>
+            <div class="dot-row"><span class="g"></span><span class="g"></span><span class="b"></span><span class="r"></span><span class="r"></span></div>
+          </div>
+          <div class="role-opt${chosenRole==='support'?' sel':''}" data-role="support">
+            <div class="rt">ПОДДЕРЖКА (САП)</div><div class="rd">3 синих, 2 зелёных показателя</div>
+            <div class="dot-row"><span class="b"></span><span class="b"></span><span class="b"></span><span class="g"></span><span class="g"></span></div>
+          </div>
+        </div>
+        ${existing ? '<div class="hint">Смена роли перегенерирует набор эмблем под новые слоты (жетоны сохранятся).</div>' : ''}
+      </div>
+      <div id="joinErr"></div>
+      <div class="modal-actions">
+        <button class="btn" id="mCancel">Отмена</button>
+        <button class="btn primary" id="mSave">${existing ? 'Сохранить' : 'Создать знамя'}</button>
+      </div>
+    </div></div>`;
+
+  document.getElementById('mClose').onclick = closeModal;
+  document.getElementById('mCancel').onclick = closeModal;
+  document.querySelectorAll('.role-opt').forEach(el=>{
+    el.onclick = () => {
+      document.querySelectorAll('.role-opt').forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');
+      chosenRole = el.dataset.role;
+    };
+  });
+  document.getElementById('fPhoto').onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    chosenPhoto = await resizeImage(file, 480);
+    document.getElementById('photoPreview').innerHTML = `<img src="${chosenPhoto}">`;
+  };
+  document.getElementById('fName').oninput = (e) => {
+    if(!chosenPhoto) document.getElementById('photoPreview').textContent = initialsFor(e.target.value);
+  };
+
+  document.getElementById('mSave').onclick = async () => {
+    const name = document.getElementById('fName').value.trim();
+    const link = document.getElementById('fLink').value.trim();
+    const accId = extractAccountId(link);
+    const errEl = document.getElementById('joinErr');
+    errEl.innerHTML = '';
+    if(!name){ errEl.innerHTML = '<div class="err-note">Укажи имя.</div>'; return; }
+    if(!accId){ errEl.innerHTML = '<div class="err-note">Не удалось распознать Account ID из ссылки.</div>'; return; }
+    if(!chosenRole){ errEl.innerHTML = '<div class="err-note">Выбери роль.</div>'; return; }
+    if(!existing && accId !== editId){
+      const clash = PLAYERS.find(p=>p.accountId===accId);
+      if(clash){ errEl.innerHTML = '<div class="err-note">Этот профиль уже есть в реестре.</div>'; return; }
+    }
+
+    let ps;
+    if(existing){
+      ps = existing;
+      ps.name = name;
+      ps.photo = chosenPhoto;
+      if(ps.role !== chosenRole){
+        ps.role = chosenRole;
+        ps.emblems = ROLES[chosenRole].slots.map(c => freshEmblem(c));
+      }
+    } else {
+      ps = {
+        accountId: accId, name, photo: chosenPhoto, theme: themeFor(accId),
+        role: chosenRole, tokens: START_TOKENS,
+        emblems: ROLES[chosenRole].slots.map(c => freshEmblem(c)),
+        matches: [], parsedIds: [], lastRefresh: null, joinedAt: Date.now(),
+      };
+      const idx = await getIndex();
+      if(!idx.includes(accId)){ idx.push(accId); await setIndex(idx); }
+      await setMyId(accId);
+      MY_ID = accId;
+    }
+    await savePlayer(ps);
+    closeModal();
+    await bootstrap();
+  };
+}
+
+/* ---- Reroll modal ---- */
+function openRerollModal(pid, slotIdx){
+  const ps = PLAYERS.find(p=>p.accountId===pid);
+  if(ps.tokens <= 0){
+    modalRoot.innerHTML = `<div class="overlay"><div class="modal">
+      <button class="close-x" id="mClose">×</button>
+      <h2>Жетоны закончились</h2>
+      <p class="desc">У этого знамени не осталось жетонов замены. Дождитесь еженедельного пополнения.</p>
+    </div></div>`;
+    document.getElementById('mClose').onclick = closeModal;
+    return;
+  }
+  const color = ps.emblems[slotIdx].color;
+  const candidates = [freshEmblem(color), freshEmblem(color), freshEmblem(color)];
+  modalRoot.innerHTML = `
+    <div class="overlay"><div class="modal">
+      <button class="close-x" id="mClose">×</button>
+      <h2>Замена эмблемы</h2>
+      <p class="desc">Выберите один из трёх вариантов. Останется жетонов: <b style="color:var(--gold)">${ps.tokens-1}</b></p>
+      <div id="candList"></div>
+    </div></div>`;
+  const listEl = document.getElementById('candList');
+  candidates.forEach(c => {
+    const stat = statByKey(c.color, c.stat);
+    const rank = rankByTier(c.rankTier);
+    const prop = PROPERTIES.find(x=>x.key===c.prop);
+    const row = document.createElement('div');
+    row.className = 'candidate';
+    row.innerHTML = `
+      <div><div class="cname">${rank.roman} · ${stat.label}</div><div class="cprop">${prop.label} — ${prop.desc}</div></div>
+      <div class="cval">+${Math.round(rank.bonus*100)}%</div>`;
+    row.onclick = async () => {
+      ps.emblems[slotIdx] = c;
+      ps.tokens -= 1;
+      await savePlayer(ps);
+      closeModal();
+      renderAll();
+    };
+    listEl.appendChild(row);
+  });
+  document.getElementById('mClose').onclick = closeModal;
+}
+
+function closeModal(){ modalRoot.innerHTML = ''; }
+
+/* ---- Refresh ---- */
+document.getElementById('btnRefresh').onclick = async (e) => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  const orig = btn.textContent;
+  btn.textContent = 'Парсинг...';
+  const notes = [];
+  for(const ps of PLAYERS){
+    const r = await refreshPlayer(ps);
+    notes.push(`${ps.name}: ${r.ok ? (r.newCount+' новых') : ('ошибка')}`);
+  }
+  btn.disabled = false;
+  btn.textContent = orig;
+  await bootstrap();
+  if(notes.length) statusStrip.insertAdjacentHTML('beforeend', `<span style="color:#8f8265">${notes.join(' · ')}</span>`);
+};
+
+document.getElementById('btnJoin').onclick = () => openJoinModal();
+
+/* ================= INIT ================= */
+async function bootstrap(){
+  PLAYERS = await loadAllPlayers();
+  MY_ID = await getMyId();
+  renderAll();
+}
+(async function init(){
+  if(!FIREBASE_READY){
+    document.getElementById('configBanner').innerHTML =
+      `<div class="config-banner"><b>Хранилище не настроено.</b> Впиши свои ключи Firebase в константу FIREBASE_CONFIG в начале &lt;script&gt; — без этого знамёна не будут сохраняться и не будут видны другим людям.</div>`;
+  }
+  renderLegend();
+  await bootstrap();
+})();
+</script>
+</body>
+</html>
