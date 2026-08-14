@@ -197,8 +197,8 @@ body{
       <p>Открытая лига &middot; подключи свой Dotabuff &middot; 20 жетонов замены на старте</p>
     </div>
     <div class="top-actions">
-      <button class="btn" id="btnRefresh">Обновить все матчи</button>
-      <button class="btn primary" id="btnJoin">Присоединиться</button>
+      <button class="btn" id="btnRefresh">🔄 Обновить все матчи</button>
+      <button class="btn primary" id="btnJoin">➕ Присоединиться</button>
     </div>
   </div>
 
@@ -223,9 +223,15 @@ body{
 <div id="modalRoot"></div>
 
 <script>
-try{ window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }catch(e){}
+// ================= ИНИЦИАЛИЗАЦИЯ TELEGRAM =================
+try{ 
+  if(window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready(); 
+    window.Telegram.WebApp.expand();
+  }
+} catch(e){}
 
-/* ================= FIREBASE (замени на свои ключи из console.firebase.google.com) ================= */
+/* ================= FIREBASE ================= */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDiji-w6g6x-lqu6-LlI68wBVIjqB_-3BI",
   authDomain: "fantasy-218c8.firebaseapp.com",
@@ -235,15 +241,34 @@ const FIREBASE_CONFIG = {
   appId: "1:122819799870:web:e47df878140ed305671a6f",
   measurementId: "G-9LZC0EZ0Y5"
 };
-const FIREBASE_READY = FIREBASE_CONFIG.apiKey !== "ВСТАВЬ_СЮДА";
+
 let db = null;
-if(FIREBASE_READY){
-  try{ firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); }
-  catch(e){ console.error('Firebase init failed', e); }
+let isFirebaseReady = false;
+let unsubscribeRealtime = null;
+
+try {
+  if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "ВСТАВЬ_СЮДА") {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    
+    db.enablePersistence({
+      synchronizeTabs: true
+    }).catch(err => {
+      console.warn('Офлайн-режим:', err);
+    });
+    
+    isFirebaseReady = true;
+    console.log('✅ Firebase инициализирован');
+  } else {
+    console.warn('⚠️ Firebase не настроен');
+    document.getElementById('configBanner').innerHTML = 
+      `<div class="config-banner"><b>⚠️ Хранилище не настроено.</b> Впиши свои ключи Firebase в константу FIREBASE_CONFIG</div>`;
+  }
+} catch(e) {
+  console.error('❌ Ошибка Firebase:', e);
 }
 
 /* ================= DATA DEFINITIONS ================= */
-
 const ROLES = {
   carry:   {label:'ОСНОВА',    slots:['red','red','red','green','green']},
   mid:     {label:'ЦЕНТР',     slots:['green','green','blue','red','red']},
@@ -293,71 +318,61 @@ const PROPERTIES = [
 const THEMES = ['electric','crimson','mono','emerald','violet','amber'];
 const START_TOKENS = 20;
 const NS = 'v2';
+const CACHE_NS = 'fantasy_cache';
 
-/* ================= STORAGE ================= */
-
-async function getIndex(){
-  if(!db) return [];
-  try{ const doc = await db.collection(NS+'-meta').doc('index').get(); return doc.exists ? (doc.data().ids||[]) : []; }
-  catch(e){ console.error(e); return []; }
-}
-async function setIndex(arr){
-  if(!db) return;
-  try{ await db.collection(NS+'-meta').doc('index').set({ids: arr}); }catch(e){ console.error(e); }
-}
-async function getPlayer(id){
-  if(!db) return null;
-  try{ const doc = await db.collection(NS+'-players').doc(id).get(); return doc.exists ? doc.data() : null; }
-  catch(e){ console.error(e); return null; }
-}
-async function savePlayer(p){
-  if(!db) return;
-  try{ await db.collection(NS+'-players').doc(p.accountId).set(p); }catch(e){ console.error(e); }
-}
-/* "Моя карточка" — личный указатель. Внутри Telegram хранится в облаке Telegram
-   (CloudStorage, привязано к аккаунту пользователя), вне Telegram — в localStorage браузера. */
-function tgCloud(){
-  try{ return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage) || null; }
-  catch(e){ return null; }
-}
-async function getMyId(){
-  const cs = tgCloud();
-  if(cs){ return new Promise(res => cs.getItem('my-id', (err,val)=> res(err ? null : (val||null)))); }
-  try{ return localStorage.getItem(NS+'-my-id'); }catch(e){ return null; }
-}
-async function setMyId(id){
-  const cs = tgCloud();
-  if(cs){ cs.setItem('my-id', id, ()=>{}); return; }
-  try{ localStorage.setItem(NS+'-my-id', id); }catch(e){}
+/* ================= КЕШИРОВАНИЕ ================= */
+function saveCache(key, data) {
+  try {
+    localStorage.setItem(`${CACHE_NS}_${key}`, JSON.stringify({
+      data: data,
+      timestamp: Date.now()
+    }));
+  } catch(e) {}
 }
 
-async function loadAllPlayers(){
-  const idx = await getIndex();
-  const list = await Promise.all(idx.map(id => getPlayer(id)));
-  return list.filter(Boolean);
+function loadCache(key) {
+  try {
+    const raw = localStorage.getItem(`${CACHE_NS}_${key}`);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    // Кеш действителен 5 минут
+    if (Date.now() - cached.timestamp > 300000) return null;
+    return cached.data;
+  } catch(e) { return null; }
 }
 
-/* ================= HELPERS ================= */
+function saveLocalIndex(data) {
+  saveCache('index', data);
+}
 
+function getLocalIndex() {
+  return loadCache('index');
+}
+
+/* ================= ПОМОЩНИКИ ================= */
 function extractAccountId(input){
   const digits = (input.match(/\d+/g) || []);
   if(!digits.length) return null;
   return digits[digits.length-1];
 }
+
 function themeFor(id){
   let h = 0;
   for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) >>> 0;
   return THEMES[h % THEMES.length];
 }
+
 function initialsFor(name){
   return (name||'?').trim().slice(0,1).toUpperCase();
 }
+
 function weightedRank(){
   const total = RANKS.reduce((a,r)=>a+r.weight,0);
   let n = Math.random()*total;
   for(const r of RANKS){ if(n < r.weight) return r; n -= r.weight; }
   return RANKS[0];
 }
+
 function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function rankByTier(t){ return RANKS.find(r=>r.tier===t); }
 function statByKey(color,key){ return STAT_POOL[color].find(s=>s.key===key); }
@@ -392,8 +407,151 @@ function resizeImage(file, maxDim){
   });
 }
 
-/* ================= SCORING ================= */
+function tgCloud(){
+  try{ 
+    if (window.Telegram && window.Telegram.WebApp) {
+      return window.Telegram.WebApp.CloudStorage || null;
+    }
+    return null;
+  } catch(e){ return null; }
+}
 
+/* ================= РАБОТА С FIREBASE ================= */
+async function getIndex(){
+  if(!db) return getLocalIndex() || [];
+  
+  try{ 
+    const doc = await db.collection(NS+'-meta').doc('index').get();
+    const data = doc.exists ? (doc.data().ids||[]) : [];
+    saveLocalIndex(data);
+    return data;
+  } catch(e){ 
+    console.warn('Firestore offline, using cache');
+    return getLocalIndex() || [];
+  }
+}
+
+async function setIndex(arr){
+  if(!db) return;
+  try{ 
+    await db.collection(NS+'-meta').doc('index').set({ids: arr});
+    saveLocalIndex(arr);
+  } catch(e){ console.error(e); }
+}
+
+async function getPlayer(id){
+  if(!db) return loadCache(`player_${id}`) || null;
+  
+  try{ 
+    const doc = await db.collection(NS+'-players').doc(id).get();
+    const data = doc.exists ? doc.data() : null;
+    if (data) saveCache(`player_${id}`, data);
+    return data;
+  } catch(e){ 
+    console.warn('Firestore offline for player:', id);
+    return loadCache(`player_${id}`) || null;
+  }
+}
+
+async function savePlayer(p){
+  if(!db) {
+    saveCache(`player_${p.accountId}`, p);
+    updatePlayersCache(p);
+    return;
+  }
+  
+  try{ 
+    await db.collection(NS+'-players').doc(p.accountId).set(p);
+    saveCache(`player_${p.accountId}`, p);
+    updatePlayersCache(p);
+  } catch(e){ 
+    console.warn('Save failed, cached locally');
+    saveCache(`player_${p.accountId}`, p);
+    updatePlayersCache(p);
+  }
+}
+
+function updatePlayersCache(p) {
+  const all = loadCache('players') || [];
+  const idx = all.findIndex(x => x.accountId === p.accountId);
+  if (idx >= 0) all[idx] = p;
+  else all.push(p);
+  saveCache('players', all);
+}
+
+async function getMyId(){
+  const cs = tgCloud();
+  if(cs){ 
+    return new Promise(res => cs.getItem('my-id', (err,val)=> res(err ? null : (val||null)))); 
+  }
+  try{ return localStorage.getItem(NS+'-my-id'); }catch(e){ return null; }
+}
+
+async function setMyId(id){
+  const cs = tgCloud();
+  if(cs){ cs.setItem('my-id', id, ()=>{}); return; }
+  try{ localStorage.setItem(NS+'-my-id', id); }catch(e){}
+}
+
+async function loadAllPlayers(){
+  const idx = await getIndex();
+  if (!idx.length) return [];
+  const list = await Promise.all(idx.map(id => getPlayer(id)));
+  return list.filter(Boolean);
+}
+
+/* ================= РЕАЛЬНОЕ ВРЕМЯ ================= */
+function subscribeToRealtime() {
+  if (!db) return;
+  
+  if (unsubscribeRealtime) {
+    unsubscribeRealtime();
+    unsubscribeRealtime = null;
+  }
+  
+  unsubscribeRealtime = db.collection(NS + '-players')
+    .onSnapshot((snapshot) => {
+      let hasChanges = false;
+      
+      snapshot.docChanges().forEach((change) => {
+        const data = change.doc.data();
+        if (!data) return;
+        
+        switch(change.type) {
+          case 'added':
+          case 'modified':
+            const index = PLAYERS.findIndex(p => p.accountId === data.accountId);
+            if (index !== -1) {
+              PLAYERS[index] = data;
+            } else {
+              PLAYERS.push(data);
+            }
+            hasChanges = true;
+            saveCache(`player_${data.accountId}`, data);
+            break;
+            
+          case 'removed':
+            const idx = PLAYERS.findIndex(p => p.accountId === data.accountId);
+            if (idx !== -1) {
+              PLAYERS.splice(idx, 1);
+              hasChanges = true;
+            }
+            break;
+        }
+      });
+      
+      if (hasChanges) {
+        console.log('🔄 Данные обновлены в реальном времени');
+        saveCache('players', PLAYERS);
+        renderAll();
+        updateStatus();
+      }
+    }, (error) => {
+      console.warn('⚠️ Ошибка realtime:', error);
+    });
+}
+
+/* ================= SCORING ================= */
 function computeEmblemValue(playerState, idx, matchStats){
   const em = playerState.emblems[idx];
   const stat = statByKey(em.color, em.stat);
@@ -422,33 +580,49 @@ function computeEmblemValue(playerState, idx, matchStats){
   });
   return base * mult;
 }
+
 function gameScore(playerState, matchStats){
   return playerState.emblems.reduce((sum, em, idx) => sum + computeEmblemValue(playerState, idx, matchStats), 0);
 }
+
 function totalScore(playerState){
   if(!playerState || !playerState.matches || !playerState.matches.length) return 0;
   const scores = playerState.matches.map(m => gameScore(playerState, m)).sort((a,b)=>b-a);
   return scores.slice(0,2).reduce((a,b)=>a+b,0);
 }
 
-/* ================= OPENDOTA ================= */
-
+/* ================= OPENDOTA API ================= */
 async function refreshPlayer(ps){
   if(!ps.accountId) return {ok:false, msg:'нет Dotabuff ID'};
   try{
     const recentRes = await fetch(`https://api.opendota.com/api/players/${ps.accountId}/recentMatches`);
-    if(!recentRes.ok) throw new Error('HTTP '+recentRes.status);
+    
+    if(recentRes.status === 429) {
+      return {ok:false, msg:'Слишком много запросов, подождите 30 секунд'};
+    }
+    if(recentRes.status === 404) {
+      return {ok:false, msg:'Профиль не найден или закрыт'};
+    }
+    if(!recentRes.ok) {
+      return {ok:false, msg:`Ошибка API: ${recentRes.status}`};
+    }
+    
     const recent = await recentRes.json();
-    if(!Array.isArray(recent)) throw new Error('профиль не найден или закрыт');
+    if(!Array.isArray(recent)) return {ok:false, msg:'Некорректный ответ API'};
+    
     const candidates = recent.slice(0,5);
     let newCount = 0;
+    
     for(const rm of candidates){
-      if(ps.parsedIds.includes(rm.match_id)) continue;
+      if(ps.parsedIds && ps.parsedIds.includes(rm.match_id)) continue;
+      
       const detRes = await fetch(`https://api.opendota.com/api/matches/${rm.match_id}`);
       if(!detRes.ok) continue;
+      
       const det = await detRes.json();
       const me = (det.players||[]).find(p => p.account_id === Number(ps.accountId));
       if(!me) continue;
+      
       const stats = {
         matchId: rm.match_id,
         kills: me.kills||0, deaths: me.deaths||0, assists: me.assists||0,
@@ -460,25 +634,32 @@ async function refreshPlayer(ps){
         isRadiant: me.player_slot < 128,
         duration: det.duration, startTime: det.start_time,
       };
+      
       ps.matches = (ps.matches||[]).filter(m => m.matchId !== stats.matchId);
       ps.matches.push(stats);
+      ps.parsedIds = ps.parsedIds || [];
       ps.parsedIds.push(rm.match_id);
       newCount++;
     }
+    
     ps.matches = ps.matches.slice(-10);
     ps.lastRefresh = Date.now();
     await savePlayer(ps);
     return {ok:true, newCount};
-  }catch(e){ return {ok:false, msg: e.message}; }
+  } catch(e){ 
+    console.error('Refresh error:', e);
+    return {ok:false, msg: e.message}; 
+  }
 }
 
-/* ================= STATE ================= */
-
+/* ================= UI ================= */
 let PLAYERS = [];
 let MY_ID = null;
 let ACTIVE_TAB = 'cards';
 let BOARD_FILTER = 'all';
 const openLogs = new Set();
+let isUpdating = false;
+let updateInterval = null;
 
 const viewCards = document.getElementById('viewCards');
 const viewBoard = document.getElementById('viewBoard');
@@ -510,13 +691,14 @@ function renderCards(){
     if(b) b.onclick = openJoinModal;
     return;
   }
+  
   viewCards.innerHTML = `<div class="cards" id="cardsGrid"></div>`;
   const grid = document.getElementById('cardsGrid');
 
   PLAYERS.forEach(ps => {
     const isMine = ps.accountId === MY_ID;
     const roleInfo = ROLES[ps.role];
-    const latestMatch = ps.matches[ps.matches.length-1];
+    const latestMatch = ps.matches && ps.matches.length ? ps.matches[ps.matches.length-1] : null;
     const card = document.createElement('div');
     card.className = `card theme-${ps.theme}${isMine ? ' mine' : ''}`;
 
@@ -582,7 +764,8 @@ function renderCards(){
       if(editBtn) editBtn.onclick = () => openJoinModal(ps.accountId);
     }
     card.querySelector('[data-log]').onclick = (e) => {
-      if(openLogs.has(ps.accountId)) openLogs.delete(ps.accountId); else openLogs.add(ps.accountId);
+      if(openLogs.has(ps.accountId)) openLogs.delete(ps.accountId); 
+      else openLogs.add(ps.accountId);
       renderCards();
     };
   });
@@ -630,33 +813,78 @@ function renderBoard(){
   }
 }
 
-function renderStatus(){
+function updateStatus(){
   const lastRefresh = PLAYERS.reduce((max,p)=> p.lastRefresh && p.lastRefresh>max ? p.lastRefresh : max, 0);
   statusStrip.innerHTML = `
     <span>Знамён в реестре: <b>${PLAYERS.length}</b></span>
     <span>Последнее обновление: <b>${lastRefresh ? new Date(lastRefresh).toLocaleString('ru-RU') : 'ещё не было'}</b></span>
     <span>Учитываются 2 лучшие игры из последних распарсенных матчей</span>
+    ${isFirebaseReady ? '<span style="color:var(--gold)">● онлайн</span>' : '<span style="color:var(--red)">● офлайн</span>'}
   `;
 }
 
 async function renderAll(){
-  renderStatus();
-  if(ACTIVE_TAB==='cards') renderCards(); else renderBoard();
+  updateStatus();
+  if(ACTIVE_TAB==='cards') renderCards(); 
+  else renderBoard();
 }
 
-/* ---- tabs ---- */
-document.querySelectorAll('.tab').forEach(t=>{
-  t.onclick = () => {
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    ACTIVE_TAB = t.dataset.tab;
-    viewCards.style.display = ACTIVE_TAB==='cards' ? '' : 'none';
-    viewBoard.style.display = ACTIVE_TAB==='board' ? '' : 'none';
-    renderAll();
-  };
-});
+/* ================= АВТООБНОВЛЕНИЕ ================= */
+function startAutoUpdate() {
+  if (updateInterval) clearInterval(updateInterval);
+  
+  updateInterval = setInterval(async () => {
+    if (isUpdating) return;
+    
+    isUpdating = true;
+    try {
+      const players = await loadAllPlayers();
+      if (players && players.length > 0) {
+        PLAYERS = players;
+        saveCache('players', players);
+        renderAll();
+      }
+    } catch(e) {
+      console.warn('Auto update failed:', e);
+    } finally {
+      isUpdating = false;
+    }
+  }, 30000);
+}
 
-/* ---- Join / edit modal ---- */
+/* ================= BOOTSTRAP ================= */
+async function bootstrap() {
+  // Сначала из кеша
+  const cached = loadCache('players');
+  if (cached && cached.length > 0) {
+    PLAYERS = cached;
+    MY_ID = await getMyId();
+    renderAll();
+  }
+  
+  // Затем из Firebase
+  try {
+    const fresh = await loadAllPlayers();
+    if (fresh && fresh.length > 0) {
+      PLAYERS = fresh;
+      saveCache('players', fresh);
+      MY_ID = await getMyId();
+      renderAll();
+    }
+  } catch(e) {
+    console.warn('Using cached data');
+  }
+  
+  // Подписываемся на реальное время
+  subscribeToRealtime();
+  
+  // Запускаем автообновление
+  startAutoUpdate();
+}
+
+/* ================= МОДАЛЬНЫЕ ОКНА ================= */
+function closeModal(){ modalRoot.innerHTML = ''; }
+
 function openJoinModal(editId){
   const existing = editId ? PLAYERS.find(p=>p.accountId===editId) : null;
   let tgUser = null;
@@ -772,9 +1000,10 @@ function openJoinModal(editId){
   };
 }
 
-/* ---- Reroll modal ---- */
 function openRerollModal(pid, slotIdx){
   const ps = PLAYERS.find(p=>p.accountId===pid);
+  if(!ps) return;
+  
   if(ps.tokens <= 0){
     modalRoot.innerHTML = `<div class="overlay"><div class="modal">
       <button class="close-x" id="mClose">×</button>
@@ -784,6 +1013,7 @@ function openRerollModal(pid, slotIdx){
     document.getElementById('mClose').onclick = closeModal;
     return;
   }
+  
   const color = ps.emblems[slotIdx].color;
   const candidates = [freshEmblem(color), freshEmblem(color), freshEmblem(color)];
   modalRoot.innerHTML = `
@@ -815,40 +1045,70 @@ function openRerollModal(pid, slotIdx){
   document.getElementById('mClose').onclick = closeModal;
 }
 
-function closeModal(){ modalRoot.innerHTML = ''; }
+/* ================= КНОПКИ ================= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    ACTIVE_TAB = t.dataset.tab;
+    viewCards.style.display = ACTIVE_TAB==='cards' ? '' : 'none';
+    viewBoard.style.display = ACTIVE_TAB==='board' ? '' : 'none';
+    renderAll();
+  };
+});
 
-/* ---- Refresh ---- */
+document.getElementById('btnJoin').onclick = () => openJoinModal();
+
 document.getElementById('btnRefresh').onclick = async (e) => {
   const btn = e.currentTarget;
   btn.disabled = true;
   const orig = btn.textContent;
-  btn.textContent = 'Парсинг...';
-  const notes = [];
-  for(const ps of PLAYERS){
-    const r = await refreshPlayer(ps);
-    notes.push(`${ps.name}: ${r.ok ? (r.newCount+' новых') : ('ошибка')}`);
+  btn.textContent = '⏳ Парсинг...';
+  
+  try {
+    let totalNew = 0;
+    const errors = [];
+    
+    for(const ps of PLAYERS){
+      const r = await refreshPlayer(ps);
+      if(r.ok) totalNew += r.newCount || 0;
+      else errors.push(`${ps.name}: ${r.msg}`);
+    }
+    
+    if(totalNew > 0) {
+      if(window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.HapticFeedback && window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      }
+    }
+    
+    await bootstrap();
+    
+    const msg = totalNew > 0 ? `✅ Добавлено ${totalNew} новых матчей` : 'ℹ️ Новых матчей не найдено';
+    if(errors.length) {
+      statusStrip.innerHTML += `<span style="color:var(--red)">⚠️ ${errors.join('; ')}</span>`;
+    }
+    statusStrip.innerHTML += `<span style="color:var(--gold)">${msg}</span>`;
+    
+  } catch(error) {
+    console.error('Refresh error:', error);
+    if(window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.showPopup && window.Telegram.WebApp.showPopup({
+        title: 'Ошибка',
+        message: error.message || 'Не удалось обновить данные',
+        buttons: [{ type: 'ok' }]
+      });
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = orig;
   }
-  btn.disabled = false;
-  btn.textContent = orig;
-  await bootstrap();
-  if(notes.length) statusStrip.insertAdjacentHTML('beforeend', `<span style="color:#8f8265">${notes.join(' · ')}</span>`);
 };
 
-document.getElementById('btnJoin').onclick = () => openJoinModal();
-
-/* ================= INIT ================= */
-async function bootstrap(){
-  PLAYERS = await loadAllPlayers();
-  MY_ID = await getMyId();
-  renderAll();
-}
-(async function init(){
-  if(!FIREBASE_READY){
-    document.getElementById('configBanner').innerHTML =
-      `<div class="config-banner"><b>Хранилище не настроено.</b> Впиши свои ключи Firebase в константу FIREBASE_CONFIG в начале &lt;script&gt; — без этого знамёна не будут сохраняться и не будут видны другим людям.</div>`;
-  }
+/* ================= ИНИЦИАЛИЗАЦИЯ ================= */
+(async function init() {
   renderLegend();
   await bootstrap();
+  console.log('✅ Приложение запущено');
 })();
 </script>
 </body>
