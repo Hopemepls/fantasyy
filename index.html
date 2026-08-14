@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 
-<title>Dota 2 Fantasy Registry</title>
+<title>Dota Fantasy League</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
@@ -12,56 +12,42 @@
 
 <style>
 :root{
-  --bg:#080706;
+  --bg:#070706;
   --bg2:#0d0b09;
-  --panel:#13100d;
-  --panel2:#19140f;
+  --panel:#12100d;
+  --panel2:#18140f;
   --panel3:#211a12;
-
-  --text:#eee5d3;
-  --muted:#8f836f;
-  --muted2:#655b4c;
-
-  --gold:#d8b34b;
-  --gold2:#9b7929;
-  --gold3:#604a1b;
-
-  --line:#30271c;
-  --line2:#403323;
-
-  --green:#63c584;
-  --red:#d36570;
-  --blue:#78a9dc;
-
-  --shadow:0 20px 60px rgba(0,0,0,.45);
+  --text:#eee4d0;
+  --muted:#897b65;
+  --muted2:#625846;
+  --gold:#d6b044;
+  --gold2:#987723;
+  --gold3:#f0d27a;
+  --line:#30271b;
+  --green:#62bd7d;
+  --red:#cf5d69;
+  --blue:#7599d8;
+  --shadow:0 20px 55px rgba(0,0,0,.42);
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
-html,
-body{
+html,body{
   margin:0;
   min-height:100%;
   background:
-    radial-gradient(circle at 50% -20%,rgba(173,130,39,.08),transparent 35%),
+    radial-gradient(circle at 50% -10%,rgba(183,143,44,.09),transparent 35%),
     var(--bg);
 }
 
 body{
   color:var(--text);
-  padding:
-    calc(14px + env(safe-area-inset-top))
-    11px
-    calc(60px + env(safe-area-inset-bottom));
-
-  font-family:Georgia,"Times New Roman",serif;
+  padding:18px 12px 80px;
+  font-family:Georgia,serif;
   -webkit-tap-highlight-color:transparent;
 }
 
-button,
-input{
+button,input{
   font:inherit;
 }
 
@@ -69,55 +55,53 @@ button{
   cursor:pointer;
 }
 
-button:disabled{
-  cursor:not-allowed;
-  opacity:.45;
-}
-
 .wrap{
-  width:100%;
   max-width:1180px;
-  margin:0 auto;
+  margin:auto;
 }
 
-/* ============================================================
-   HEADER
-============================================================ */
+/* HEADER */
 
 .header{
   display:flex;
   justify-content:space-between;
   align-items:flex-end;
-  gap:18px;
-
-  padding:8px 0 17px;
+  gap:20px;
+  padding:8px 0 18px;
   border-bottom:1px solid var(--line);
 }
 
 .brand{
-  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:13px;
 }
 
-.brand-kicker{
-  color:var(--gold);
-  font:8px monospace;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  margin-bottom:6px;
+.brand-mark{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--gold2);
+  background:linear-gradient(145deg,#241c0e,#0e0c09);
+  color:var(--gold3);
+  font-size:21px;
+  border-radius:5px;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
 }
 
-.brand h1{
+.logo h1{
   margin:0;
-  font-size:26px;
-  line-height:1;
-  letter-spacing:1.8px;
+  font-size:24px;
+  letter-spacing:2px;
 }
 
-.brand p{
-  margin:7px 0 0;
+.logo p{
+  margin:5px 0 0;
   color:var(--muted);
   font:9px monospace;
-  letter-spacing:.4px;
+  letter-spacing:1px;
 }
 
 .actions{
@@ -126,269 +110,207 @@ button:disabled{
   flex-wrap:wrap;
 }
 
-/* ============================================================
-   BUTTONS
-============================================================ */
+/* BUTTONS */
 
 .btn{
-  border:1px solid var(--gold3);
-  background:linear-gradient(180deg,var(--panel3),var(--panel2));
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#19150f,#100e0b);
   color:var(--text);
-
   padding:9px 12px;
   border-radius:4px;
-
   font:9px monospace;
   letter-spacing:.8px;
   text-transform:uppercase;
-
-  transition:
-    border-color .15s,
-    background .15s,
-    transform .15s;
+  transition:.18s;
 }
 
 .btn:hover{
   border-color:var(--gold2);
-  background:#2a2115;
-}
-
-.btn:active{
-  transform:translateY(1px);
+  transform:translateY(-1px);
 }
 
 .btn.primary{
-  background:linear-gradient(180deg,#ad892b,#735717);
+  background:linear-gradient(180deg,#b08a2a,#745918);
   border-color:var(--gold);
-  color:#181206;
-  font-weight:700;
+  color:#160f04;
+  font-weight:bold;
 }
 
-.btn.small{
-  padding:7px 9px;
-  font-size:8px;
+.btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+  transform:none;
 }
 
-/* ============================================================
-   TABS
-============================================================ */
+/* NAV */
 
 .tabs{
   display:flex;
-  gap:25px;
+  gap:26px;
   border-bottom:1px solid var(--line);
-  margin-bottom:17px;
-  overflow:auto;
+  margin-bottom:16px;
 }
 
 .tab{
   position:relative;
-
   border:0;
   background:none;
-
   color:var(--muted);
-
-  padding:12px 1px;
-
-  white-space:nowrap;
-
+  padding:12px 1px 13px;
   font:9px monospace;
-  letter-spacing:1.4px;
+  letter-spacing:1.5px;
   text-transform:uppercase;
 }
 
 .tab.active{
-  color:var(--gold);
+  color:var(--gold3);
 }
 
 .tab.active:after{
   content:"";
-
   position:absolute;
   left:0;
   right:0;
   bottom:-1px;
-
   height:2px;
-
   background:var(--gold);
-  box-shadow:0 0 10px rgba(216,179,75,.3);
 }
 
-/* ============================================================
-   STATUS
-============================================================ */
+/* STATUS */
 
 .status{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin:13px 0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin:14px 0;
 }
 
 .status-item{
   border:1px solid var(--line);
   background:rgba(255,255,255,.012);
-
-  padding:6px 9px;
-  border-radius:3px;
-
+  padding:8px 10px;
+  border-radius:4px;
   color:var(--muted);
-
   font:8px monospace;
 }
 
 .status-item b{
+  display:block;
+  margin-top:3px;
   color:var(--gold);
+  font-size:10px;
 }
 
-/* ============================================================
-   NOTICE
-============================================================ */
+/* NOTICE */
 
 .notice{
-  border:1px solid #51421e;
+  border:1px solid #51421d;
   background:rgba(140,110,25,.07);
-
-  color:#c9bb99;
-
+  color:#cabb98;
   padding:10px 12px;
   margin:12px 0;
-
   border-radius:4px;
-
   font:9px/1.6 monospace;
 }
 
 .notice.ok{
-  border-color:#315d40;
-  background:rgba(50,120,70,.08);
-  color:#9fd1aa;
+  border-color:#315b3e;
+  background:rgba(50,120,70,.07);
+  color:#9bd2aa;
 }
 
 .notice.error{
-  border-color:#693039;
+  border-color:#6a3039;
   background:rgba(140,30,45,.08);
-  color:#e4a5ac;
+  color:#e0a0a8;
 }
 
-/* ============================================================
-   EMPTY
-============================================================ */
+/* TOOLBAR */
 
-.empty{
-  padding:58px 20px;
-
-  text-align:center;
-
-  border:1px dashed var(--line2);
-  border-radius:5px;
-
-  background:rgba(255,255,255,.01);
-}
-
-.empty-icon{
-  width:70px;
-  height:70px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  margin:0 auto 18px;
-
-  border:1px solid var(--gold3);
-  border-radius:50%;
-
-  color:var(--gold);
-  font-size:28px;
-
-  background:rgba(160,125,30,.04);
-}
-
-.empty h2{
-  margin:0 0 9px;
-  font-size:20px;
-}
-
-.empty p{
-  max-width:540px;
-  margin:0 auto 20px;
-
-  color:var(--muted);
-
-  line-height:1.7;
-  font-size:11px;
-}
-
-/* ============================================================
-   CARDS GRID
-============================================================ */
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(305px,1fr));
-  gap:15px;
-}
-
-/* ============================================================
-   PLAYER CARD
-============================================================ */
-
-.player-card{
-  overflow:hidden;
-
-  border:1px solid var(--line);
-  border-radius:6px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.015),
-      transparent 28%
-    ),
-    linear-gradient(180deg,var(--panel),var(--panel2));
-
-  box-shadow:var(--shadow);
-
-  transition:
-    transform .18s,
-    border-color .18s;
-}
-
-.player-card:hover{
-  transform:translateY(-2px);
-  border-color:#4a3a24;
-}
-
-.player-card.mine{
-  border-color:#725a25;
-}
-
-/* ============================================================
-   CARD HEADER
-============================================================ */
-
-.card-head{
-  height:43px;
-
+.toolbar{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:10px;
+  margin:15px 0;
+}
 
+.toolbar-left{
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+
+.toolbar-title{
+  color:var(--muted);
+  font:9px monospace;
+  letter-spacing:1px;
+}
+
+.search{
+  width:230px;
+  max-width:45vw;
+}
+
+/* INPUT */
+
+input{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  outline:none;
+  background:#0c0a08;
+  color:var(--text);
+  font:10px monospace;
+  transition:.18s;
+}
+
+input:focus{
+  border-color:var(--gold2);
+  box-shadow:0 0 0 2px rgba(180,140,35,.05);
+}
+
+/* CARDS */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:15px;
+}
+
+.card{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.015),transparent 30%),
+    linear-gradient(180deg,var(--panel),var(--panel2));
+  box-shadow:var(--shadow);
+}
+
+.card.mine{
+  border-color:#81692b;
+  box-shadow:
+    0 0 0 1px rgba(194,153,49,.05),
+    var(--shadow);
+}
+
+.card-head{
+  height:43px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   padding:0 12px;
-
   border-bottom:1px solid var(--line);
 }
 
 .rank{
-  color:var(--muted);
-  font:9px monospace;
-}
-
-.rank strong{
-  color:var(--gold);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gold3);
+  font:bold 10px monospace;
 }
 
 .role{
@@ -397,217 +319,115 @@ button:disabled{
   letter-spacing:1.5px;
 }
 
-.mine-badge{
-  padding:4px 7px;
-
+.badge{
+  padding:3px 6px;
   border-radius:2px;
-
   background:var(--gold);
-  color:#171206;
-
+  color:#171106;
   font:7px monospace;
-  font-weight:700;
-  letter-spacing:.5px;
+  font-weight:bold;
 }
 
-/* ============================================================
-   PHOTO
-============================================================ */
+.badge.you{
+  background:#5e8f6a;
+  color:#071008;
+}
 
 .photo{
   height:190px;
-
   position:relative;
   overflow:hidden;
-
   background:
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(200,160,60,.12),
-      transparent 40%
-    ),
-    #0c0a08;
+    radial-gradient(circle at 50% 30%,#292117,#0b0907 65%);
 }
 
 .photo img{
   width:100%;
   height:100%;
-
-  display:block;
-
   object-fit:cover;
-
-  transition:transform .4s;
+  display:block;
 }
 
-.player-card:hover .photo img{
-  transform:scale(1.025);
+.placeholder{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#4d4232;
+  font-size:65px;
 }
 
 .photo:after{
   content:"";
-
   position:absolute;
   inset:0;
-
+  background:
+    linear-gradient(to top,rgba(0,0,0,.94),rgba(0,0,0,.05) 65%),
+    linear-gradient(90deg,rgba(0,0,0,.25),transparent 45%,rgba(0,0,0,.25));
   pointer-events:none;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(0,0,0,.04),
-      rgba(0,0,0,.06) 40%,
-      rgba(0,0,0,.9) 100%
-    );
-}
-
-.photo-placeholder{
-  width:100%;
-  height:100%;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  color:#40372a;
-  font-size:60px;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(205,165,65,.1),
-      transparent 55%
-    );
 }
 
 .player-name{
   position:absolute;
-
   left:13px;
   right:13px;
-  bottom:12px;
-
+  bottom:11px;
   z-index:2;
 }
 
 .player-name strong{
   display:block;
-
-  font-size:20px;
-  line-height:1.15;
-
+  font-size:19px;
   text-shadow:0 2px 10px #000;
 }
 
 .player-name span{
-  display:block;
-
-  margin-top:4px;
-
-  color:#a99d87;
-
+  color:#9c9078;
   font:8px monospace;
 }
 
-/* ============================================================
-   CARD SUMMARY
-============================================================ */
+/* SCORE */
 
 .card-summary{
   display:grid;
   grid-template-columns:1fr auto;
   align-items:center;
-
   padding:13px;
-
   border-bottom:1px solid var(--line);
 }
 
 .rarity{
   color:var(--gold);
-
   font:8px monospace;
-  letter-spacing:1.3px;
+  letter-spacing:1.2px;
 }
 
 .score-label{
-  margin-top:5px;
-
-  color:var(--muted2);
-
-  font:7px monospace;
-  letter-spacing:.7px;
+  color:#706653;
+  margin-top:4px;
+  font:8px monospace;
 }
 
 .score{
-  color:var(--gold);
-
+  color:var(--gold3);
   font-size:27px;
-  line-height:1;
-
-  font-weight:700;
-
-  text-shadow:0 0 18px rgba(216,179,75,.13);
+  font-weight:bold;
+  text-shadow:0 0 22px rgba(211,169,55,.13);
 }
 
-/* ============================================================
-   STATS
-============================================================ */
-
-.quick-stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-
-  border-bottom:1px solid var(--line);
-}
-
-.quick-stat{
-  padding:9px 5px;
-
-  text-align:center;
-
-  border-right:1px solid var(--line);
-}
-
-.quick-stat:last-child{
-  border-right:0;
-}
-
-.quick-stat strong{
-  display:block;
-
-  font:11px monospace;
-  color:#d8cdb8;
-}
-
-.quick-stat span{
-  display:block;
-
-  margin-top:3px;
-
-  color:var(--muted2);
-
-  font:6px monospace;
-  letter-spacing:.4px;
-}
-
-/* ============================================================
-   MATCH
-============================================================ */
+/* MATCHES */
 
 .matches{
   padding:10px;
 }
 
 .match{
-  padding:9px;
-
-  margin-bottom:6px;
-
+  background:#0e0d0b;
   border:1px solid var(--line);
+  padding:9px;
+  margin-bottom:6px;
   border-radius:3px;
-
-  background:#100e0b;
 }
 
 .match:last-child{
@@ -618,7 +438,6 @@ button:disabled{
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:8px;
 }
 
@@ -629,19 +448,15 @@ button:disabled{
 
 .match-score{
   color:var(--gold);
-  font:12px monospace;
-  font-weight:600;
+  font:bold 12px monospace;
 }
 
 .match-info{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
-
   margin-top:5px;
-
-  color:#746a58;
-
+  color:#766c5a;
   font:8px monospace;
 }
 
@@ -653,60 +468,12 @@ button:disabled{
   color:var(--red)!important;
 }
 
-/* ============================================================
-   LOADING
-============================================================ */
-
-.loading{
-  padding:11px 12px;
-
-  border-bottom:1px solid var(--line);
-}
-
-.loading-line{
-  display:flex;
-  justify-content:space-between;
-
-  gap:10px;
-
-  margin-bottom:7px;
-
-  color:#9c9078;
-
-  font:8px monospace;
-}
-
-.progress{
-  height:4px;
-
-  overflow:hidden;
-
-  border-radius:8px;
-
-  background:#292219;
-}
-
-.progress i{
-  display:block;
-
-  width:0;
-  height:100%;
-
-  background:var(--gold);
-
-  transition:width .2s;
-}
-
-/* ============================================================
-   FOOTER
-============================================================ */
+/* FOOTER */
 
 .card-footer{
   display:flex;
   gap:6px;
-
   padding:10px;
-
   border-top:1px solid var(--line);
 }
 
@@ -714,305 +481,194 @@ button:disabled{
   flex:1;
 }
 
-/* ============================================================
-   RATING
-============================================================ */
+/* EMPTY */
 
-.rating-head{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
+.empty{
+  padding:65px 20px;
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:5px;
+  background:rgba(255,255,255,.01);
+}
 
-  gap:15px;
-
+.empty-icon{
+  color:var(--gold);
+  font-size:35px;
   margin-bottom:12px;
 }
 
-.rating-title h2{
-  margin:0;
-
-  font-size:21px;
+.empty h2{
+  margin:0 0 8px;
 }
 
-.rating-title p{
-  margin:5px 0 0;
-
+.empty p{
+  max-width:550px;
+  margin:0 auto 18px;
   color:var(--muted);
-
-  font:8px monospace;
+  line-height:1.7;
+  font-size:12px;
 }
 
-.rating-count{
-  color:var(--gold);
+/* LEADERBOARD */
 
-  font:9px monospace;
-}
-
-.rating-list{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-
-.rating-row{
-  display:grid;
-
-  grid-template-columns:46px 50px minmax(150px,1fr) 105px 100px;
-
-  align-items:center;
-
-  gap:10px;
-
-  min-height:70px;
-
-  padding:8px 10px;
-
+.leaderboard{
   border:1px solid var(--line);
-  border-radius:4px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.015),
-      transparent
-    ),
-    var(--panel);
-
-  transition:border-color .15s;
-}
-
-.rating-row:hover{
-  border-color:#4a3a24;
-}
-
-.rating-row.mine{
-  border-color:#735b27;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(180,140,40,.07),
-      transparent
-    ),
-    var(--panel);
-}
-
-.rating-position{
-  color:var(--muted);
-
-  text-align:center;
-
-  font:bold 14px monospace;
-}
-
-.rating-position.top{
-  color:var(--gold);
-}
-
-.rating-avatar{
-  width:43px;
-  height:43px;
-
+  border-radius:5px;
   overflow:hidden;
-
-  border:1px solid var(--line2);
-  border-radius:3px;
-
-  background:#0b0907;
+  background:var(--panel);
 }
 
-.rating-avatar img{
+.lb-row{
+  display:grid;
+  grid-template-columns:55px 1fr 100px 110px;
+  align-items:center;
+  gap:10px;
+  padding:11px 13px;
+  border-bottom:1px solid var(--line);
+  transition:.15s;
+}
+
+.lb-row:last-child{
+  border-bottom:0;
+}
+
+.lb-row:hover{
+  background:rgba(255,255,255,.018);
+}
+
+.lb-row.mine{
+  background:rgba(184,145,42,.055);
+}
+
+.lb-rank{
+  color:#7c705c;
+  font:bold 12px monospace;
+}
+
+.lb-player{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.lb-avatar{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border-radius:3px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#0c0a08;
+}
+
+.lb-avatar img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
 
-.rating-avatar .avatar-letter{
+.lb-avatar div{
   width:100%;
   height:100%;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
-  color:#70644e;
-
-  font-size:18px;
+  color:#5b4e3a;
+  font-size:15px;
 }
 
-.rating-player{
+.lb-name{
   min-width:0;
 }
 
-.rating-player strong{
+.lb-name strong{
   display:block;
-
   overflow:hidden;
-
-  color:#e8dfcf;
-
-  text-overflow:ellipsis;
   white-space:nowrap;
-
-  font-size:13px;
+  text-overflow:ellipsis;
+  font-size:12px;
 }
 
-.rating-player span{
+.lb-name span{
   display:block;
-
-  margin-top:4px;
-
-  overflow:hidden;
-
-  color:var(--muted2);
-
-  text-overflow:ellipsis;
-  white-space:nowrap;
-
+  margin-top:3px;
+  color:#665b4b;
   font:7px monospace;
 }
 
-.rating-matches{
-  color:#958a76;
-
+.lb-score{
+  color:var(--gold3);
   text-align:right;
+  font:bold 14px monospace;
+}
 
+.lb-matches{
+  color:#786c59;
+  text-align:right;
   font:8px monospace;
 }
 
-.rating-matches strong{
-  color:#d5c7ad;
-
-  font-size:10px;
-}
-
-.rating-score{
-  color:var(--gold);
-
-  text-align:right;
-
-  font:bold 18px monospace;
-}
-
-.rating-role{
-  margin-top:3px;
-
-  color:var(--muted2);
-
-  font:7px monospace;
-  letter-spacing:.7px;
-}
-
-/* ============================================================
-   FORM
-============================================================ */
+/* MODAL */
 
 .overlay{
   position:fixed;
   inset:0;
-
   z-index:100;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   padding:12px;
-
   background:rgba(0,0,0,.86);
-
-  backdrop-filter:blur(5px);
+  backdrop-filter:blur(4px);
 }
 
 .modal{
   width:100%;
-  max-width:570px;
+  max-width:560px;
   max-height:93vh;
-
-  position:relative;
-
   overflow:auto;
-
+  position:relative;
   padding:21px;
-
   border:1px solid var(--gold2);
   border-radius:6px;
-
   background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.018),
-      transparent 30%
-    ),
+    linear-gradient(180deg,rgba(255,255,255,.02),transparent 25%),
     var(--panel);
-
-  box-shadow:var(--shadow);
+  box-shadow:0 25px 80px rgba(0,0,0,.65);
 }
 
 .close{
   position:absolute;
-
   top:8px;
   right:11px;
-
   border:0;
   background:none;
-
   color:var(--muted);
-
-  font-size:23px;
+  font-size:24px;
 }
 
 .modal h2{
   margin:0 0 6px;
-
-  font-size:21px;
 }
 
 .modal-desc{
-  margin-bottom:18px;
-
   color:#9b8e75;
-
-  font-size:10px;
+  font-size:11px;
   line-height:1.6;
-}
-
-.modal-desc b{
-  color:#d9ccb3;
+  margin-bottom:17px;
 }
 
 .field{
   margin-bottom:14px;
 }
 
-.field label{
+.field>label{
   display:block;
-
   margin-bottom:6px;
-
   color:#968a73;
-
   font:8px monospace;
   letter-spacing:1px;
-}
-
-input{
-  width:100%;
-
-  padding:10px;
-
-  border:1px solid var(--line);
-  border-radius:3px;
-  outline:none;
-
-  background:#0d0b09;
-  color:var(--text);
-
-  font:11px monospace;
-}
-
-input:focus{
-  border-color:var(--gold2);
 }
 
 .roles,
@@ -1025,47 +681,36 @@ input:focus{
 .role-option,
 .rarity-option{
   padding:11px 7px;
-
   text-align:center;
-
   border:1px solid var(--line);
+  background:#100e0b;
   border-radius:3px;
-
-  background:#11100d;
-
   cursor:pointer;
-
-  transition:border-color .15s,background .15s;
+  transition:.15s;
 }
 
 .role-option:hover,
 .rarity-option:hover{
-  border-color:#584521;
+  border-color:#5f4c25;
 }
 
 .role-option.selected,
 .rarity-option.selected{
   border-color:var(--gold);
-
-  background:rgba(160,125,30,.08);
-
-  color:var(--gold);
+  background:rgba(180,140,35,.06);
+  color:var(--gold3);
 }
 
 .role-option strong{
   display:block;
-
   font:9px monospace;
 }
 
 .role-option span{
   display:block;
-
   margin-top:3px;
-
   color:#6f6554;
-
-  font-size:8px;
+  font-size:9px;
 }
 
 .bonus-grid{
@@ -1076,17 +721,16 @@ input:focus{
 
 .bonus{
   padding:8px;
-
   border:1px solid var(--line);
-  border-radius:3px;
-
   background:#100e0b;
+  border-radius:3px;
 }
 
 .bonus label{
+  display:block;
   margin-bottom:4px;
-
-  font-size:7px;
+  color:#766b58;
+  font:7px monospace;
 }
 
 .bonus input{
@@ -1097,28 +741,24 @@ input:focus{
   display:flex;
   justify-content:flex-end;
   gap:7px;
-
   margin-top:17px;
 }
 
-/* ============================================================
-   CALCULATION
-============================================================ */
+/* CALC */
 
 .calc-box{
-  margin-top:12px;
-
   border:1px solid var(--line);
+  margin-top:10px;
+  border-radius:3px;
+  overflow:hidden;
 }
 
 .calc-head{
   display:flex;
   justify-content:space-between;
-
   padding:9px;
-
+  background:#17130f;
   border-bottom:1px solid var(--line);
-
   font:8px monospace;
 }
 
@@ -1128,118 +768,85 @@ input:focus{
 
 .calc-table{
   width:100%;
-
   border-collapse:collapse;
 }
 
 .calc-table th,
 .calc-table td{
-  padding:8px 6px;
-
+  padding:7px 6px;
   border-bottom:1px solid var(--line);
-
+  text-align:left;
   font-size:8px;
 }
 
 .calc-table th{
-  color:var(--muted);
-
-  background:var(--panel2);
-
+  background:#110f0c;
+  color:#756a57;
   font:7px monospace;
-  text-transform:uppercase;
 }
 
 .calc-table td{
-  background:#100e0b;
+  background:#0d0c0a;
 }
 
 .calc-total{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
   margin-top:10px;
-  padding:13px;
-
+  padding:12px;
   border:1px solid var(--gold2);
-
   background:rgba(160,125,30,.07);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
 .calc-total span{
   color:#988a6d;
-
   font:9px monospace;
 }
 
 .calc-total strong{
-  color:var(--gold);
-
-  font-size:24px;
+  color:var(--gold3);
+  font-size:23px;
 }
 
-/* ============================================================
-   API DEBUG
-============================================================ */
+/* LOADING */
 
-.diag{
-  display:none;
-
-  border:1px solid var(--line);
-  border-radius:4px;
-
-  overflow:hidden;
-
-  margin-top:12px;
-}
-
-.diag.open{
-  display:block;
-}
-
-.diag-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:10px;
-
-  background:var(--panel2);
-
+.loading{
+  padding:12px;
   border-bottom:1px solid var(--line);
 }
 
-.diag-head strong{
-  font:9px monospace;
+.loading-line{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:#9c9078;
+  font:8px monospace;
+  margin-bottom:7px;
 }
 
-pre{
-  margin:0;
-
-  max-height:500px;
-
-  overflow:auto;
-
-  padding:12px;
-
-  color:#afa38b;
-
-  font:8px/1.5 monospace;
-
-  white-space:pre-wrap;
-  word-break:break-word;
+.progress{
+  height:5px;
+  background:#292219;
+  border-radius:8px;
+  overflow:hidden;
 }
 
-/* ============================================================
-   MOBILE
-============================================================ */
+.progress i{
+  display:block;
+  width:0;
+  height:100%;
+  background:var(--gold);
+  transition:width .2s;
+}
 
-@media(max-width:700px){
+/* MOBILE */
+
+@media(max-width:760px){
 
   .header{
-    flex-direction:column;
     align-items:flex-start;
+    flex-direction:column;
   }
 
   .actions{
@@ -1250,36 +857,42 @@ pre{
     flex:1;
   }
 
-  .rating-row{
-    grid-template-columns:38px 42px minmax(0,1fr) 80px;
+  .status{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .rating-matches{
+  .toolbar{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .search{
+    width:100%;
+    max-width:none;
+  }
+
+  .lb-row{
+    grid-template-columns:38px 1fr auto;
+  }
+
+  .lb-matches{
     display:none;
   }
 
-  .rating-score{
-    font-size:15px;
+  .cards{
+    grid-template-columns:1fr;
   }
 }
 
-@media(max-width:500px){
+@media(max-width:420px){
 
   body{
     padding-left:9px;
     padding-right:9px;
   }
 
-  .brand h1{
-    font-size:22px;
-  }
-
-  .cards{
-    grid-template-columns:1fr;
-  }
-
-  .photo{
-    height:205px;
+  .logo h1{
+    font-size:21px;
   }
 
   .roles,
@@ -1287,23 +900,8 @@ pre{
     grid-template-columns:1fr;
   }
 
-  .rating-row{
-    grid-template-columns:34px 40px minmax(0,1fr) 72px;
-    gap:7px;
-    padding:8px;
-  }
-
-  .rating-avatar{
-    width:38px;
-    height:38px;
-  }
-
-  .rating-player strong{
-    font-size:11px;
-  }
-
-  .rating-score{
-    font-size:14px;
+  .bonus-grid{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -1317,28 +915,18 @@ pre{
 
   <div class="brand">
 
-    <div class="brand-kicker">
-      DOTA 2 · FANTASY SYSTEM
+    <div class="brand-mark">⚔</div>
+
+    <div class="logo">
+      <h1>FANTASY LEAGUE</h1>
+      <p>DOTA 2 · PLAYER CARDS · GLOBAL LADDER</p>
     </div>
-
-    <h1>FANTASY REGISTRY</h1>
-
-    <p>
-      PLAYER CARDS · MATCH PERFORMANCE · GLOBAL RATING
-    </p>
 
   </div>
 
   <div class="actions">
-
-    <button class="btn" id="myBtn">
-      Моя карта
-    </button>
-
-    <button class="btn" id="refreshBtn">
-      ↻ Обновить
-    </button>
-
+    <button class="btn" id="myBtn">Моя карта</button>
+    <button class="btn" id="refreshBtn">↻ Обновить</button>
   </div>
 
 </header>
@@ -1346,15 +934,11 @@ pre{
 <nav class="tabs">
 
   <button class="tab active" data-tab="players">
-    Моя карта
+    МОЯ КАРТА
   </button>
 
   <button class="tab" data-tab="rating">
-    Рейтинг
-  </button>
-
-  <button class="tab" data-tab="diagnostics">
-    API
+    ЛАДДЕРБОРД
   </button>
 
 </nav>
@@ -1364,24 +948,6 @@ pre{
 <div id="notice"></div>
 
 <div id="content"></div>
-
-<div class="diag" id="diag">
-
-  <div class="diag-head">
-
-    <strong>
-      OPEN DOTA / DEBUG
-    </strong>
-
-    <button class="btn small" id="clearDiag">
-      Очистить
-    </button>
-
-  </div>
-
-  <pre id="diagOutput">Пока запросов нет.</pre>
-
-</div>
 
 </div>
 
@@ -1396,7 +962,7 @@ pre{
 const API = "https://api.opendota.com/api";
 
 const FIREBASE_CONFIG = {
-  apiKey:"AIzaSyDijiSyDg6x-lqu6-LlI68wBVIjqB_-3BI",
+  apiKey:"AIzaSyDijiSy46g6x-lqu6-LlI68wBVIjqB_-3BI",
   authDomain:"fantasy-218c8.firebaseapp.com",
   projectId:"fantasy-218c8",
   storageBucket:"fantasy-218c8.firebasestorage.app",
@@ -1405,7 +971,7 @@ const FIREBASE_CONFIG = {
   measurementId:"G-9LZC0EZ0Y5"
 };
 
-const CACHE_KEY = "fantasy_registry_v20";
+const LOCAL_KEY = "dota_fantasy_player_v20";
 
 const FANTASY_RULES = {
 
@@ -1429,7 +995,6 @@ const FANTASY_RULES = {
   stuns:.05,
 
   deaths_base:3
-
 };
 
 const BONUS_FIELDS = [
@@ -1466,50 +1031,30 @@ const RARITIES = {
 
 };
 
+
+/* ============================================================
+   STATE
+============================================================ */
+
 let db = null;
 
 let player = null;
 
-let telegramUser = null;
+let allPlayers = [];
 
-let telegramId = null;
+let telegramUser = null;
 
 let activeTab = "players";
 
-let logs = [];
-
-let allPlayers = [];
-
 let ratingLoading = false;
 
-
-/* ============================================================
-   DOM
-============================================================ */
-
-const content =
-  document.getElementById("content");
-
-const status =
-  document.getElementById("status");
-
-const notice =
-  document.getElementById("notice");
-
-const modalRoot =
-  document.getElementById("modalRoot");
-
-const diag =
-  document.getElementById("diag");
-
-const diagOutput =
-  document.getElementById("diagOutput");
+let playerLoading = false;
 
 
 /* ============================================================
    TELEGRAM
-   Telegram НЕ является обязательным.
-   Используем только профиль/фото.
+   Telegram НЕ используется как обязательная авторизация.
+   Используем только данные профиля, если они доступны.
 ============================================================ */
 
 function initTelegram(){
@@ -1524,33 +1069,25 @@ function initTelegram(){
       return;
     }
 
-    try{
-      tg.ready();
-    }catch(_){}
+    tg.ready();
 
     try{
       tg.expand();
     }catch(_){}
 
-    const user =
+    const u =
       tg.initDataUnsafe &&
       tg.initDataUnsafe.user;
 
-    if(user){
-
-      telegramUser = user;
-
-      if(user.id){
-        telegramId = String(user.id);
-      }
-
+    if(u){
+      telegramUser = u;
     }
 
-  }catch(error){
+  }catch(e){
 
     console.warn(
       "Telegram unavailable",
-      error
+      e
     );
 
   }
@@ -1577,23 +1114,40 @@ try{
     synchronizeTabs:true
   }).catch(()=>{});
 
-}catch(error){
+}catch(e){
 
-  console.warn(
-    "Firebase initialization error",
-    error
+  console.error(
+    "Firebase error",
+    e
   );
 
 }
 
 
 /* ============================================================
+   DOM
+============================================================ */
+
+const content =
+  document.getElementById("content");
+
+const status =
+  document.getElementById("status");
+
+const notice =
+  document.getElementById("notice");
+
+const modalRoot =
+  document.getElementById("modalRoot");
+
+
+/* ============================================================
    HELPERS
 ============================================================ */
 
-function esc(value){
+function esc(v){
 
-  return String(value ?? "")
+  return String(v ?? "")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
@@ -1601,10 +1155,9 @@ function esc(value){
 
 }
 
+function num(v){
 
-function num(value){
-
-  const n = Number(value);
+  const n = Number(v);
 
   return Number.isFinite(n)
     ? n
@@ -1612,10 +1165,9 @@ function num(value){
 
 }
 
+function fmt(v){
 
-function fmt(value){
-
-  return num(value).toLocaleString(
+  return num(v).toLocaleString(
     "ru-RU",
     {
       maximumFractionDigits:2
@@ -1624,122 +1176,37 @@ function fmt(value){
 
 }
 
+function initials(v){
 
-function accountIdFrom(value){
-
-  const match =
-    String(value || "")
-      .match(/\d+/g);
-
-  if(!match || !match.length){
-    return null;
-  }
-
-  return match[match.length - 1];
+  return String(v || "?")
+    .trim()
+    .slice(0,1)
+    .toUpperCase();
 
 }
-
-
-function initials(value){
-
-  const text =
-    String(value || "?")
-      .trim();
-
-  return text
-    ? text.slice(0,1).toUpperCase()
-    : "?";
-
-}
-
 
 function defaultBonuses(){
 
-  const bonuses = {};
+  const x = {};
 
   BONUS_FIELDS.forEach(
     ([key])=>{
-      bonuses[key] = 0;
+      x[key]=0;
     }
   );
 
-  return bonuses;
+  return x;
 
 }
-
 
 function defaultCard(){
 
   return {
-
     rarity:"bronze",
-
-    bonuses:
-      defaultBonuses()
-
+    bonuses:defaultBonuses()
   };
 
 }
-
-
-function normalizePlayer(p){
-
-  p = p || {};
-
-  p.card =
-    p.card ||
-    defaultCard();
-
-  p.card.bonuses =
-    p.card.bonuses ||
-    defaultBonuses();
-
-  BONUS_FIELDS.forEach(
-    ([key])=>{
-
-      p.card.bonuses[key] =
-        num(
-          p.card.bonuses[key]
-        );
-
-    }
-  );
-
-  if(!RARITIES[p.card.rarity]){
-    p.card.rarity = "bronze";
-  }
-
-  if(!ROLES[p.role]){
-    p.role = "carry";
-  }
-
-  if(!Array.isArray(p.matches)){
-    p.matches = [];
-  }
-
-  return p;
-
-}
-
-
-function tgName(){
-
-  if(!telegramUser){
-    return "";
-  }
-
-  return [
-
-    telegramUser.first_name,
-    telegramUser.last_name
-
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-
-}
-
 
 function tgPhoto(){
 
@@ -1756,72 +1223,77 @@ function tgPhoto(){
 
 }
 
+function tgName(){
 
-function makeLocalOwnerId(){
-
-  let id = null;
-
-  try{
-
-    id =
-      localStorage.getItem(
-        "fantasy_owner_id"
-      );
-
-    if(!id){
-
-      id =
-        "local_" +
-        Date.now() +
-        "_" +
-        Math.random()
-          .toString(36)
-          .slice(2);
-
-      localStorage.setItem(
-        "fantasy_owner_id",
-        id
-      );
-
-    }
-
-  }catch(_){
-
-    id =
-      "local_" +
-      Date.now();
-
+  if(!telegramUser){
+    return "";
   }
 
-  return id;
+  return [
+    telegramUser.first_name,
+    telegramUser.last_name
+  ]
+  .filter(Boolean)
+  .join(" ")
+  .trim();
 
 }
 
 
 /* ============================================================
-   OWNER ID
+   NORMALIZE
 ============================================================ */
 
-function ownerId(){
+function normalize(p){
 
-  /*
-    Если Telegram дал ID —
-    используем его как владельца.
+  p = p || {};
 
-    Но наличие Telegram НЕ обязательно.
-  */
+  p.card =
+    p.card ||
+    defaultCard();
 
-  if(telegramId){
-    return "tg_" + telegramId;
+  p.card.bonuses =
+    p.card.bonuses ||
+    defaultBonuses();
+
+  BONUS_FIELDS.forEach(
+    ([key])=>{
+      p.card.bonuses[key] =
+        num(p.card.bonuses[key]);
+    }
+  );
+
+  if(
+    !RARITIES[p.card.rarity]
+  ){
+
+    p.card.rarity = "bronze";
+
   }
 
-  return makeLocalOwnerId();
+  if(
+    !ROLES[p.role]
+  ){
+
+    p.role = "carry";
+
+  }
+
+  if(
+    !Array.isArray(p.matches)
+  ){
+
+    p.matches = [];
+
+  }
+
+  return p;
 
 }
 
 
 /* ============================================================
-   LOCAL CACHE
+   LOCAL
 ============================================================ */
 
 function loadLocal(){
@@ -1830,14 +1302,14 @@ function loadLocal(){
 
     const raw =
       localStorage.getItem(
-        CACHE_KEY
+        LOCAL_KEY
       );
 
     if(!raw){
       return null;
     }
 
-    return normalizePlayer(
+    return normalize(
       JSON.parse(raw)
     );
 
@@ -1849,7 +1321,6 @@ function loadLocal(){
 
 }
 
-
 function saveLocal(){
 
   try{
@@ -1857,7 +1328,7 @@ function saveLocal(){
     if(player){
 
       localStorage.setItem(
-        CACHE_KEY,
+        LOCAL_KEY,
         JSON.stringify(player)
       );
 
@@ -1872,82 +1343,72 @@ function saveLocal(){
    FIRESTORE
 ============================================================ */
 
-function ownerRef(){
+/*
+   Общая коллекция:
 
-  if(!db){
+   players/
+      DOTA_ACCOUNT_ID
+
+   Благодаря этому все пользователи
+   находятся в одной таблице.
+*/
+
+function playerRef(accountId){
+
+  if(!db || !accountId){
     return null;
   }
 
   return db
-    .collection("owners")
-    .doc(ownerId());
+    .collection("players")
+    .doc(String(accountId));
 
 }
 
 
-async function loadOwner(){
+/* ============================================================
+   CHECK PLAYER
+============================================================ */
 
-  const local =
-    loadLocal();
-
-  /*
-    Мгновенно показываем локальную карту.
-  */
-
-  if(local){
-
-    player =
-      normalizePlayer(local);
-
-    render();
-
-  }
+async function playerExists(accountId){
 
   if(!db){
-    return player;
+    return false;
   }
 
   try{
 
-    const snapshot =
-      await ownerRef().get();
+    const snap =
+      await playerRef(accountId)
+        .get();
 
-    if(snapshot.exists){
+    return snap.exists;
 
-      player =
-        normalizePlayer(
-          snapshot.data()
-        );
+  }catch(e){
 
-      saveLocal();
-
-      render();
-
-    }
-
-  }catch(error){
-
-    log(
-      "OWNER LOAD ERROR",
-      {
-        error:error.message
-      }
+    console.error(
+      "playerExists",
+      e
     );
 
-  }
+    return false;
 
-  return player;
+  }
 
 }
 
 
-async function saveOwner(){
+/* ============================================================
+   SAVE PLAYER
+============================================================ */
+
+async function savePlayer(){
 
   if(!player){
     return;
   }
 
-  normalizePlayer(player);
+  normalize(player);
 
   saveLocal();
 
@@ -1955,25 +1416,99 @@ async function saveOwner(){
     return;
   }
 
-  try{
-
-    await ownerRef().set(
-      player,
-      {
-        merge:true
-      }
+  const ref =
+    playerRef(
+      player.accountId
     );
 
-  }catch(error){
+  if(!ref){
+    return;
+  }
 
-    log(
-      "OWNER SAVE ERROR",
-      {
-        error:error.message
-      }
-    );
+  /*
+    fantasyTotal всегда сохраняется.
+    Поэтому ладдерборд может сортироваться
+    даже без пересчёта всех матчей.
+  */
+
+  const best =
+    bestTwoFor(player);
+
+  player.fantasyTotal =
+    Number(best.total.toFixed(2));
+
+  player.matchCount =
+    player.matches.length;
+
+  player.updatedAt =
+    Date.now();
+
+  await ref.set(
+    player,
+    {merge:true}
+  );
+
+}
+
+
+/* ============================================================
+   LOAD CURRENT PLAYER
+============================================================ */
+
+async function loadCurrentPlayer(){
+
+  const local =
+    loadLocal();
+
+  if(local){
+
+    player = local;
+
+    render();
 
   }
+
+  /*
+    Если локальный игрок есть,
+    пытаемся найти его в Firebase.
+  */
+
+  if(
+    local &&
+    db &&
+    local.accountId
+  ){
+
+    try{
+
+      const snap =
+        await playerRef(
+          local.accountId
+        ).get();
+
+      if(snap.exists){
+
+        player =
+          normalize(
+            snap.data()
+          );
+
+        saveLocal();
+
+      }
+
+    }catch(e){
+
+      console.warn(
+        "Current player load",
+        e
+      );
+
+    }
+
+  }
+
+  render();
 
 }
 
@@ -1986,10 +1521,9 @@ async function loadAllPlayers(){
 
   if(!db){
 
-    allPlayers =
-      player ? [player] : [];
+    allPlayers = [];
 
-    return allPlayers;
+    return [];
 
   }
 
@@ -1999,153 +1533,77 @@ async function loadAllPlayers(){
 
   try{
 
-    const snapshot =
-      await db
-        .collection("owners")
-        .get();
-
-    const players = [];
-
-    snapshot.forEach(
-      doc=>{
-
-        try{
-
-          const data =
-            normalizePlayer(
-              doc.data()
-            );
-
-          data._docId =
-            doc.id;
-
-          players.push(data);
-
-        }catch(error){
-
-          console.warn(
-            "Invalid player document",
-            doc.id,
-            error
-          );
-
-        }
-
-      }
-    );
-
-    allPlayers = players;
-
     /*
-      Если своя карта есть локально,
-      гарантируем её наличие в списке.
+      НЕ используем orderBy здесь.
+
+      Это важно:
+      Firestore может требовать индекс,
+      а нам он не нужен.
+
+      Сначала получаем всех игроков,
+      затем сортируем JS.
     */
 
-    if(player){
-
-      const exists =
-        allPlayers.some(
-          x =>
-            String(x._docId) ===
-            ownerId()
-        );
-
-      if(!exists){
-
-        allPlayers.push(
-          player
-        );
-
-      }
-
-    }
-
-  }catch(error){
-
-    log(
-      "RATING LOAD ERROR",
-      {
-        error:error.message
-      }
-    );
+    const snap =
+      await db
+        .collection("players")
+        .get();
 
     allPlayers =
-      player ? [player] : [];
+      snap.docs
+        .map(doc=>{
+
+          return normalize({
+            id:doc.id,
+            ...doc.data()
+          });
+
+        })
+        .filter(p=>p.accountId);
+
+    /*
+      Сортировка по актуальному fantasyTotal.
+    */
+
+    allPlayers.sort(
+      (a,b)=>
+        num(b.fantasyTotal)
+        -
+        num(a.fantasyTotal)
+    );
+
+    return allPlayers;
+
+  }catch(e){
+
+    console.error(
+      "LOAD PLAYERS",
+      e
+    );
+
+    showNotice(
+      "Не удалось загрузить игроков: "+
+      e.message,
+      "error"
+    );
+
+    allPlayers = [];
+
+    return [];
+
+  }finally{
+
+    ratingLoading = false;
+
+    render();
 
   }
 
-  ratingLoading = false;
-
-  render();
-
-  return allPlayers;
-
 }
 
 
 /* ============================================================
-   DIAGNOSTICS
-============================================================ */
-
-function log(title,data){
-
-  logs.unshift({
-
-    time:
-      new Date()
-        .toLocaleTimeString("ru-RU"),
-
-    title,
-
-    data
-
-  });
-
-  logs =
-    logs.slice(0,50);
-
-  renderDiagnostics();
-
-}
-
-
-function renderDiagnostics(){
-
-  diagOutput.textContent =
-    logs.length
-
-      ? logs
-        .map(
-          x =>
-            `[${x.time}] ${x.title}\n` +
-            JSON.stringify(
-              x.data,
-              null,
-              2
-            )
-        )
-        .join(
-          "\n\n--------------------\n\n"
-        )
-
-      : "Пока запросов нет.";
-
-}
-
-
-document
-  .getElementById("clearDiag")
-  .onclick = ()=>{
-
-    logs = [];
-
-    renderDiagnostics();
-
-  };
-
-
-/* ============================================================
-   OPENDOTA
+   API
 ============================================================ */
 
 async function api(path){
@@ -2153,27 +1611,17 @@ async function api(path){
   const url =
     API + path;
 
-  log(
-    "REQUEST",
-    {
-      url
-    }
-  );
-
   const response =
     await fetch(
       url,
       {
         method:"GET",
-        cache:"no-store",
         headers:{
           Accept:"application/json"
-        }
+        },
+        cache:"no-store"
       }
     );
-
-  const text =
-    await response.text();
 
   if(!response.ok){
 
@@ -2182,6 +1630,9 @@ async function api(path){
     );
 
   }
+
+  const text =
+    await response.text();
 
   try{
 
@@ -2199,7 +1650,7 @@ async function api(path){
 
 
 /* ============================================================
-   PLAYER HISTORY
+   RECENT MATCHES
 ============================================================ */
 
 async function getHistory(accountId){
@@ -2214,12 +1665,11 @@ async function getHistory(accountId){
   }
 
   return data
-    .filter(
-      match => match.match_id
-    )
+    .filter(x=>x.match_id)
     .sort(
       (a,b)=>
-        num(b.start_time) -
+        num(b.start_time)
+        -
         num(a.start_time)
     )
     .slice(0,4);
@@ -2228,7 +1678,7 @@ async function getHistory(accountId){
 
 
 /* ============================================================
-   FANTASY CALCULATION
+   FANTASY
 ============================================================ */
 
 function calculateBaseFantasy(p){
@@ -2258,9 +1708,11 @@ function calculateBaseFantasy(p){
     num(p.roshan_kills);
 
   const team =
-    num(p.teamfight_participation);
+    num(
+      p.teamfight_participation
+    );
 
-  const observers =
+  const obs =
     num(p.obs_placed);
 
   const stacks =
@@ -2276,6 +1728,7 @@ function calculateBaseFantasy(p){
 
   const stuns =
     num(p.stuns);
+
 
   return {
 
@@ -2313,7 +1766,7 @@ function calculateBaseFantasy(p){
       FANTASY_RULES.teamfight,
 
     observer_placed:
-      observers *
+      obs *
       FANTASY_RULES.observer_placed,
 
     camps_stacked:
@@ -2342,12 +1795,12 @@ function applyBonuses(
   bonuses
 ){
 
-  const result = {};
+  const out = {};
 
   BONUS_FIELDS.forEach(
     ([key])=>{
 
-      result[key] =
+      out[key] =
         num(base[key]) *
         (
           1 +
@@ -2360,18 +1813,18 @@ function applyBonuses(
     }
   );
 
-  return result;
+  return out;
 
 }
 
 
 function calculate(
-  stats,
+  p,
   card
 ){
 
   const base =
-    calculateBaseFantasy(stats);
+    calculateBaseFantasy(p);
 
   const final =
     applyBonuses(
@@ -2382,19 +1835,15 @@ function calculate(
   const total =
     Object.values(final)
       .reduce(
-        (sum,value)=>
-          sum + num(value),
+        (sum,v)=>
+          sum + num(v),
         0
       );
 
   return {
-
     base,
-
     final,
-
     total
-
   };
 
 }
@@ -2417,7 +1866,9 @@ async function loadMatch(
 
   if(
     !match ||
-    !Array.isArray(match.players)
+    !Array.isArray(
+      match.players
+    )
   ){
 
     throw new Error(
@@ -2428,30 +1879,33 @@ async function loadMatch(
 
   const p =
     match.players.find(
-      x =>
-        String(x.account_id) ===
+      x=>
+        String(x.account_id)
+        ===
         String(accountId)
     );
 
   if(!p){
 
     throw new Error(
-      `Игрок не найден в матче ${matchId}`
+      `Игрок ${accountId} не найден в матче ${matchId}`
     );
 
   }
 
-  const fantasy =
+  const calc =
     calculate(
       p,
       card
     );
 
   const radiant =
-    num(p.player_slot) < 128;
+    num(p.player_slot)
+    < 128;
 
   const win =
-    Boolean(match.radiant_win) ===
+    Boolean(match.radiant_win)
+    ===
     radiant;
 
   return {
@@ -2486,7 +1940,9 @@ async function loadMatch(
       num(p.gold_per_min),
 
     teamfight:
-      num(p.teamfight_participation),
+      num(
+        p.teamfight_participation
+      ),
 
     observer:
       num(p.obs_placed),
@@ -2512,14 +1968,14 @@ async function loadMatch(
       num(p.stuns),
 
     baseFantasy:
-      fantasy.base,
+      calc.base,
 
     finalFantasy:
-      fantasy.final,
+      calc.final,
 
     fantasy:
       Number(
-        fantasy.total.toFixed(2)
+        calc.total.toFixed(2)
       )
 
   };
@@ -2528,273 +1984,25 @@ async function loadMatch(
 
 
 /* ============================================================
-   LOAD PLAYER MATCHES
+   BEST TWO
 ============================================================ */
 
-async function refreshOnePlayer(
-  target,
-  limit = 2
-){
+function bestTwoFor(p){
 
-  if(!target || !target.accountId){
-    return target;
-  }
-
-  try{
-
-    const history =
-      await getHistory(
-        target.accountId
-      );
-
-    if(!history.length){
-      return target;
-    }
-
-    const ids =
-      history
-        .slice(0,limit)
-        .map(
-          x =>
-            String(x.match_id)
-        );
-
-    const existing =
-      new Map(
-        (target.matches || [])
-          .map(
-            m =>
-              [
-                String(m.matchId),
-                m
-              ]
+  const sorted =
+    Array.isArray(p.matches)
+      ? p.matches
+          .slice()
+          .sort(
+            (a,b)=>
+              num(b.fantasy)
+              -
+              num(a.fantasy)
           )
-      );
-
-    const missing =
-      ids.filter(
-        id =>
-          !existing.has(id)
-      );
-
-    /*
-      Загружаем только недостающие матчи.
-      Это существенно уменьшает количество API запросов.
-    */
-
-    for(
-      const id of missing
-    ){
-
-      try{
-
-        const match =
-          await loadMatch(
-            id,
-            target.accountId,
-            target.card
-          );
-
-        existing.set(
-          id,
-          match
-        );
-
-      }catch(error){
-
-        log(
-          "MATCH FAILED",
-          {
-            player:
-              target.name,
-
-            matchId:id,
-
-            error:
-              error.message
-          }
-        );
-
-      }
-
-    }
-
-    target.matches =
-      ids
-        .map(
-          id =>
-            existing.get(id)
-        )
-        .filter(Boolean);
-
-    /*
-      Если бонусы карты изменились —
-      пересчитываем без новых запросов.
-    */
-
-    target.matches.forEach(
-      match=>{
-
-        if(!match.baseFantasy){
-          return;
-        }
-
-        const final =
-          applyBonuses(
-            match.baseFantasy,
-            target.card.bonuses
-          );
-
-        match.finalFantasy =
-          final;
-
-        match.fantasy =
-          Number(
-            Object.values(final)
-              .reduce(
-                (sum,value)=>
-                  sum + num(value),
-                0
-              )
-              .toFixed(2)
-          );
-
-      }
-    );
-
-    target.lastRefresh =
-      Date.now();
-
-    return target;
-
-  }catch(error){
-
-    log(
-      "PLAYER REFRESH ERROR",
-      {
-        player:
-          target.name,
-
-        accountId:
-          target.accountId,
-
-        error:
-          error.message
-      }
-    );
-
-    return target;
-
-  }
-
-}
-
-
-/* ============================================================
-   REFRESH MY PLAYER
-============================================================ */
-
-async function refreshPlayer(){
-
-  if(!player){
-    return;
-  }
-
-  player.loading = true;
-
-  player.loadingText =
-    "Получаем последние матчи...";
-
-  render();
-
-  try{
-
-    await refreshOnePlayer(
-      player,
-      2
-    );
-
-    delete player.loading;
-    delete player.loadingText;
-
-    await saveOwner();
-
-    /*
-      Обновляем локальную копию
-      в рейтинге.
-    */
-
-    const index =
-      allPlayers.findIndex(
-        x =>
-          String(
-            x._docId
-          ) ===
-          ownerId()
-      );
-
-    if(index >= 0){
-
-      allPlayers[index] =
-        player;
-
-    }else{
-
-      allPlayers.push(
-        player
-      );
-
-    }
-
-    render();
-
-    showNotice(
-      "✓ Последние матчи обновлены",
-      "ok"
-    );
-
-  }catch(error){
-
-    delete player.loading;
-    delete player.loadingText;
-
-    render();
-
-    showNotice(
-      "Ошибка: " +
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   BEST 2
-============================================================ */
-
-function bestTwo(target = player){
-
-  if(!target){
-
-    return {
-      matches:[],
-      total:0
-    };
-
-  }
+      : [];
 
   const matches =
-    (target.matches || [])
-      .slice()
-      .sort(
-        (a,b)=>
-          num(b.fantasy) -
-          num(a.fantasy)
-      )
-      .slice(0,2);
+    sorted.slice(0,2);
 
   const total =
     matches.reduce(
@@ -2804,61 +2012,551 @@ function bestTwo(target = player){
     );
 
   return {
-
     matches,
-
     total
-
   };
 
 }
 
 
+function bestTwo(){
+
+  return bestTwoFor(
+    player || {
+      matches:[]
+    }
+  );
+
+}
+
+
 /* ============================================================
-   RENDER STATUS
+   REFRESH CURRENT PLAYER
 ============================================================ */
 
-function renderStatus(){
+async function refreshPlayer(){
 
-  const best =
-    bestTwo(player);
+  if(!player){
+    return;
+  }
 
-  status.innerHTML = `
+  if(playerLoading){
+    return;
+  }
 
-    <div class="status-item">
-      СИСТЕМА
-      <b>ONLINE</b>
-    </div>
+  playerLoading = true;
 
-    <div class="status-item">
-      МОЯ КАРТА
-      <b>
-        ${player ? "CREATED" : "NEW"}
-      </b>
-    </div>
+  player.loading = true;
 
-    <div class="status-item">
-      ИГРОКОВ
-      <b>
-        ${allPlayers.length || 0}
-      </b>
-    </div>
+  render();
 
-    <div class="status-item">
-      BEST 2
-      <b>
-        ${fmt(best.total)}
-      </b>
-    </div>
+  try{
 
-    <div class="status-item">
-      TELEGRAM
-      <b>
-        ${telegramUser ? "PHOTO OK" : "OPTIONAL"}
-      </b>
-    </div>
+    const history =
+      await getHistory(
+        player.accountId
+      );
 
-  `;
+    if(!history.length){
+
+      throw new Error(
+        "OpenDota не вернула последние матчи"
+      );
+
+    }
+
+    const target =
+      history
+        .slice(0,4)
+        .map(
+          x=>String(x.match_id)
+        );
+
+    const existing =
+      new Map(
+        (player.matches || [])
+          .map(
+            m=>
+              [
+                String(m.matchId),
+                m
+              ]
+          )
+      );
+
+    /*
+      Загружаем матчи,
+      которых ещё нет.
+    */
+
+    for(
+      let i=0;
+      i<target.length;
+      i++
+    ){
+
+      const matchId =
+        target[i];
+
+      /*
+        Если матч уже сохранён,
+        не дёргаем API повторно.
+      */
+
+      if(
+        existing.has(matchId)
+      ){
+
+        continue;
+
+      }
+
+      try{
+
+        const match =
+          await loadMatch(
+            matchId,
+            player.accountId,
+            player.card
+          );
+
+        existing.set(
+          matchId,
+          match
+        );
+
+      }catch(e){
+
+        console.warn(
+          "Match failed",
+          matchId,
+          e
+        );
+
+      }
+
+      player.loadingCurrent =
+        i+1;
+
+      player.loadingTotal =
+        target.length;
+
+      render();
+
+    }
+
+
+    /*
+      Берём только последние
+      доступные матчи.
+    */
+
+    player.matches =
+      target
+        .map(
+          id=>existing.get(id)
+        )
+        .filter(Boolean);
+
+
+    /*
+      ВАЖНО:
+      если пользователь изменил бонусы,
+      пересчитываем сохранённые матчи.
+    */
+
+    player.matches.forEach(
+      m=>{
+
+        if(!m.baseFantasy){
+          return;
+        }
+
+        const final =
+          applyBonuses(
+            m.baseFantasy,
+            player.card.bonuses
+          );
+
+        m.finalFantasy =
+          final;
+
+        m.fantasy =
+          Number(
+            Object.values(final)
+              .reduce(
+                (s,v)=>
+                  s + num(v),
+                0
+              )
+              .toFixed(2)
+          );
+
+      }
+    );
+
+
+    const best =
+      bestTwo();
+
+    player.fantasyTotal =
+      Number(
+        best.total.toFixed(2)
+      );
+
+    player.matchCount =
+      player.matches.length;
+
+    player.lastRefresh =
+      Date.now();
+
+    player.updatedAt =
+      Date.now();
+
+
+    delete player.loading;
+    delete player.loadingCurrent;
+    delete player.loadingTotal;
+
+
+    /*
+      Сохраняем свежие данные
+      обратно в Firestore.
+    */
+
+    await savePlayer();
+
+
+    /*
+      Обновляем локальный объект
+      в ладдерборде.
+    */
+
+    const index =
+      allPlayers.findIndex(
+        p=>
+          String(p.accountId)
+          ===
+          String(player.accountId)
+      );
+
+    if(index >= 0){
+
+      allPlayers[index] =
+        normalize({
+          ...player
+        });
+
+    }
+
+
+    allPlayers.sort(
+      (a,b)=>
+        num(b.fantasyTotal)
+        -
+        num(a.fantasyTotal)
+    );
+
+
+    render();
+
+    showNotice(
+      "✓ Статистика игрока обновлена. Ладдерборд синхронизирован.",
+      "ok"
+    );
+
+  }catch(e){
+
+    delete player.loading;
+    delete player.loadingCurrent;
+    delete player.loadingTotal;
+
+    render();
+
+    showNotice(
+      "Ошибка обновления: "+
+      e.message,
+      "error"
+    );
+
+  }finally{
+
+    playerLoading = false;
+
+  }
+
+}
+
+
+/* ============================================================
+   REFRESH ALL PLAYERS
+============================================================ */
+
+/*
+  Эта функция обновляет игроков,
+  которые уже находятся в ладдерборде.
+
+  Чтобы не создавать огромную нагрузку,
+  одновременно обновляем максимум 2 игрока.
+*/
+
+async function refreshLeaderboardData(){
+
+  if(!db){
+    return;
+  }
+
+  if(!allPlayers.length){
+
+    await loadAllPlayers();
+
+  }
+
+  showNotice(
+    "Обновляем статистику игроков..."
+  );
+
+  const players =
+    allPlayers.slice();
+
+  let index = 0;
+
+
+  async function worker(){
+
+    while(true){
+
+      const i =
+        index++;
+
+      if(i >= players.length){
+        return;
+      }
+
+      const p =
+        players[i];
+
+      try{
+
+        const history =
+          await getHistory(
+            p.accountId
+          );
+
+        if(!history.length){
+          continue;
+        }
+
+        const target =
+          history
+            .slice(0,4)
+            .map(
+              x=>String(x.match_id)
+            );
+
+        const existing =
+          new Map(
+            (p.matches || [])
+              .map(
+                m=>
+                  [
+                    String(m.matchId),
+                    m
+                  ]
+              )
+          );
+
+
+        for(
+          const matchId
+          of target
+        ){
+
+          if(
+            existing.has(matchId)
+          ){
+
+            continue;
+
+          }
+
+          try{
+
+            const m =
+              await loadMatch(
+                matchId,
+                p.accountId,
+                p.card
+              );
+
+            existing.set(
+              matchId,
+              m
+            );
+
+          }catch(_){}
+
+        }
+
+
+        p.matches =
+          target
+            .map(
+              id=>
+                existing.get(id)
+            )
+            .filter(Boolean);
+
+
+        /*
+          Пересчёт бонусов.
+        */
+
+        p.matches.forEach(
+          m=>{
+
+            if(!m.baseFantasy){
+              return;
+            }
+
+            const final =
+              applyBonuses(
+                m.baseFantasy,
+                p.card.bonuses
+              );
+
+            m.finalFantasy =
+              final;
+
+            m.fantasy =
+              Number(
+                Object.values(final)
+                  .reduce(
+                    (s,v)=>
+                      s + num(v),
+                    0
+                  )
+                  .toFixed(2)
+              );
+
+          }
+        );
+
+
+        const best =
+          bestTwoFor(p);
+
+        p.fantasyTotal =
+          Number(
+            best.total.toFixed(2)
+          );
+
+        p.matchCount =
+          p.matches.length;
+
+        p.updatedAt =
+          Date.now();
+
+
+        await playerRef(
+          p.accountId
+        ).set(
+          p,
+          {merge:true}
+        );
+
+
+        /*
+          Если это текущий игрок,
+          обновляем localStorage.
+        */
+
+        if(
+          player &&
+          String(
+            player.accountId
+          )
+          ===
+          String(
+            p.accountId
+          )
+        ){
+
+          player =
+            normalize({
+              ...p
+            });
+
+          saveLocal();
+
+        }
+
+      }catch(e){
+
+        console.warn(
+          "Leaderboard update failed",
+          p.accountId,
+          e
+        );
+
+      }
+
+    }
+
+  }
+
+
+  await Promise.all([
+    worker(),
+    worker()
+  ]);
+
+
+  allPlayers.sort(
+    (a,b)=>
+      num(b.fantasyTotal)
+      -
+      num(a.fantasyTotal)
+  );
+
+
+  render();
+
+  showNotice(
+    "✓ Ладдерборд обновлён.",
+    "ok"
+  );
+
+}
+
+
+/* ============================================================
+   NOTICE
+============================================================ */
+
+let noticeTimer = null;
+
+function showNotice(
+  text,
+  type=""
+){
+
+  clearTimeout(
+    noticeTimer
+  );
+
+  notice.innerHTML =
+    `<div class="notice ${type}">
+      ${esc(text)}
+    </div>`;
+
+  noticeTimer =
+    setTimeout(
+      ()=>{
+        notice.innerHTML="";
+      },
+      5000
+    );
 
 }
 
@@ -2867,43 +2565,61 @@ function renderStatus(){
    AVATAR
 ============================================================ */
 
-function avatarHtml(
-  target,
-  rating = false
-){
+function avatarHTML(p){
 
-  if(
-    target &&
-    target.photo
-  ){
+  if(p.photo){
 
     return `
-
       <img
-        src="${esc(target.photo)}"
+        src="${esc(p.photo)}"
         loading="lazy"
         onerror="this.style.display='none'"
-        alt=""
       >
-
     `;
 
   }
 
   return `
+    <div class="placeholder">
+      ${esc(initials(p.name))}
+    </div>
+  `;
 
-    <div class="${
-      rating
-        ? "avatar-letter"
-        : "photo-placeholder"
-    }">
+}
 
-      ${esc(
-        initials(
-          target &&
-          target.name
-        )
-      )}
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function renderStatus(){
+
+  const best =
+    bestTwo();
+
+  status.innerHTML = `
+
+    <div class="status">
+
+      <div class="status-item">
+        PLAYERS
+        <b>${allPlayers.length}</b>
+      </div>
+
+      <div class="status-item">
+        MY SCORE
+        <b>${player ? fmt(best.total) : "—"}</b>
+      </div>
+
+      <div class="status-item">
+        DATABASE
+        <b>${db ? "ONLINE" : "LOCAL"}</b>
+      </div>
+
+      <div class="status-item">
+        TELEGRAM PHOTO
+        <b>${tgPhoto() ? "READY" : "OPTIONAL"}</b>
+      </div>
 
     </div>
 
@@ -2913,7 +2629,7 @@ function avatarHtml(
 
 
 /* ============================================================
-   RENDER PLAYER
+   PLAYER VIEW
 ============================================================ */
 
 function renderPlayer(){
@@ -2924,22 +2640,14 @@ function renderPlayer(){
 
       <div class="empty">
 
-        <div class="empty-icon">
-          ⚔
-        </div>
+        <div class="empty-icon">⚔</div>
 
-        <h2>
-          Создай свою Dota 2 карту
-        </h2>
+        <h2>Создай свою карту</h2>
 
         <p>
-          Укажи имя и Dota Account ID.
-          После создания карта фиксируется:
-          изменить игрока или создать вторую карту
-          с этого устройства уже нельзя.
-          Если ты открываешь приложение через Telegram,
-          фотография профиля автоматически появится
-          на карточке.
+          Введи имя и Dota 2 Account ID.
+          Telegram используется только для фотографии профиля,
+          если приложение открыто внутри Telegram.
         </p>
 
         <button
@@ -2962,44 +2670,55 @@ function renderPlayer(){
 
   }
 
+
   const best =
-    bestTwo(player);
+    bestTwo();
 
   const matches =
     player.matches || [];
 
-  const wins =
-    matches.filter(
-      x => x.win
-    ).length;
-
-  const losses =
-    matches.length -
-    wins;
 
   content.innerHTML = `
 
+    <div class="toolbar">
+
+      <div class="toolbar-title">
+        МОЯ PLAYER CARD
+      </div>
+
+      <button
+        class="btn"
+        id="refreshMine"
+      >
+        ↻ Обновить статистику
+      </button>
+
+    </div>
+
+
     <div class="cards">
 
-      <article
-        class="player-card mine"
-      >
+      <article class="card mine">
 
         <div class="card-head">
 
-          <div class="rank">
-            МОЯ КАРТА
-          </div>
+          <span class="role">
+            ${esc(
+              ROLES[player.role]
+              || "ИГРОК"
+            )}
+          </span>
 
-          <span class="mine-badge">
-            ВЫ
+          <span class="badge you">
+            МОЯ КАРТА
           </span>
 
         </div>
 
+
         <div class="photo">
 
-          ${avatarHtml(player)}
+          ${avatarHTML(player)}
 
           <div class="player-name">
 
@@ -3008,32 +2727,29 @@ function renderPlayer(){
             </strong>
 
             <span>
-              DOTA ACCOUNT ·
-              ${esc(player.accountId)}
+              ACCOUNT ${esc(player.accountId)}
             </span>
 
           </div>
 
         </div>
 
+
         <div class="card-summary">
 
           <div>
 
             <div class="rarity">
-
               ${esc(
                 RARITIES[
                   player.card.rarity
                 ]
               )}
-
               · PLAYER CARD
-
             </div>
 
             <div class="score-label">
-              ЛУЧШИЕ 2 МАТЧА
+              BEST 2 MATCHES
             </div>
 
           </div>
@@ -3044,82 +2760,78 @@ function renderPlayer(){
 
         </div>
 
-        <div class="quick-stats">
 
-          <div class="quick-stat">
-            <strong>
-              ${matches.length}
-            </strong>
-            <span>МАТЧЕЙ</span>
-          </div>
+        ${player.loading ? `
 
-          <div class="quick-stat">
-            <strong>
-              ${wins}
-            </strong>
-            <span>ПОБЕД</span>
-          </div>
+          <div class="loading">
 
-          <div class="quick-stat">
-            <strong>
-              ${losses}
-            </strong>
-            <span>ПОРАЖЕНИЙ</span>
-          </div>
+            <div class="loading-line">
 
-          <div class="quick-stat">
-            <strong>
-              ${esc(
-                ROLES[player.role]
-              )}
-            </strong>
-            <span>РОЛЬ</span>
-          </div>
+              <span>
+                Загрузка матчей...
+              </span>
 
-        </div>
-
-        ${
-          player.loading
-
-          ? `
-
-            <div class="loading">
-
-              <div class="loading-line">
-
-                <span>
-                  ${esc(
-                    player.loadingText ||
-                    "Загрузка..."
-                  )}
-                </span>
-
-                <span>
-                  ...
-                </span>
-
-              </div>
-
-              <div class="progress">
-                <i style="width:65%"></i>
-              </div>
+              <span>
+                ${num(
+                  player.loadingCurrent
+                )}
+                /
+                ${num(
+                  player.loadingTotal
+                )}
+              </span>
 
             </div>
 
-          `
+            <div class="progress">
 
-          : ""
+              <i
+                style="
+                  width:${
+                    player.loadingTotal
+                    ?
+                    (
+                      num(
+                        player.loadingCurrent
+                      )
+                      /
+                      num(
+                        player.loadingTotal
+                      )
+                      *
+                      100
+                    )
+                    :
+                    0
+                  }%
+                "
+              ></i>
 
-        }
+            </div>
+
+          </div>
+
+        ` : ""}
+
 
         <div class="matches">
 
           ${
             matches.length
 
-            ? matches
+            ?
+
+            matches
+              .slice()
+              .sort(
+                (a,b)=>
+                  num(b.fantasy)
+                  -
+                  num(a.fantasy)
+              )
+              .slice(0,4)
               .map(
-                m => `
+                m=>`
 
                   <div class="match">
 
@@ -3140,19 +2852,21 @@ function renderPlayer(){
                       <span
                         class="${
                           m.win
-                            ? "win"
-                            : "loss"
+                          ? "win"
+                          : "loss"
                         }"
                       >
                         ${
                           m.win
-                            ? "ПОБЕДА"
-                            : "ПОРАЖЕНИЕ"
+                          ? "ПОБЕДА"
+                          : "ПОРАЖЕНИЕ"
                         }
                       </span>
 
                       <span>
-                        ${m.kills}/${m.deaths}/${m.assists}
+                        ${m.kills}/
+                        ${m.deaths}/
+                        ${m.assists}
                       </span>
 
                       <span>
@@ -3167,23 +2881,19 @@ function renderPlayer(){
               )
               .join("")
 
-            : `
-
-              <div class="match">
-
-                <div class="match-info">
-
-                  Матчи ещё не загружены
-
-                </div>
-
-              </div>
+            :
 
             `
-
+              <div class="match">
+                <div class="match-info">
+                  Матчи ещё не загружены
+                </div>
+              </div>
+            `
           }
 
         </div>
+
 
         <div class="card-footer">
 
@@ -3195,10 +2905,10 @@ function renderPlayer(){
           </button>
 
           <button
-            class="btn primary"
-            id="refreshMine"
+            class="btn"
+            id="editBtn"
           >
-            ↻ Обновить
+            Карта
           </button>
 
         </div>
@@ -3209,10 +2919,18 @@ function renderPlayer(){
 
   `;
 
+
   document
     .getElementById("calcBtn")
     .onclick =
     openCalculation;
+
+
+  document
+    .getElementById("editBtn")
+    .onclick =
+    openEditModal;
+
 
   document
     .getElementById("refreshMine")
@@ -3235,15 +2953,16 @@ function renderRating(){
       <div class="empty">
 
         <div class="empty-icon">
-          ◌
+          ↻
         </div>
 
         <h2>
-          Загружаем рейтинг
+          Загружаем ладдерборд
         </h2>
 
         <p>
-          Получаем карточки игроков из реестра.
+          Получаем всех зарегистрированных
+          игроков из Firestore.
         </p>
 
       </div>
@@ -3254,274 +2973,328 @@ function renderRating(){
 
   }
 
-  const players =
-    allPlayers
-      .slice()
-      .sort(
-        (a,b)=>
-          bestTwo(b).total -
-          bestTwo(a).total
-      );
 
-  if(!players.length){
+  const query =
+    (
+      document
+        .getElementById("ratingSearch")
+        ?.value
+      || ""
+    )
+    .trim()
+    .toLowerCase();
 
-    content.innerHTML = `
 
-      <div class="empty">
+  let players =
+    allPlayers.filter(
+      p=>{
 
-        <div class="empty-icon">
-          ★
-        </div>
+        if(!query){
+          return true;
+        }
 
-        <h2>
-          Рейтинг пока пуст
-        </h2>
+        return (
 
-        <p>
-          Создай первую карточку.
-          Когда другие игроки создадут свои карты,
-          они автоматически появятся здесь.
-        </p>
+          String(p.name || "")
+            .toLowerCase()
+            .includes(query)
 
-      </div>
+          ||
 
-    `;
+          String(p.accountId || "")
+            .includes(query)
 
-    return;
+        );
 
-  }
+      }
+    );
+
+
+  players.sort(
+    (a,b)=>
+      num(b.fantasyTotal)
+      -
+      num(a.fantasyTotal)
+  );
+
 
   content.innerHTML = `
 
-    <div class="rating-head">
+    <div class="toolbar">
 
-      <div class="rating-title">
+      <div class="toolbar-left">
 
-        <h2>
-          Глобальный рейтинг
-        </h2>
-
-        <p>
-          Игроки реестра · BEST 2 MATCHES
-        </p>
+        <div class="toolbar-title">
+          GLOBAL LADDER ·
+          ${players.length}
+        </div>
 
       </div>
 
-      <div class="rating-count">
-        ${players.length} PLAYERS
+      <div class="toolbar-left">
+
+        <input
+          class="search"
+          id="ratingSearch"
+          placeholder="Поиск игрока..."
+          value="${esc(query)}"
+        >
+
+        <button
+          class="btn"
+          id="refreshRating"
+        >
+          ↻
+        </button>
+
+        <button
+          class="btn primary"
+          id="syncRating"
+        >
+          Синхронизировать
+        </button>
+
       </div>
 
     </div>
 
-    <div class="rating-list">
 
-      ${players
-        .map(
-          (p,index)=>{
+    ${
+      players.length
 
-            const best =
-              bestTwo(p);
+      ?
 
-            const matches =
-              p.matches || [];
+      `
+      <div class="leaderboard">
 
-            const isMine =
-              player &&
-              String(
-                p._docId || ""
-              ) ===
-              ownerId();
+        ${
+          players
+            .map(
+              (p,index)=>{
 
-            return `
+                const isMine =
+                  player &&
+                  String(
+                    player.accountId
+                  )
+                  ===
+                  String(
+                    p.accountId
+                  );
 
-              <div
-                class="
-                  rating-row
-                  ${isMine ? "mine" : ""}
-                "
-              >
+                const best =
+                  bestTwoFor(p);
 
-                <div
-                  class="
-                    rating-position
-                    ${
-                      index < 3
-                        ? "top"
-                        : ""
-                    }
-                  "
-                >
-                  ${index + 1}
-                </div>
+                return `
 
-                <div class="rating-avatar">
+                  <div
+                    class="
+                      lb-row
+                      ${isMine ? "mine" : ""}
+                    "
+                  >
 
-                  ${avatarHtml(
-                    p,
-                    true
-                  )}
+                    <div class="lb-rank">
+                      #${index+1}
+                    </div>
 
-                </div>
 
-                <div class="rating-player">
+                    <div class="lb-player">
 
-                  <strong>
-                    ${esc(p.name)}
-                  </strong>
+                      <div class="lb-avatar">
 
-                  <span>
-                    ${esc(
-                      p.accountId
-                    )}
-                  </span>
+                        ${
+                          p.photo
 
-                  <div class="rating-role">
+                          ?
 
-                    ${
-                      esc(
-                        ROLES[p.role] ||
-                        "ИГРОК"
-                      )
-                    }
+                          `
+                            <img
+                              src="${esc(p.photo)}"
+                              loading="lazy"
+                            >
+                          `
 
-                    ·
+                          :
 
-                    ${
-                      esc(
-                        RARITIES[
-                          p.card &&
-                          p.card.rarity
-                        ] ||
-                        "BRONZE"
-                      )
-                    }
+                          `
+                            <div>
+                              ${esc(
+                                initials(
+                                  p.name
+                                )
+                              )}
+                            </div>
+                          `
+                        }
+
+                      </div>
+
+
+                      <div class="lb-name">
+
+                        <strong>
+                          ${esc(p.name)}
+                          ${
+                            isMine
+                            ? " · ТЫ"
+                            : ""
+                          }
+                        </strong>
+
+                        <span>
+                          ${esc(
+                            ROLES[p.role]
+                            || "ИГРОК"
+                          )}
+                          ·
+                          ${esc(
+                            p.accountId
+                          )}
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="lb-score">
+
+                      ${fmt(
+                        best.total
+                      )}
+
+                    </div>
+
+
+                    <div class="lb-matches">
+
+                      BEST 2<br>
+
+                      ${
+                        p.updatedAt
+                        ?
+                        new Date(
+                          p.updatedAt
+                        ).toLocaleDateString(
+                          "ru-RU"
+                        )
+                        :
+                        "—"
+                      }
+
+                    </div>
 
                   </div>
 
-                </div>
+                `;
 
-                <div class="rating-matches">
+              }
+            )
+            .join("")
+        }
 
-                  <strong>
-                    ${matches.length}
-                  </strong>
+      </div>
+      `
 
-                  <br>
+      :
 
-                  МАТЧЕЙ
+      `
+        <div class="empty">
 
-                </div>
+          <div class="empty-icon">
+            🏆
+          </div>
 
-                <div class="rating-score">
+          <h2>
+            Игроков пока нет
+          </h2>
 
-                  ${fmt(best.total)}
+          <p>
+            Зарегистрируй первую карту,
+            чтобы она появилась в глобальном
+            ладдерборде.
+          </p>
 
-                </div>
-
-              </div>
-
-            `;
-
-          }
-        )
-        .join("")}
-
-    </div>
+        </div>
+      `
+    }
 
   `;
+
+
+  const search =
+    document.getElementById(
+      "ratingSearch"
+    );
+
+  if(search){
+
+    search.oninput =
+      ()=>{
+        renderRating();
+      };
+
+  }
+
+
+  const refresh =
+    document.getElementById(
+      "refreshRating"
+    );
+
+  if(refresh){
+
+    refresh.onclick =
+      loadAllPlayers;
+
+  }
+
+
+  const sync =
+    document.getElementById(
+      "syncRating"
+    );
+
+  if(sync){
+
+    sync.onclick =
+      async ()=>{
+
+        sync.disabled=true;
+
+        try{
+
+          await refreshLeaderboardData();
+
+        }finally{
+
+          sync.disabled=false;
+
+        }
+
+      };
+
+  }
 
 }
 
 
 /* ============================================================
-   DIAGNOSTICS TAB
-============================================================ */
-
-function renderDiagnosticsTab(){
-
-  content.innerHTML = `
-
-    <div class="notice">
-
-      <b>FANTASY REGISTRY</b>
-      <br><br>
-
-      Firestore:
-      <b>
-        ${db ? "ONLINE" : "OFFLINE"}
-      </b>
-
-      <br><br>
-
-      Telegram:
-      <b>
-        ${
-          telegramUser
-            ? "PROFILE DETECTED"
-            : "NOT REQUIRED"
-        }
-      </b>
-
-      <br><br>
-
-      Telegram ID:
-      <b>
-        ${
-          telegramId
-            ? esc(telegramId)
-            : "—"
-        }
-      </b>
-
-      <br><br>
-
-      Owner document:
-      <b>
-        ${esc(ownerId())}
-      </b>
-
-      <br><br>
-
-      Игроков в рейтинге:
-      <b>
-        ${allPlayers.length}
-      </b>
-
-    </div>
-
-  `;
-
-  renderDiagnostics();
-
-}
-
-
-/* ============================================================
-   MAIN RENDER
+   RENDER
 ============================================================ */
 
 function render(){
 
   renderStatus();
 
-  diag.classList.toggle(
-    "open",
-    activeTab === "diagnostics"
-  );
-
-  if(activeTab === "players"){
+  if(activeTab==="players"){
 
     renderPlayer();
 
-  }else if(
-    activeTab === "rating"
-  ){
-
-    renderRating();
-
   }else{
 
-    renderDiagnosticsTab();
+    renderRating();
 
   }
 
@@ -3529,41 +3302,21 @@ function render(){
 
 
 /* ============================================================
-   NOTICE
+   MODALS
 ============================================================ */
 
-function showNotice(
-  text,
-  type = ""
-){
+function closeModal(){
 
-  notice.innerHTML = `
-
-    <div class="notice ${type}">
-      ${esc(text)}
-    </div>
-
-  `;
-
-  setTimeout(
-    ()=>{
-      notice.innerHTML = "";
-    },
-    5000
-  );
+  modalRoot.innerHTML="";
 
 }
 
 
 /* ============================================================
-   CREATE MODAL
+   CREATE
 ============================================================ */
 
 function openCreateModal(){
-
-  /*
-    Вторую карту создать нельзя.
-  */
 
   if(player){
 
@@ -3576,15 +3329,49 @@ function openCreateModal(){
 
   }
 
-  let role = "carry";
+  renderForm(false);
 
-  let rarity = "bronze";
+}
 
-  const defaultName =
-    tgName();
 
-  const defaultPhoto =
-    tgPhoto();
+/* ============================================================
+   EDIT
+============================================================ */
+
+function openEditModal(){
+
+  if(!player){
+    return;
+  }
+
+  renderForm(true);
+
+}
+
+
+/* ============================================================
+   FORM
+============================================================ */
+
+function renderForm(edit){
+
+  const card =
+    player
+    ?
+    normalize(player).card
+    :
+    defaultCard();
+
+  let role =
+    player
+    ?
+    player.role
+    :
+    "carry";
+
+  let rarity =
+    card.rarity;
+
 
   modalRoot.innerHTML = `
 
@@ -3599,42 +3386,39 @@ function openCreateModal(){
           ×
         </button>
 
+
         <h2>
-          Создание PLAYER CARD
+          ${
+            edit
+            ? "Настройки карты"
+            : "Создание Player Card"
+          }
         </h2>
+
 
         <div class="modal-desc">
 
           ${
-            defaultPhoto
+            edit
 
-            ? `
-
-              Фото Telegram найдено.
-              Оно будет сохранено
-              на твоей карточке.
+            ?
 
             `
-
-            : `
-
-              Фото Telegram не найдено.
-              Это не мешает созданию карты.
-
+              Карта уже зарегистрирована.
+              Dota Account ID изменить нельзя.
             `
 
+            :
+
+            `
+              Укажи Dota 2 Account ID.
+              Telegram-фото будет использовано
+              автоматически, если оно доступно.
+            `
           }
 
-          <br><br>
-
-          После создания:
-
-          <b>
-            имя, Dota Account ID,
-            роль и карта изменить нельзя.
-          </b>
-
         </div>
+
 
         <div class="field">
 
@@ -3644,12 +3428,18 @@ function openCreateModal(){
 
           <input
             id="playerName"
-            value="${esc(defaultName)}"
+            value="${esc(
+              player
+              ?
+              player.name
+              :
+              tgName()
+            )}"
             placeholder="Например: Miracle-"
-            autocomplete="off"
           >
 
         </div>
+
 
         <div class="field">
 
@@ -3659,12 +3449,19 @@ function openCreateModal(){
 
           <input
             id="playerAccount"
-            placeholder="Например: 105248644"
-            inputmode="numeric"
-            autocomplete="off"
+            value="${esc(
+              player
+              ?
+              player.accountId
+              :
+              ""
+            )}"
+            placeholder="117905733"
+            ${edit ? "readonly" : ""}
           >
 
         </div>
+
 
         <div class="field">
 
@@ -3677,77 +3474,124 @@ function openCreateModal(){
             id="roleGrid"
           >
 
-            ${Object.entries(ROLES)
-              .map(
-                ([key,value])=>`
+            ${
+              Object.entries(ROLES)
+                .map(
+                  ([key,label])=>`
 
-                  <div
-                    class="
-                      role-option
-                      ${
-                        role === key
+                    <div
+                      class="
+                        role-option
+                        ${
+                          role===key
                           ? "selected"
                           : ""
-                      }
-                    "
-                    data-role="${key}"
-                  >
+                        }
+                      "
+                      data-role="${key}"
+                    >
 
-                    <strong>
-                      ${value}
-                    </strong>
+                      <strong>
+                        ${label}
+                      </strong>
 
-                    <span>
-                      Fantasy
-                    </span>
+                      <span>
+                        Fantasy
+                      </span>
 
-                  </div>
+                    </div>
 
-                `
-              )
-              .join("")}
+                  `
+                )
+                .join("")
+            }
 
           </div>
 
         </div>
+
 
         <div class="field">
 
           <label>
-            РЕДКОСТЬ КАРТЫ
+            РЕДКОСТЬ
           </label>
 
           <div class="rarity-grid">
 
-            ${Object.entries(RARITIES)
-              .map(
-                ([key,value])=>`
+            ${
+              Object.entries(RARITIES)
+                .map(
+                  ([key,label])=>`
 
-                  <div
-                    class="
-                      rarity-option
-                      ${
-                        rarity === key
+                    <div
+                      class="
+                        rarity-option
+                        ${
+                          rarity===key
                           ? "selected"
                           : ""
-                      }
-                    "
-                    data-rarity="${key}"
-                  >
-                    ${value}
-                  </div>
+                        }
+                      "
+                      data-rarity="${key}"
+                    >
+                      ${label}
+                    </div>
 
-                `
-              )
-              .join("")}
+                  `
+                )
+                .join("")
+            }
 
           </div>
 
         </div>
 
-        <div
-          id="modalError"
-        ></div>
+
+        <div class="field">
+
+          <label>
+            PLAYER CARD БОНУСЫ
+          </label>
+
+          <div class="bonus-grid">
+
+            ${
+              BONUS_FIELDS
+                .map(
+                  ([key,label])=>`
+
+                    <div class="bonus">
+
+                      <label>
+                        ${label}
+                      </label>
+
+                      <input
+                        type="number"
+                        min="-100"
+                        max="100"
+                        step="1"
+                        data-bonus="${key}"
+                        value="${num(
+                          card.bonuses[key]
+                        )}"
+                      >
+
+                    </div>
+
+                  `
+                )
+                .join("")
+            }
+
+          </div>
+
+        </div>
+
+
+        <div id="modalError"></div>
+
 
         <div class="modal-actions">
 
@@ -3762,7 +3606,11 @@ function openCreateModal(){
             class="btn primary"
             id="savePlayer"
           >
-            Создать карту
+            ${
+              edit
+              ? "Сохранить"
+              : "Создать карту"
+            }
           </button>
 
         </div>
@@ -3772,6 +3620,7 @@ function openCreateModal(){
     </div>
 
   `;
+
 
   document
     .getElementById("closeModal")
@@ -3787,29 +3636,30 @@ function openCreateModal(){
   document
     .querySelectorAll("[data-role]")
     .forEach(
-      element=>{
+      el=>{
 
-        element.onclick = ()=>{
+        el.onclick =
+          ()=>{
 
-          role =
-            element.dataset.role;
+            role =
+              el.dataset.role;
 
-          document
-            .querySelectorAll(
-              "[data-role]"
-            )
-            .forEach(
-              x =>
-                x.classList.remove(
-                  "selected"
-                )
+            document
+              .querySelectorAll(
+                "[data-role]"
+              )
+              .forEach(
+                x=>
+                  x.classList.remove(
+                    "selected"
+                  )
+              );
+
+            el.classList.add(
+              "selected"
             );
 
-          element.classList.add(
-            "selected"
-          );
-
-        };
+          };
 
       }
     );
@@ -3818,29 +3668,30 @@ function openCreateModal(){
   document
     .querySelectorAll("[data-rarity]")
     .forEach(
-      element=>{
+      el=>{
 
-        element.onclick = ()=>{
+        el.onclick =
+          ()=>{
 
-          rarity =
-            element.dataset.rarity;
+            rarity =
+              el.dataset.rarity;
 
-          document
-            .querySelectorAll(
-              "[data-rarity]"
-            )
-            .forEach(
-              x =>
-                x.classList.remove(
-                  "selected"
-                )
+            document
+              .querySelectorAll(
+                "[data-rarity]"
+              )
+              .forEach(
+                x=>
+                  x.classList.remove(
+                    "selected"
+                  )
+              );
+
+            el.classList.add(
+              "selected"
             );
 
-          element.classList.add(
-            "selected"
-          );
-
-        };
+          };
 
       }
     );
@@ -3856,208 +3707,280 @@ function openCreateModal(){
           "modalError"
         );
 
-      errorBox.innerHTML = "";
+      errorBox.innerHTML="";
 
-      const name =
-        document
-          .getElementById(
-            "playerName"
-          )
-          .value
-          .trim();
 
-      const account =
-        accountIdFrom(
+      const saveButton =
+        document.getElementById(
+          "savePlayer"
+        );
+
+      saveButton.disabled=true;
+
+
+      try{
+
+        const name =
+          document
+            .getElementById(
+              "playerName"
+            )
+            .value
+            .trim();
+
+
+        const rawAccount =
           document
             .getElementById(
               "playerAccount"
             )
             .value
-        );
+            .trim();
 
-      if(!name){
 
-        errorBox.innerHTML = `
+        /*
+          Разрешаем ввод:
+          123456
+          steam_123456
+          https://...
+        */
 
-          <div class="notice error">
-            Укажи имя игрока.
-          </div>
+        const numbers =
+          rawAccount.match(
+            /\d+/g
+          );
 
-        `;
+        const account =
+          numbers &&
+          numbers.length
+          ?
+          numbers[numbers.length-1]
+          :
+          null;
 
-        return;
 
-      }
+        if(!name){
 
-      if(!account){
-
-        errorBox.innerHTML = `
-
-          <div class="notice error">
-            Укажи корректный Dota Account ID.
-          </div>
-
-        `;
-
-        return;
-
-      }
-
-      /*
-        Повторно проверяем Firestore.
-        Это важно, если карта уже была создана,
-        но локальный cache был очищен.
-      */
-
-      if(db){
-
-        try{
-
-          const existing =
-            await ownerRef().get();
-
-          if(existing.exists){
-
-            player =
-              normalizePlayer(
-                existing.data()
-              );
-
-            saveLocal();
-
-            closeModal();
-
-            render();
-
-            showNotice(
-              "Эта карта уже существует.",
-              "error"
-            );
-
-            return;
-
-          }
-
-        }catch(error){
-
-          console.warn(
-            "Owner check failed",
-            error
+          throw new Error(
+            "Укажи имя игрока."
           );
 
         }
 
-      }
+
+        if(!account){
+
+          throw new Error(
+            "Укажи корректный Dota Account ID."
+          );
+
+        }
 
 
-      /*
-        Создание карты.
-      */
+        /*
+          При создании проверяем,
+          не занят ли этот Account ID.
+        */
 
-      player = {
+        if(!edit){
 
-        accountId:
-          String(account),
+          if(
+            await playerExists(
+              account
+            )
+          ){
 
-        name,
+            throw new Error(
+              "Этот Dota Account ID уже зарегистрирован в ладдерборде."
+            );
 
-        role,
+          }
 
-        photo:
-          defaultPhoto || null,
+        }
 
-        telegramUserId:
-          telegramId || null,
 
-        telegramUsername:
-          telegramUser &&
-          telegramUser.username
-            ? telegramUser.username
-            : null,
+        const bonuses =
+          defaultBonuses();
 
-        ownerId:
-          ownerId(),
 
-        card:{
+        document
+          .querySelectorAll(
+            "[data-bonus]"
+          )
+          .forEach(
+            input=>{
 
-          rarity,
+              bonuses[
+                input.dataset.bonus
+              ] =
+                num(input.value);
+
+            }
+          );
+
+
+        if(!edit){
+
+          player = {
+
+            accountId:
+              String(account),
+
+            name,
+
+            role,
+
+            photo:
+              tgPhoto(),
+
+            telegramUsername:
+              telegramUser &&
+              telegramUser.username
+              ?
+              telegramUser.username
+              :
+              null,
+
+            card:{
+              rarity,
+              bonuses
+            },
+
+            matches:[],
+
+            fantasyTotal:0,
+
+            matchCount:0,
+
+            createdAt:
+              Date.now(),
+
+            updatedAt:
+              Date.now()
+
+          };
+
+        }else{
 
           /*
-            Бонусы оставляем нулевыми.
-            Карта после создания фиксируется.
+            В режиме редактирования
+            Account ID НЕ меняем.
           */
 
-          bonuses:
-            defaultBonuses()
+          player.name =
+            name;
 
-        },
+          player.role =
+            role;
 
-        matches:[],
+          player.card = {
 
-        createdAt:
-          Date.now(),
+            rarity,
 
-        lastRefresh:null
+            bonuses
 
-      };
+          };
 
-      normalizePlayer(player);
+          /*
+            Если Telegram-фото появилось
+            позже — можем его обновить.
+          */
 
-      try{
+          if(
+            tgPhoto()
+          ){
 
-        await saveOwner();
+            player.photo =
+              tgPhoto();
 
-      }catch(error){
+          }
 
-        errorBox.innerHTML = `
+        }
 
-          <div class="notice error">
 
-            Не удалось сохранить карту:
-            ${esc(error.message)}
+        normalize(player);
 
-          </div>
 
-        `;
+        /*
+          Сохраняем общую карточку
+          в players/{accountId}.
+        */
 
-        return;
+        await savePlayer();
+
+
+        /*
+          Обновляем локальный список.
+        */
+
+        const idx =
+          allPlayers.findIndex(
+            p=>
+              String(
+                p.accountId
+              )
+              ===
+              String(
+                player.accountId
+              )
+          );
+
+
+        if(idx >= 0){
+
+          allPlayers[idx] =
+            normalize({
+              ...player
+            });
+
+        }else{
+
+          allPlayers.push(
+            normalize({
+              ...player
+            })
+          );
+
+        }
+
+
+        allPlayers.sort(
+          (a,b)=>
+            num(b.fantasyTotal)
+            -
+            num(a.fantasyTotal)
+        );
+
+
+        closeModal();
+
+        render();
+
+
+        /*
+          После создания
+          автоматически грузим матчи.
+        */
+
+        await refreshPlayer();
+
+
+      }catch(e){
+
+        errorBox.innerHTML =
+          `
+            <div class="notice error">
+              ${esc(e.message)}
+            </div>
+          `;
+
+      }finally{
+
+        saveButton.disabled=false;
 
       }
 
-      closeModal();
-
-      render();
-
-      showNotice(
-        "✓ Карта создана и зафиксирована",
-        "ok"
-      );
-
-      /*
-        Матчи загружаем после создания.
-      */
-
-      await refreshPlayer();
-
-      /*
-        После обновления рейтинга
-        тоже подгружаем остальных.
-      */
-
-      await loadAllPlayers();
-
     };
-
-}
-
-
-/* ============================================================
-   CLOSE MODAL
-============================================================ */
-
-function closeModal(){
-
-  modalRoot.innerHTML = "";
 
 }
 
@@ -4073,7 +3996,8 @@ function openCalculation(){
   }
 
   const best =
-    bestTwo(player);
+    bestTwo();
+
 
   modalRoot.innerHTML = `
 
@@ -4083,17 +4007,18 @@ function openCalculation(){
 
         <button
           class="close"
-          id="closeModal"
+          id="closeCalc"
         >
           ×
         </button>
+
 
         <h2>
           Fantasy Calculation
         </h2>
 
-        <div class="modal-desc">
 
+        <div class="modal-desc">
           ${esc(player.name)}
           ·
           ${esc(
@@ -4101,15 +4026,17 @@ function openCalculation(){
               player.card.rarity
             ]
           )}
-
         </div>
+
 
         ${
           best.matches.length
 
-          ? best.matches
+          ?
+
+          best.matches
             .map(
-              match=>`
+              m=>`
 
                 <div class="calc-box">
 
@@ -4117,83 +4044,72 @@ function openCalculation(){
 
                     <span>
                       MATCH #${esc(
-                        match.matchId
+                        m.matchId
                       )}
                     </span>
 
                     <strong>
                       ${fmt(
-                        match.fantasy
+                        m.fantasy
                       )}
                     </strong>
 
                   </div>
+
 
                   <table class="calc-table">
 
                     <thead>
 
                       <tr>
-
-                        <th>
-                          Показатель
-                        </th>
-
-                        <th>
-                          Base
-                        </th>
-
-                        <th>
-                          Card
-                        </th>
-
-                        <th>
-                          Final
-                        </th>
-
+                        <th>Показатель</th>
+                        <th>BASE</th>
+                        <th>CARD</th>
+                        <th>FINAL</th>
                       </tr>
 
                     </thead>
 
+
                     <tbody>
 
-                      ${BONUS_FIELDS
-                        .map(
-                          ([key,label])=>`
+                      ${
+                        BONUS_FIELDS
+                          .map(
+                            ([key,label])=>`
 
-                            <tr>
+                              <tr>
 
-                              <td>
-                                ${esc(label)}
-                              </td>
+                                <td>
+                                  ${esc(label)}
+                                </td>
 
-                              <td>
-                                ${num(
-                                  match
-                                    .baseFantasy[key]
-                                ).toFixed(3)}
-                              </td>
+                                <td>
+                                  ${num(
+                                    m.baseFantasy[key]
+                                  ).toFixed(3)}
+                                </td>
 
-                              <td>
-                                +${num(
-                                  player
-                                    .card
-                                    .bonuses[key]
-                                )}%
-                              </td>
+                                <td>
+                                  +${num(
+                                    player
+                                      .card
+                                      .bonuses[key]
+                                  )}%
+                                </td>
 
-                              <td>
-                                ${num(
-                                  match
-                                    .finalFantasy[key]
-                                ).toFixed(3)}
-                              </td>
+                                <td>
+                                  ${num(
+                                    m.finalFantasy[key]
+                                  ).toFixed(3)}
+                                </td>
 
-                            </tr>
+                              </tr>
 
-                          `
-                        )
-                        .join("")}
+                            `
+                          )
+                          .join("")
+                      }
 
                     </tbody>
 
@@ -4205,17 +4121,15 @@ function openCalculation(){
             )
             .join("")
 
-          : `
-
-            <div class="notice">
-
-              Нет загруженных матчей.
-
-            </div>
+          :
 
           `
-
+            <div class="notice">
+              Нет загруженных матчей.
+            </div>
+          `
         }
+
 
         <div class="calc-total">
 
@@ -4235,8 +4149,9 @@ function openCalculation(){
 
   `;
 
+
   document
-    .getElementById("closeModal")
+    .getElementById("closeCalc")
     .onclick =
     closeModal;
 
@@ -4252,50 +4167,60 @@ document
   .forEach(
     tab=>{
 
-      tab.onclick = async ()=>{
+      tab.onclick =
+        async ()=>{
 
-        document
-          .querySelectorAll(".tab")
-          .forEach(
-            x =>
-              x.classList.remove(
-                "active"
-              )
+          document
+            .querySelectorAll(".tab")
+            .forEach(
+              x=>
+                x.classList.remove(
+                  "active"
+                )
+            );
+
+          tab.classList.add(
+            "active"
           );
 
-        tab.classList.add(
-          "active"
-        );
+          activeTab =
+            tab.dataset.tab;
 
-        activeTab =
-          tab.dataset.tab;
 
-        render();
+          if(
+            activeTab==="rating"
+          ){
 
-        /*
-          При открытии рейтинга
-          загружаем всех владельцев.
-        */
+            if(!allPlayers.length){
 
-        if(activeTab === "rating"){
+              await loadAllPlayers();
 
-          await loadAllPlayers();
+            }else{
 
-        }
+              render();
 
-      };
+            }
+
+          }else{
+
+            render();
+
+          }
+
+        };
 
     }
   );
 
 
 /* ============================================================
-   MY BUTTON
+   HEADER BUTTONS
 ============================================================ */
 
 document
   .getElementById("myBtn")
-  .onclick = ()=>{
+  .onclick =
+  ()=>{
 
     activeTab =
       "players";
@@ -4303,11 +4228,10 @@ document
     document
       .querySelectorAll(".tab")
       .forEach(
-        x =>
+        x=>
           x.classList.toggle(
             "active",
-            x.dataset.tab ===
-            "players"
+            x.dataset.tab==="players"
           )
       );
 
@@ -4316,70 +4240,60 @@ document
   };
 
 
-/* ============================================================
-   REFRESH
-============================================================ */
-
 document
   .getElementById("refreshBtn")
   .onclick =
   async ()=>{
 
-    const button =
+    const btn =
       document.getElementById(
         "refreshBtn"
       );
 
-    button.disabled = true;
+    btn.disabled=true;
 
-    button.textContent =
+    btn.textContent =
       "Загрузка...";
+
 
     try{
 
       /*
-        Обновляем свою карту.
-      */
+        Если открыта карта —
+        обновляем её.
 
-      if(player){
-
-        await refreshPlayer();
-
-      }
-
-      /*
-        И затем обновляем список
-        владельцев.
-      */
-
-      await loadAllPlayers();
-
-      /*
-        Если открыт рейтинг —
-        обновляем оценки игроков,
-        у которых уже есть матчи.
+        Если рейтинг —
+        сначала читаем всех,
+        затем обновляем их статистику.
       */
 
       if(
-        activeTab === "rating" &&
-        allPlayers.length
+        activeTab==="players"
       ){
 
-        /*
-          Не делаем API-запрос для каждого игрока
-          автоматически при каждом клике.
-          Сначала используем сохранённые матчи.
-        */
+        if(player){
 
-        render();
+          await refreshPlayer();
+
+        }else{
+
+          showNotice(
+            "Сначала создай карту."
+          );
+
+        }
+
+      }else{
+
+        await refreshLeaderboardData();
 
       }
 
     }finally{
 
-      button.disabled = false;
+      btn.disabled=false;
 
-      button.textContent =
+      btn.textContent =
         "↻ Обновить";
 
     }
@@ -4394,14 +4308,8 @@ document
 async function boot(){
 
   /*
-    1. Сначала пытаемся определить Telegram.
-    Это НЕ блокирует приложение.
-  */
-
-  initTelegram();
-
-  /*
-    2. Показываем локальную карту.
+    Сначала мгновенно показываем
+    локальную карту.
   */
 
   player =
@@ -4409,41 +4317,63 @@ async function boot(){
 
   render();
 
+
   /*
-    3. Подтягиваем свою карту из Firestore.
+    Затем загружаем её из Firebase.
   */
 
-  await loadOwner();
+  await loadCurrentPlayer();
+
 
   /*
-    4. Загружаем список всех карточек.
+    Загружаем всех игроков
+    сразу, чтобы ладдерборд был готов.
   */
 
   await loadAllPlayers();
 
+
   /*
-    5. Если карта уже существует —
-    показываем её.
+    Если текущего игрока нет в общей базе,
+    но есть локально — добавляем.
   */
 
   if(player){
 
-    showNotice(
-      `✓ Карта ${player.name} загружена`,
-      "ok"
+    const exists =
+      allPlayers.some(
+        p=>
+          String(
+            p.accountId
+          )
+          ===
+          String(
+            player.accountId
+          )
+      );
+
+    if(!exists){
+
+      allPlayers.push(
+        normalize({
+          ...player
+        })
+      );
+
+    }
+
+    allPlayers.sort(
+      (a,b)=>
+        num(b.fantasyTotal)
+        -
+        num(a.fantasyTotal)
     );
 
-  }else{
-
-    showNotice(
-      "Создай свою первую Dota 2 карту",
-      ""
-    );
+    render();
 
   }
 
 }
-
 
 boot();
 
