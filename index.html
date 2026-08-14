@@ -3,3982 +3,916 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-
 <title>Dota 2 Fantasy Registry</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@500;600;700&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
 :root{
-  --bg:#090806;
-  --panel:#15110d;
-  --panel2:#1d1710;
-  --panel3:#251d13;
-  --text:#eadfc7;
-  --muted:#8f8269;
-  --gold:#d1aa38;
-  --gold2:#8f7426;
-  --line:#33291d;
-  --green:#63b27c;
-  --red:#c75b67;
-  --blue:#6684df;
-  --shadow:0 14px 36px rgba(0,0,0,.45);
-}
-
-*{
-  box-sizing:border-box;
-}
-
-html,
-body{
-  margin:0;
-  min-height:100%;
-  background:var(--bg);
-}
-
-body{
-  color:var(--text);
-  padding:16px 11px 70px;
-  font-family:"Spectral",serif;
-  -webkit-tap-highlight-color:transparent;
-}
-
-button,
-input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.wrap{
-  max-width:1180px;
-  margin:auto;
-}
-
-/* HEADER */
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:18px;
-  padding-bottom:15px;
-  border-bottom:1px solid var(--line);
-}
-
-.logo h1{
-  margin:0;
-  font-family:"Spectral SC",serif;
-  font-size:25px;
-  letter-spacing:1.4px;
-}
-
-.logo p{
-  margin:4px 0 0;
-  color:var(--muted);
-  font-size:11px;
-}
-
-.actions{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-.btn{
-  border:1px solid var(--gold2);
-  background:var(--panel2);
-  color:var(--text);
-  padding:9px 12px;
-  border-radius:4px;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:9px;
-  letter-spacing:.8px;
-  text-transform:uppercase;
-}
-
-.btn:hover{
-  border-color:var(--gold);
-  background:var(--panel3);
-}
-
-.btn.primary{
-  background:linear-gradient(180deg,#9c7b21,#6d5316);
-  border-color:var(--gold);
-  color:#171206;
-  font-weight:600;
-}
-
-.btn:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-}
-
-/* TABS */
-
-.tabs{
-  display:flex;
-  gap:23px;
-  border-bottom:1px solid var(--line);
-  margin-bottom:16px;
-}
-
-.tab{
-  position:relative;
-  border:0;
-  background:none;
-  color:var(--muted);
-  padding:11px 1px 12px;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:9px;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-}
-
-.tab.active{
-  color:var(--gold);
-}
-
-.tab.active:after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:-1px;
-  height:2px;
-  background:var(--gold);
-}
-
-/* STATUS */
-
-.status{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin:14px 0;
-}
-
-.status-item{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.015);
-  padding:6px 9px;
-  border-radius:3px;
-  color:var(--muted);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:9px;
-}
-
-.status-item b{
-  color:var(--gold);
-}
-
-/* NOTICE */
-
-.notice{
-  border:1px solid #54451e;
-  background:rgba(140,110,25,.08);
-  color:#cbbb97;
-  padding:10px 12px;
-  margin:12px 0;
-  border-radius:4px;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:10px;
-  line-height:1.55;
-}
-
-.notice.ok{
-  border-color:#315a3e;
-  background:rgba(50,120,70,.08);
-  color:#9bcfa9;
-}
-
-.notice.error{
-  border-color:#693039;
-  background:rgba(140,30,45,.09);
-  color:#e2a0a8;
-}
-
-/* CARDS */
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:15px;
-}
-
-.card{
-  overflow:hidden;
-  border:1px solid var(--line);
-  border-radius:5px;
-  background:linear-gradient(180deg,var(--panel),var(--panel2));
-  box-shadow:var(--shadow);
-}
-
-.card.mine{
-  border-color:#80682b;
-}
-
-.card-head{
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 12px;
-  border-bottom:1px solid var(--line);
-}
-
-.role{
-  color:var(--gold);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  letter-spacing:1.4px;
-}
-
-.mine-badge{
-  padding:3px 6px;
-  border-radius:2px;
-  background:var(--gold);
-  color:#171206;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:7px;
-  font-weight:600;
-}
-
-.photo{
-  height:175px;
-  position:relative;
-  overflow:hidden;
-  background:#0c0a08;
-}
-
-.photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.placeholder{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:"Spectral SC",serif;
-  font-size:55px;
-  color:#40372a;
-}
-
-.photo:after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,.9),
-    rgba(0,0,0,0) 60%
-  );
-  pointer-events:none;
-}
-
-.player-name{
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:10px;
-  z-index:2;
-}
-
-.player-name strong{
-  display:block;
-  font-family:"Spectral SC",serif;
-  font-size:19px;
-  text-shadow:0 2px 8px #000;
-}
-
-.player-name span{
-  color:#aaa087;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-}
-
-.card-summary{
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:center;
-  padding:12px;
-  border-bottom:1px solid var(--line);
-}
-
-.rarity{
-  color:var(--gold);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  letter-spacing:1.2px;
-}
-
-.score{
-  margin-top:3px;
-  color:var(--gold);
-  font-family:"Spectral SC",serif;
-  font-size:26px;
-  font-weight:700;
-}
-
-.score-label{
-  color:#736954;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-}
-
-/* LOADING */
-
-.loading{
-  padding:12px;
-  border-bottom:1px solid var(--line);
-}
-
-.loading-line{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  color:#9c9078;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  margin-bottom:7px;
-}
-
-.progress{
-  height:5px;
-  background:#292219;
-  border-radius:8px;
-  overflow:hidden;
-}
-
-.progress i{
-  display:block;
-  width:0%;
-  height:100%;
-  background:var(--gold);
-  transition:width .2s ease;
-}
-
-/* MATCH */
-
-.matches{
-  padding:10px;
-}
-
-.match{
-  background:#11100d;
-  border:1px solid var(--line);
-  padding:9px;
-  margin-bottom:6px;
-  border-radius:3px;
-}
-
-.match:last-child{
-  margin-bottom:0;
-}
-
-.match-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-}
-
-.match-id{
-  color:#6d6454;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-}
-
-.match-score{
-  color:var(--gold);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:12px;
-  font-weight:600;
-}
-
-.match-info{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:5px;
-  color:#746a58;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-}
-
-.win{
-  color:var(--green)!important;
-}
-
-.loss{
-  color:var(--red)!important;
-}
-
-.card-footer{
-  display:flex;
-  gap:6px;
-  padding:10px;
-  border-top:1px solid var(--line);
-}
-
-.card-footer .btn{
-  flex:1;
-}
-
-/* EMPTY */
-
-.empty{
-  padding:50px 18px;
-  text-align:center;
-  border:1px dashed var(--line);
-  color:var(--muted);
-}
-
-.empty h2{
-  margin:0 0 8px;
-  color:var(--text);
-  font-family:"Spectral SC",serif;
-}
-
-.empty p{
-  max-width:520px;
-  margin:0 auto;
-  line-height:1.6;
-  font-size:12px;
-}
-
-/* TABLE */
-
-.table-wrap{
-  overflow:auto;
-  border:1px solid var(--line);
-  border-radius:4px;
-}
-
-table{
-  width:100%;
-  min-width:650px;
-  border-collapse:collapse;
-}
-
-th,
-td{
-  padding:10px;
-  border-bottom:1px solid var(--line);
-  text-align:left;
-}
-
-th{
-  background:var(--panel2);
-  color:var(--muted);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  text-transform:uppercase;
-}
-
-td{
-  background:var(--panel);
-  font-size:12px;
-}
-
-tr:last-child td{
-  border-bottom:0;
-}
-
-.avatar-small{
-  width:32px;
-  height:32px;
-  overflow:hidden;
-  border-radius:50%;
-  background:#211b13;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#685b47;
-  font-family:"Spectral SC",serif;
-}
-
-.avatar-small img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.player-cell{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.table-score{
-  color:var(--gold);
-  font-family:"IBM Plex Mono",monospace;
-  font-weight:600;
-}
-
-/* MODAL */
-
-.overlay{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-  background:rgba(0,0,0,.84);
-}
-
-.modal{
-  width:100%;
-  max-width:550px;
-  max-height:93vh;
-  overflow:auto;
-  position:relative;
-  padding:20px;
-  border:1px solid var(--gold2);
-  border-radius:5px;
-  background:var(--panel);
-  box-shadow:var(--shadow);
-}
-
-.close{
-  position:absolute;
-  top:8px;
-  right:11px;
-  border:0;
-  background:none;
-  color:var(--muted);
-  font-size:23px;
-}
-
-.modal h2{
-  margin:0 0 6px;
-  font-family:"Spectral SC",serif;
-}
-
-.modal-desc{
-  color:#9b8e75;
-  font-size:11px;
-  line-height:1.55;
-  margin-bottom:16px;
-}
-
-.field{
-  margin-bottom:13px;
-}
-
-.field label{
-  display:block;
-  margin-bottom:5px;
-  color:#968a73;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  letter-spacing:1px;
-}
-
-input{
-  width:100%;
-  padding:9px 10px;
-  border:1px solid var(--line);
-  border-radius:3px;
-  outline:none;
-  background:#0d0b09;
-  color:var(--text);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:11px;
-}
-
-input:focus{
-  border-color:var(--gold2);
-}
-
-input[readonly]{
-  opacity:.55;
-  cursor:not-allowed;
-}
-
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:7px;
-  margin-top:16px;
-}
-
-.calc-table{
-  width:100%;
-  min-width:0;
-  border-collapse:collapse;
-  margin-top:12px;
-}
-
-.calc-table th,
-.calc-table td{
-  min-width:0;
-  padding:8px 6px;
-  font-size:8px;
-}
-
-.calc-table th{
-  font-size:7px;
-}
-
-.calc-table td{
-  background:#100e0b;
-}
-
-.calc-total{
-  margin-top:10px;
-  padding:12px;
-  border:1px solid var(--gold2);
-  background:rgba(160,125,30,.08);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.calc-total span{
-  color:#988a6d;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:9px;
-}
-
-.calc-total strong{
-  color:var(--gold);
-  font-family:"Spectral SC",serif;
-  font-size:23px;
-}
-
-/* RANK */
-
-.my-rank{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-bottom:14px;
-}
-
-.rank-box{
-  border:1px solid var(--line);
-  background:var(--panel);
-  padding:12px;
-}
-
-.rank-box span{
-  display:block;
-  color:var(--muted);
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-}
-
-.rank-box strong{
-  display:block;
-  margin-top:5px;
-  color:var(--gold);
-  font-family:"Spectral SC",serif;
-  font-size:22px;
-}
-
-/* DIAG */
-
-.diag{
-  display:none;
-  border:1px solid var(--line);
-  background:#0d0b09;
-  border-radius:4px;
-  overflow:hidden;
-}
-
-.diag.open{
-  display:block;
-}
-
-.diag-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  border-bottom:1px solid var(--line);
-  background:var(--panel2);
-}
-
-.diag-head strong{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:9px;
-}
-
-pre{
-  margin:0;
-  max-height:500px;
-  overflow:auto;
-  padding:12px;
-  color:#afa38b;
-  font-family:"IBM Plex Mono",monospace;
-  font-size:8px;
-  line-height:1.5;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-/* MOBILE */
-
-@media(max-width:650px){
-
-  .header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .actions{
-    width:100%;
-  }
-
-  .actions .btn{
-    flex:1;
-  }
-
-  .cards{
-    grid-template-columns:1fr;
-  }
-
-  .my-rank{
-    grid-template-columns:1fr 1fr 1fr;
-  }
-
-}
+  --bg:#090806;--panel:#15110d;--panel2:#1d1710;--panel3:#251d13;
+  --text:#eadfc7;--muted:#8f8269;--gold:#d1aa38;--gold2:#8f7426;
+  --line:#33291d;--green:#63b27c;--red:#c75b67;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg)}
+body{color:var(--text);padding:16px 11px 70px;font-family:Georgia,serif;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:auto}
+.header{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:15px;border-bottom:1px solid var(--line)}
+.logo h1{margin:0;font-size:25px;letter-spacing:1.4px}
+.logo p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid var(--gold2);background:var(--panel2);color:var(--text);padding:9px 12px;border-radius:4px;font:10px monospace;letter-spacing:.7px;text-transform:uppercase}
+.btn:hover{border-color:var(--gold);background:var(--panel3)}
+.btn.primary{background:linear-gradient(180deg,#9c7b21,#6d5316);border-color:var(--gold);color:#171206;font-weight:700}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.tabs{display:flex;gap:23px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{position:relative;border:0;background:none;color:var(--muted);padding:11px 1px 12px;font:10px monospace;letter-spacing:1.2px;text-transform:uppercase}
+.tab.active{color:var(--gold)}
+.tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--gold)}
+.status{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.status-item{border:1px solid var(--line);background:rgba(255,255,255,.015);padding:6px 9px;border-radius:3px;color:var(--muted);font:9px monospace}
+.status-item b{color:var(--gold)}
+.notice{border:1px solid #54451e;background:rgba(140,110,25,.08);color:#cbbb97;padding:10px 12px;margin:12px 0;border-radius:4px;font:10px/1.55 monospace}
+.notice.ok{border-color:#315a3e;background:rgba(50,120,70,.08);color:#9bcfa9}
+.notice.error{border-color:#693039;background:rgba(140,30,45,.09);color:#e2a0a8}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px}
+.card{overflow:hidden;border:1px solid var(--line);border-radius:5px;background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:0 14px 36px rgba(0,0,0,.45)}
+.card.mine{border-color:#80682b}
+.card-head{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line)}
+.role{color:var(--gold);font:8px monospace;letter-spacing:1.4px}
+.mine-badge{padding:3px 6px;border-radius:2px;background:var(--gold);color:#171206;font:7px monospace;font-weight:700}
+.photo{height:175px;position:relative;overflow:hidden;background:#0c0a08}
+.photo img{width:100%;height:100%;object-fit:cover}
+.placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:55px;color:#40372a}
+.photo:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,0) 60%);pointer-events:none}
+.player-name{position:absolute;left:12px;right:12px;bottom:10px;z-index:2}
+.player-name strong{display:block;font-size:19px;text-shadow:0 2px 8px #000}
+.player-name span{color:#aaa087;font:8px monospace}
+.card-summary{display:grid;grid-template-columns:1fr auto;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
+.rarity{color:var(--gold);font:8px monospace;letter-spacing:1.2px}
+.score{margin-top:3px;color:var(--gold);font-size:26px;font-weight:700}
+.score-label{color:#736954;font:8px monospace}
+.loading{padding:12px;border-bottom:1px solid var(--line)}
+.loading-line{display:flex;justify-content:space-between;gap:10px;color:#9c9078;font:8px monospace;margin-bottom:7px}
+.progress{height:5px;background:#292219;border-radius:8px;overflow:hidden}
+.progress i{display:block;width:0;height:100%;background:var(--gold);transition:width .2s}
+.matches{padding:10px}
+.match{background:#11100d;border:1px solid var(--line);padding:9px;margin-bottom:6px;border-radius:3px}
+.match:last-child{margin-bottom:0}
+.match-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.match-id{color:#6d6454;font:8px monospace}
+.match-score{color:var(--gold);font:12px monospace;font-weight:600}
+.match-info{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;color:#746a58;font:8px monospace}
+.win{color:var(--green)!important}.loss{color:var(--red)!important}
+.card-footer{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.card-footer .btn{flex:1}
+.empty{padding:50px 18px;text-align:center;border:1px dashed var(--line);color:var(--muted)}
+.empty h2{margin:0 0 8px;color:var(--text)}
+.empty p{max-width:520px;margin:0 auto 16px;line-height:1.6;font-size:12px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px}
+table{width:100%;min-width:720px;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+th{background:var(--panel2);color:var(--muted);font:8px monospace;text-transform:uppercase}
+td{background:var(--panel);font-size:12px}
+tr:last-child td{border-bottom:0}
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.84)}
+.modal{width:100%;max-width:550px;max-height:93vh;overflow:auto;position:relative;padding:20px;border:1px solid var(--gold2);border-radius:5px;background:var(--panel);box-shadow:0 14px 36px rgba(0,0,0,.55)}
+.close{position:absolute;top:8px;right:11px;border:0;background:none;color:var(--muted);font-size:23px}
+.modal h2{margin:0 0 6px}.modal-desc{color:#9b8e75;font-size:11px;line-height:1.55;margin-bottom:16px}
+.field{margin-bottom:13px}.field label{display:block;margin-bottom:5px;color:#968a73;font:8px monospace;letter-spacing:1px}
+input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:3px;outline:none;background:#0d0b09;color:var(--text);font:11px monospace}
+input:focus{border-color:var(--gold2)}
+input[readonly]{opacity:.7}
+.roles,.rarity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.role-option,.rarity-option{padding:10px;text-align:center;border:1px solid var(--line);background:#11100d;border-radius:3px;cursor:pointer}
+.role-option.selected,.rarity-option.selected{border-color:var(--gold);color:var(--gold)}
+.role-option strong{display:block;font:9px monospace}.role-option span{display:block;margin-top:3px;color:#6f6554;font-size:9px}
+.bonus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.bonus{padding:8px;border:1px solid var(--line);background:#100e0b;border-radius:3px}.bonus label{margin-bottom:4px;font-size:7px}.bonus input{padding:7px}
+.modal-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:16px}
+.calc-table{width:100%;border-collapse:collapse;margin-top:12px}.calc-table th,.calc-table td{min-width:0;padding:8px 6px;font-size:8px}.calc-table th{font-size:7px}.calc-table td{background:#100e0b}
+.calc-total{margin-top:10px;padding:12px;border:1px solid var(--gold2);background:rgba(160,125,30,.08);display:flex;justify-content:space-between;align-items:center}
+.calc-total span{color:#988a6d;font:9px monospace}.calc-total strong{color:var(--gold);font-size:23px}
+.diag{display:none;border:1px solid var(--line);background:#0d0b09;border-radius:4px;overflow:hidden}.diag.open{display:block}
+.diag-head{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.diag-head strong{font:9px monospace}pre{margin:0;max-height:500px;overflow:auto;padding:12px;color:#afa38b;font:8px/1.5 monospace;white-space:pre-wrap;word-break:break-word}
+@media(max-width:650px){.header{flex-direction:column;align-items:flex-start}.actions{width:100%}.actions .btn{flex:1}.cards{grid-template-columns:1fr}}
 </style>
 </head>
 
 <body>
-
 <div class="wrap">
-
 <header class="header">
-
   <div class="logo">
     <h1>FANTASY REGISTRY</h1>
-    <p>Dota 2 · Player Cards · Global Fantasy Ranking</p>
+    <p>Dota 2 · Player Card · Fantasy Points</p>
   </div>
-
   <div class="actions">
-
-    <button
-      class="btn"
-      id="myBtn"
-    >
-      Моя карта
-    </button>
-
-    <button
-      class="btn"
-      id="refreshBtn"
-    >
-      ↻ Обновить
-    </button>
-
+    <button class="btn" id="myBtn">Моя карта</button>
+    <button class="btn" id="refreshBtn">↻ Обновить</button>
   </div>
-
 </header>
 
 <nav class="tabs">
-
-  <button
-    class="tab active"
-    data-tab="players"
-  >
-    Моя карта
-  </button>
-
-  <button
-    class="tab"
-    data-tab="rating"
-  >
-    Мировой рейтинг
-  </button>
-
-  <button
-    class="tab"
-    data-tab="diagnostics"
-  >
-    API
-  </button>
-
+  <button class="tab active" data-tab="players">Моя карта</button>
+  <button class="tab" data-tab="rating">Рейтинг</button>
+  <button class="tab" data-tab="diagnostics">API</button>
 </nav>
 
 <div id="status"></div>
-
 <div id="notice"></div>
-
 <div id="content"></div>
 
-<div
-  class="diag"
-  id="diag"
->
-
+<div class="diag" id="diag">
   <div class="diag-head">
-
-    <strong>
-      OPEN DOTA / DEBUG
-    </strong>
-
-    <button
-      class="btn"
-      id="clearDiag"
-    >
-      Очистить
-    </button>
-
+    <strong>OPEN DOTA / DEBUG</strong>
+    <button class="btn" id="clearDiag">Очистить</button>
   </div>
-
   <pre id="diagOutput">Пока запросов нет.</pre>
-
 </div>
-
 </div>
 
 <div id="modalRoot"></div>
 
 <script>
-
 /* ============================================================
    CONFIG
 ============================================================ */
+const API="https://api.opendota.com/api";
 
-const API =
-  "https://api.opendota.com/api";
-
-const FIREBASE_CONFIG = {
-
-  apiKey:
-    "AIzaSyDiji-w6g6x-lqu6-LlI68wBVIjqB_-3BI",
-
-  authDomain:
-    "fantasy-218c8.firebaseapp.com",
-
-  projectId:
-    "fantasy-218c8",
-
-  storageBucket:
-    "fantasy-218c8.firebasestorage.app",
-
-  messagingSenderId:
-    "122819799870",
-
-  appId:
-    "1:122819799870:web:e47df878140ed305671a6f",
-
-  measurementId:
-    "G-9LZC0EZ0Y5"
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyDiji-w6g6x-lqu6-LlI68wBVIjqB_-3BI",
+  authDomain:"fantasy-218c8.firebaseapp.com",
+  projectId:"fantasy-218c8",
+  storageBucket:"fantasy-218c8.firebasestorage.app",
+  messagingSenderId:"122819799870",
+  appId:"1:122819799870:web:e47df878140ed305671a6f",
+  measurementId:"G-9LZC0EZ0Y5"
 };
 
-const COLLECTION =
-  "fantasy-users-v9";
-
-const LOCAL_PREFIX =
-  "fantasy-user-v9-";
-
-const FANTASY_RULES = {
-
-  kills:0.30,
-  deaths:-0.30,
-  assists:0.15,
-  last_hits:0.003,
-  gpm:0.002,
-  tower_kills:1,
-  roshan_kills:1,
-  teamfight:0.03,
-  observer_placed:0.50,
-  camps_stacked:0.50,
-  runes_grabbed:0.25,
-  first_blood:4,
-  stuns:0.05,
-  deaths_base:3
-
+const CACHE_KEY="fantasy_registry_owner_v10";
+const OWNER_DOC_PREFIX="owners";
+const FANTASY_RULES={
+  kills:.30,deaths:-.30,assists:.15,last_hits:.003,gpm:.002,
+  tower_kills:1,roshan_kills:1,teamfight:.03,
+  observer_placed:.50,camps_stacked:.50,runes_grabbed:.25,
+  first_blood:4,stuns:.05,deaths_base:3
 };
-
-const BONUS_FIELDS = [
-
-  ["kills","Kills"],
-  ["deaths","Deaths"],
-  ["assists","Assists"],
-  ["last_hits","Last Hits"],
-  ["gpm","GPM"],
-  ["tower_kills","Tower Kills"],
-  ["roshan_kills","Roshan"],
-  ["teamfight","Teamfight"],
-  ["observer_placed","Observers"],
-  ["camps_stacked","Stacks"],
-  ["runes_grabbed","Runes"],
-  ["first_blood","First Blood"],
-  ["stuns","Stuns"]
-
+const BONUS_FIELDS=[
+  ["kills","Kills"],["deaths","Deaths"],["assists","Assists"],
+  ["last_hits","Last Hits"],["gpm","GPM"],["tower_kills","Tower Kills"],
+  ["roshan_kills","Roshan"],["teamfight","Teamfight"],
+  ["observer_placed","Observers"],["camps_stacked","Stacks"],
+  ["runes_grabbed","Runes"],["first_blood","First Blood"],["stuns","Stuns"]
 ];
+const ROLES={carry:"ОСНОВА",mid:"ЦЕНТР",support:"ПОДДЕРЖКА"};
+const RARITIES={bronze:"BRONZE",silver:"SILVER",gold:"GOLD"};
 
-const ROLES = {
-
-  carry:"ОСНОВА",
-  mid:"ЦЕНТР",
-  support:"ПОДДЕРЖКА"
-
-};
-
-const RARITIES = {
-
-  bronze:"BRONZE",
-  silver:"SILVER",
-  gold:"GOLD"
-
-};
-
-let db = null;
-
-let telegramUser = null;
-
-let myPlayer = null;
-
-let leaderboard = [];
-
-let activeTab = "players";
-
-let logs = [];
-
-let loading = false;
+let db=null;
+let player=null;
+let telegramUser=null;
+let telegramId=null;
+let activeTab="players";
+let logs=[];
 
 /* ============================================================
    TELEGRAM
 ============================================================ */
+function initTelegram(){
+  try{
+    const tg=window.Telegram && window.Telegram.WebApp;
+    if(!tg) return false;
 
-try{
+    tg.ready();
+    try{tg.expand()}catch(_){}
 
-  if(
-    window.Telegram &&
-    Telegram.WebApp
-  ){
+    const u=tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if(u && u.id){
+      telegramUser=u;
+      telegramId=String(u.id);
+      return true;
+    }
 
-    Telegram.WebApp.ready();
-
-    Telegram.WebApp.expand();
-
-    telegramUser =
-      Telegram.WebApp.initDataUnsafe &&
-      Telegram.WebApp.initDataUnsafe.user
-        ?Telegram.WebApp.initDataUnsafe.user
-        :null;
-
+    return false;
+  }catch(e){
+    console.warn("Telegram init",e);
+    return false;
   }
-
-}catch(error){
-
-  console.warn(
-    "Telegram:",
-    error
-  );
-
 }
+
+initTelegram();
 
 /* ============================================================
    FIREBASE
 ============================================================ */
-
 try{
-
-  firebase.initializeApp(
-    FIREBASE_CONFIG
-  );
-
-  db =
-    firebase.firestore();
-
-  db.enablePersistence({
-    synchronizeTabs:true
-  }).catch(
-    ()=>{}
-  );
-
-}catch(error){
-
-  console.warn(
-    "Firebase:",
-    error
-  );
-
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.firestore();
+  db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+}catch(e){
+  console.warn("Firebase",e);
 }
 
 /* ============================================================
    DOM
 ============================================================ */
-
-const content =
-  document.getElementById("content");
-
-const status =
-  document.getElementById("status");
-
-const notice =
-  document.getElementById("notice");
-
-const modalRoot =
-  document.getElementById("modalRoot");
-
-const diag =
-  document.getElementById("diag");
-
-const diagOutput =
-  document.getElementById("diagOutput");
+const content=document.getElementById("content");
+const status=document.getElementById("status");
+const notice=document.getElementById("notice");
+const modalRoot=document.getElementById("modalRoot");
+const diag=document.getElementById("diag");
+const diagOutput=document.getElementById("diagOutput");
 
 /* ============================================================
    HELPERS
 ============================================================ */
-
-function esc(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
-
+function esc(v){
+  return String(v??"")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
-
-function number(value){
-
-  const n =
-    Number(value);
-
-  return Number.isFinite(n)
-    ?n
-    :0;
-
+function num(v){
+  const n=Number(v);
+  return Number.isFinite(n)?n:0;
 }
-
-function fmt(value){
-
-  return number(value)
-    .toLocaleString(
-      "ru-RU",
-      {
-        maximumFractionDigits:2
-      }
-    );
-
+function fmt(v){
+  return num(v).toLocaleString("ru-RU",{maximumFractionDigits:2});
 }
-
-function accountIdFrom(value){
-
-  const matches =
-    String(value || "")
-      .match(/\d+/g);
-
-  if(
-    !matches ||
-    !matches.length
-  ){
-
-    return null;
-
-  }
-
-  return matches[
-    matches.length-1
-  ];
-
+function accountIdFrom(v){
+  const m=String(v||"").match(/\d+/g);
+  return m&&m.length?m[m.length-1]:null;
 }
-
-function initials(name){
-
-  return String(
-    name || "?"
-  )
-  .trim()
-  .slice(0,1)
-  .toUpperCase();
-
-}
-
+function initials(v){return String(v||"?").trim().slice(0,1).toUpperCase()}
 function defaultBonuses(){
-
-  const bonuses = {};
-
-  BONUS_FIELDS.forEach(
-    ([key])=>{
-      bonuses[key]=0;
-    }
-  );
-
-  return bonuses;
-
+  const x={}; BONUS_FIELDS.forEach(([k])=>x[k]=0); return x;
 }
-
-function defaultCard(){
-
-  return {
-
-    rarity:"bronze",
-
-    bonuses:
-      defaultBonuses()
-
-  };
-
+function defaultCard(){return {rarity:"bronze",bonuses:defaultBonuses()}}
+function normalize(p){
+  p=p||{};
+  p.card=p.card||defaultCard();
+  p.card.bonuses=p.card.bonuses||defaultBonuses();
+  BONUS_FIELDS.forEach(([k])=>p.card.bonuses[k]=num(p.card.bonuses[k]));
+  if(!RARITIES[p.card.rarity])p.card.rarity="bronze";
+  if(!Array.isArray(p.matches))p.matches=[];
+  return p;
 }
-
-function getTelegramId(){
-
-  return telegramUser
-    ?String(telegramUser.id)
-    :null;
-
+function tgName(){
+  if(!telegramUser)return "";
+  return [telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ").trim();
 }
-
-function getTelegramName(){
-
-  if(!telegramUser)
-    return "";
-
-  let name =
-    telegramUser.first_name || "";
-
-  if(
-    telegramUser.last_name
-  ){
-
-    name +=
-      " "+
-      telegramUser.last_name;
-
-  }
-
-  return name.trim();
-
-}
-
-function getTelegramPhoto(){
-
-  return telegramUser &&
-    telegramUser.photo_url
-      ?telegramUser.photo_url
-      :null;
-
-}
-
-function localKey(){
-
-  const id =
-    getTelegramId();
-
-  return id
-    ?LOCAL_PREFIX+id
-    :LOCAL_PREFIX+"guest";
-
-}
+function tgPhoto(){return telegramUser&&telegramUser.photo_url?telegramUser.photo_url:null}
 
 /* ============================================================
-   NORMALIZE
+   OWNER CACHE
+   Один Telegram ID -> один документ -> одна карта.
 ============================================================ */
-
-function normalizePlayer(player){
-
-  player =
-    player || {};
-
-  player.accountId =
-    String(
-      player.accountId || ""
-    );
-
-  player.name =
-    String(
-      player.name || ""
-    );
-
-  player.role =
-    ROLES[player.role]
-      ?player.role
-      :"carry";
-
-  if(!player.card){
-
-    player.card =
-      defaultCard();
-
-  }
-
-  if(
-    !player.card.bonuses
-  ){
-
-    player.card.bonuses =
-      defaultBonuses();
-
-  }
-
-  BONUS_FIELDS.forEach(
-    ([key])=>{
-
-      player.card.bonuses[key] =
-        number(
-          player.card.bonuses[key]
-        );
-
-    }
-  );
-
-  if(
-    !RARITIES[
-      player.card.rarity
-    ]
-  ){
-
-    player.card.rarity =
-      "bronze";
-
-  }
-
-  if(
-    !Array.isArray(
-      player.matches
-    )
-  ){
-
-    player.matches=[];
-
-  }
-
-  return player;
-
-}
-
-/* ============================================================
-   LOCAL CACHE
-============================================================ */
-
 function loadLocal(){
-
   try{
-
-    const raw =
-      localStorage.getItem(
-        localKey()
-      );
-
-    if(!raw)
-      return null;
-
-    return normalizePlayer(
-      JSON.parse(raw)
-    );
-
-  }catch(error){
-
-    return null;
-
-  }
-
+    const raw=localStorage.getItem(CACHE_KEY);
+    return raw?normalize(JSON.parse(raw)):null;
+  }catch(_){return null}
 }
-
 function saveLocal(){
-
-  if(!myPlayer)
-    return;
-
   try{
-
-    localStorage.setItem(
-      localKey(),
-      JSON.stringify(
-        myPlayer
-      )
-    );
-
-  }catch(error){}
-
+    if(player)localStorage.setItem(CACHE_KEY,JSON.stringify(player));
+  }catch(_){}
 }
 
-/* ============================================================
-   FIRESTORE USER
-============================================================ */
+function ownerRef(){
+  if(!db||!telegramId)return null;
+  return db.collection(OWNER_DOC_PREFIX).doc(telegramId);
+}
 
-function userDoc(){
+async function loadOwner(){
+  const local=loadLocal();
 
-  const tgId =
-    getTelegramId();
-
-  if(
-    !db ||
-    !tgId
-  ){
-
-    return null;
-
+  /* В Telegram локальный cache показываем мгновенно. */
+  if(local && String(local.telegramUserId)===String(telegramId)){
+    player=local;
+    render();
   }
 
-  return db
-    .collection(
-      COLLECTION
-    )
-    .doc(
-      tgId
-    );
-
-}
-
-/*
-  Только собственный документ.
-*/
-
-async function loadMyUser(){
-
-  const ref =
-    userDoc();
-
-  if(!ref)
-    return null;
+  if(!db||!telegramId)return player;
 
   try{
+    const snap=await ownerRef().get();
 
-    const snapshot =
-      await ref.get();
-
-    if(!snapshot.exists)
-      return null;
-
-    return normalizePlayer(
-      snapshot.data()
-    );
-
-  }catch(error){
-
-    log(
-      "LOAD USER ERROR",
-      {
-        error:
-          error.message
+    if(snap.exists){
+      const remote=normalize(snap.data());
+      /* Никогда не принимаем документ другого владельца. */
+      if(String(remote.telegramUserId)!==String(telegramId)){
+        throw new Error("Владелец карточки не совпадает с Telegram ID");
       }
-    );
-
-    return null;
-
+      player=remote;
+      saveLocal();
+      render();
+    }else if(local && String(local.telegramUserId)===String(telegramId)){
+      await ownerRef().set(local,{merge:false});
+    }
+  }catch(e){
+    log("OWNER LOAD ERROR",{error:e.message});
   }
-
+  return player;
 }
 
-async function createMyUser(player){
-
-  const ref =
-    userDoc();
-
-  if(!ref)
-    return false;
-
-  try{
-
-    await ref.set(
-      player,
-      {
-        merge:false
-      }
-    );
-
-    return true;
-
-  }catch(error){
-
-    log(
-      "CREATE USER ERROR",
-      {
-        error:
-          error.message
-      }
-    );
-
-    throw error;
-
-  }
-
-}
-
-async function saveMyUser(){
-
-  if(!myPlayer)
-    return;
-
-  normalizePlayer(
-    myPlayer
-  );
-
+async function saveOwner(){
+  if(!player)return;
+  normalize(player);
   saveLocal();
 
-  const ref =
-    userDoc();
-
-  if(!ref)
-    return;
+  if(!db||!telegramId)return;
 
   try{
-
-    await ref.set(
-      myPlayer,
-      {
-        merge:true
-      }
-    );
-
-  }catch(error){
-
-    log(
-      "SAVE USER ERROR",
-      {
-        error:
-          error.message
-      }
-    );
-
+    /* Документ ключуется Telegram ID, а не Dota accountId. */
+    await ownerRef().set(player,{merge:true});
+  }catch(e){
+    log("OWNER SAVE ERROR",{error:e.message});
   }
-
 }
 
 /* ============================================================
    DIAGNOSTICS
 ============================================================ */
-
-function log(
-  title,
-  data
-){
-
+function log(title,data){
   logs.unshift({
-
-    time:
-      new Date()
-        .toLocaleTimeString(
-          "ru-RU"
-        ),
-
-    title,
-
-    data
-
+    time:new Date().toLocaleTimeString("ru-RU"),
+    title,data
   });
-
-  logs =
-    logs.slice(0,40);
-
+  logs=logs.slice(0,40);
   renderDiagnostics();
-
 }
-
 function renderDiagnostics(){
-
-  if(!logs.length){
-
-    diagOutput.textContent =
-      "Пока запросов нет.";
-
-    return;
-
-  }
-
-  diagOutput.textContent =
-    logs
-      .map(
-        item=>
-          `[${item.time}] ${item.title}\n`+
-          JSON.stringify(
-            item.data,
-            null,
-            2
-          )
-      )
-      .join(
-        "\n\n--------------------\n\n"
-      );
-
+  diagOutput.textContent=logs.length
+    ?logs.map(x=>`[${x.time}] ${x.title}\n${JSON.stringify(x.data,null,2)}`).join("\n\n--------------------\n\n")
+    :"Пока запросов нет.";
 }
-
-document
-  .getElementById("clearDiag")
-  .onclick=()=>{
-
-    logs=[];
-
-    renderDiagnostics();
-
-  };
+document.getElementById("clearDiag").onclick=()=>{logs=[];renderDiagnostics()};
 
 /* ============================================================
-   API
+   OPEN DOTA
 ============================================================ */
-
 async function api(path){
-
-  const url =
-    API+
-    path;
-
-  log(
-    "REQUEST",
-    {
-      url
-    }
-  );
-
-  let response;
-
-  try{
-
-    response =
-      await fetch(
-        url,
-        {
-          method:"GET",
-          cache:"force-cache",
-          headers:{
-            Accept:
-              "application/json"
-          }
-        }
-      );
-
-  }catch(error){
-
-    throw new Error(
-      "Ошибка соединения с OpenDota: "+
-      error.message
-    );
-
-  }
-
-  if(!response.ok){
-
-    throw new Error(
-      `OpenDota HTTP ${response.status}`
-    );
-
-  }
-
-  return response.json();
-
+  const url=API+path;
+  log("REQUEST",{url});
+  const r=await fetch(url,{method:"GET",cache:"force-cache",headers:{Accept:"application/json"}});
+  const text=await r.text();
+  if(!r.ok)throw new Error(`OpenDota HTTP ${r.status}`);
+  try{return JSON.parse(text)}catch(_){throw new Error("OpenDota вернула не JSON")}
 }
 
-/* ============================================================
-   RECENT MATCHES
-============================================================ */
-
-async function getHistory(
-  accountId
-){
-
-  const data =
-    await api(
-      `/players/${accountId}/recentMatches`
-    );
-
-  if(
-    !Array.isArray(data)
-  ){
-
-    throw new Error(
-      "История матчей не получена"
-    );
-
-  }
-
-  return data
-    .filter(
-      item=>
-        item &&
-        item.match_id
-    )
-    .sort(
-      (a,b)=>
-        number(b.start_time)-
-        number(a.start_time)
-    )
-    .slice(0,2);
-
+async function getHistory(accountId){
+  const data=await api(`/players/${accountId}/recentMatches`);
+  return Array.isArray(data)
+    ?data.filter(x=>x.match_id).sort((a,b)=>num(b.start_time)-num(a.start_time)).slice(0,4)
+    :[];
 }
 
 /* ============================================================
    FANTASY
 ============================================================ */
+function calculateBaseFantasy(p){
+  const kills=num(p.kills), deaths=num(p.deaths), assists=num(p.assists);
+  const lastHits=num(p.last_hits), denies=num(p.denies), gpm=num(p.gold_per_min);
+  const tower=num(p.tower_kills), roshan=num(p.roshan_kills);
+  const team=num(p.teamfight_participation), obs=num(p.obs_placed);
+  const stacks=num(p.camps_stacked), runes=num(p.rune_pickups);
+  const fb=p.firstblood_claimed?1:0, stuns=num(p.stuns);
 
-function calculateBaseFantasy(
-  player
-){
-
-  const kills =
-    number(player.kills);
-
-  const deaths =
-    number(player.deaths);
-
-  const assists =
-    number(player.assists);
-
-  const lastHits =
-    number(player.last_hits);
-
-  const denies =
-    number(player.denies);
-
-  const gpm =
-    number(player.gold_per_min);
-
-  const towerKills =
-    number(player.tower_kills);
-
-  const roshanKills =
-    number(player.roshan_kills);
-
-  const teamfight =
-    number(
-      player.teamfight_participation
-    );
-
-  const observer =
-    number(player.obs_placed);
-
-  const stacks =
-    number(player.camps_stacked);
-
-  const runes =
-    number(player.rune_pickups);
-
-  const firstBlood =
-    player.firstblood_claimed
-      ?1
-      :0;
-
-  const stuns =
-    number(player.stuns);
-
-  return {
-
-    kills:
-      kills*
-      FANTASY_RULES.kills,
-
-    deaths:
-      FANTASY_RULES.deaths_base+
-      deaths*
-      FANTASY_RULES.deaths,
-
-    assists:
-      assists*
-      FANTASY_RULES.assists,
-
-    last_hits:
-      (
-        lastHits+
-        denies
-      )*
-      FANTASY_RULES.last_hits,
-
-    gpm:
-      gpm*
-      FANTASY_RULES.gpm,
-
-    tower_kills:
-      towerKills*
-      FANTASY_RULES.tower_kills,
-
-    roshan_kills:
-      roshanKills*
-      FANTASY_RULES.roshan_kills,
-
-    teamfight:
-      teamfight*
-      FANTASY_RULES.teamfight,
-
-    observer_placed:
-      observer*
-      FANTASY_RULES.observer_placed,
-
-    camps_stacked:
-      stacks*
-      FANTASY_RULES.camps_stacked,
-
-    runes_grabbed:
-      runes*
-      FANTASY_RULES.runes_grabbed,
-
-    first_blood:
-      firstBlood*
-      FANTASY_RULES.first_blood,
-
-    stuns:
-      stuns*
-      FANTASY_RULES.stuns
-
+  return{
+    kills:kills*FANTASY_RULES.kills,
+    deaths:FANTASY_RULES.deaths_base+deaths*FANTASY_RULES.deaths,
+    assists:assists*FANTASY_RULES.assists,
+    last_hits:(lastHits+denies)*FANTASY_RULES.last_hits,
+    gpm:gpm*FANTASY_RULES.gpm,
+    tower_kills:tower*FANTASY_RULES.tower_kills,
+    roshan_kills:roshan*FANTASY_RULES.roshan_kills,
+    teamfight:team*FANTASY_RULES.teamfight,
+    observer_placed:obs*FANTASY_RULES.observer_placed,
+    camps_stacked:stacks*FANTASY_RULES.camps_stacked,
+    runes_grabbed:runes*FANTASY_RULES.runes_grabbed,
+    first_blood:fb*FANTASY_RULES.first_blood,
+    stuns:stuns*FANTASY_RULES.stuns
   };
-
 }
-
-function applyCardBonuses(
-  base,
-  bonuses
-){
-
-  const final = {};
-
-  BONUS_FIELDS.forEach(
-    ([key])=>{
-
-      const value =
-        number(base[key]);
-
-      const bonus =
-        number(
-          bonuses &&
-          bonuses[key]
-        );
-
-      final[key] =
-        value*
-        (
-          1+
-          bonus/100
-        );
-
-    }
-  );
-
-  return final;
-
+function applyBonuses(base,bonuses){
+  const out={};
+  BONUS_FIELDS.forEach(([k])=>out[k]=num(base[k])*(1+num(bonuses&&bonuses[k])/100));
+  return out;
 }
-
-function calculateFinalFantasy(
-  stats,
-  card
-){
-
-  const base =
-    calculateBaseFantasy(
-      stats
-    );
-
-  const final =
-    applyCardBonuses(
-      base,
-      card &&
-      card.bonuses
-    );
-
-  const total =
-    Object.values(final)
-      .reduce(
-        (sum,value)=>
-          sum+
-          number(value),
-        0
-      );
-
-  return {
-
-    base,
-    final,
-    total
-
-  };
-
+function calculate(p,card){
+  const base=calculateBaseFantasy(p);
+  const final=applyBonuses(base,card.bonuses);
+  const total=Object.values(final).reduce((s,v)=>s+num(v),0);
+  return{base,final,total};
 }
 
 /* ============================================================
-   MATCH
+   MATCHES
 ============================================================ */
+async function loadMatch(matchId,accountId,card){
+  const match=await api(`/matches/${matchId}`);
+  if(!match||!Array.isArray(match.players))throw new Error(`Матч ${matchId}: players отсутствует`);
 
-async function loadMatch(
-  matchId,
-  accountId,
-  card
-){
+  const p=match.players.find(x=>String(x.account_id)===String(accountId));
+  if(!p)throw new Error(`Игрок не найден в матче ${matchId}`);
 
-  const match =
-    await api(
-      `/matches/${matchId}`
-    );
+  const c=calculate(p,card);
+  const radiant=num(p.player_slot)<128;
+  const win=Boolean(match.radiant_win)===radiant;
 
-  if(
-    !match ||
-    !Array.isArray(match.players)
-  ){
-
-    throw new Error(
-      `Матч ${matchId} не содержит игроков`
-    );
-
-  }
-
-  const player =
-    match.players.find(
-      p=>
-        String(
-          p.account_id
-        )===
-        String(accountId)
-    );
-
-  if(!player){
-
-    throw new Error(
-      `Игрок не найден в матче ${matchId}`
-    );
-
-  }
-
-  const calc =
-    calculateFinalFantasy(
-      player,
-      card
-    );
-
-  const radiant =
-    number(
-      player.player_slot
-    )<128;
-
-  const win =
-    Boolean(
-      match.radiant_win
-    )===
-    radiant;
-
-  return {
-
-    matchId:
-      String(match.match_id),
-
-    startTime:
-      number(match.start_time),
-
-    duration:
-      number(match.duration),
-
+  return{
+    matchId:String(match.match_id),
+    startTime:num(match.start_time),
+    duration:num(match.duration),
     win,
-
-    kills:
-      number(player.kills),
-
-    deaths:
-      number(player.deaths),
-
-    assists:
-      number(player.assists),
-
-    lastHits:
-      number(player.last_hits),
-
-    denies:
-      number(player.denies),
-
-    gpm:
-      number(player.gold_per_min),
-
-    teamfight:
-      number(
-        player.teamfight_participation
-      ),
-
-    observer:
-      number(player.obs_placed),
-
-    stacks:
-      number(player.camps_stacked),
-
-    runes:
-      number(player.rune_pickups),
-
-    firstBlood:
-      Boolean(
-        player.firstblood_claimed
-      ),
-
-    towerKills:
-      number(player.tower_kills),
-
-    roshanKills:
-      number(player.roshan_kills),
-
-    stuns:
-      number(player.stuns),
-
-    baseFantasy:
-      calc.base,
-
-    finalFantasy:
-      calc.final,
-
-    fantasy:
-      Number(
-        calc.total.toFixed(2)
-      )
-
+    kills:num(p.kills),deaths:num(p.deaths),assists:num(p.assists),
+    lastHits:num(p.last_hits),denies:num(p.denies),gpm:num(p.gold_per_min),
+    teamfight:num(p.teamfight_participation),observer:num(p.obs_placed),
+    stacks:num(p.camps_stacked),runes:num(p.rune_pickups),
+    firstBlood:Boolean(p.firstblood_claimed),
+    towerKills:num(p.tower_kills),roshanKills:num(p.roshan_kills),stuns:num(p.stuns),
+    baseFantasy:c.base,finalFantasy:c.final,
+    fantasy:Number(c.total.toFixed(2))
   };
-
 }
 
-/* ============================================================
-   TWO CONCURRENT REQUESTS
-============================================================ */
-
-async function loadMatches(
-  ids,
-  accountId,
-  card,
-  progress
-){
-
-  const result = [];
-
-  let next = 0;
+async function loadLimited(ids,accountId,card,onProgress){
+  const results=[];
+  let next=0,done=0;
 
   async function worker(){
-
     while(true){
-
-      const index =
-        next++;
-
-      if(
-        index>=ids.length
-      ){
-
-        return;
-
-      }
-
-      const id =
-        ids[index];
-
-      try{
-
-        result[index] =
-          await loadMatch(
-            id,
-            accountId,
-            card
-          );
-
-      }catch(error){
-
-        result[index]=null;
-
-        log(
-          "MATCH ERROR",
-          {
-            id,
-            error:
-              error.message
-          }
-        );
-
-      }
-
-      if(progress){
-
-        progress(
-          index+1,
-          ids.length
-        );
-
-      }
-
+      const i=next++;
+      if(i>=ids.length)return;
+      try{results[i]=await loadMatch(ids[i],accountId,card)}
+      catch(e){results[i]=null;log("MATCH FAILED",{matchId:ids[i],error:e.message})}
+      done++;
+      if(onProgress)onProgress(done,ids.length,ids[i]);
     }
-
   }
-
-  await Promise.all([
-    worker(),
-    worker()
-  ]);
-
-  return result
-    .filter(Boolean);
-
+  await Promise.all([worker(),worker()]);
+  return results.filter(Boolean);
 }
-
-/* ============================================================
-   BEST TWO
-============================================================ */
 
 function bestTwo(){
-
-  if(
-    !myPlayer ||
-    !Array.isArray(
-      myPlayer.matches
-    )
-  ){
-
-    return {
-      matches:[],
-      total:0
-    };
-
-  }
-
-  const matches =
-    myPlayer.matches
-      .slice()
-      .sort(
-        (a,b)=>
-          number(b.fantasy)-
-          number(a.fantasy)
-      )
-      .slice(0,2);
-
-  return {
-
-    matches,
-
-    total:
-      matches.reduce(
-        (sum,item)=>
-          sum+
-          number(item.fantasy),
-        0
-      )
-
-  };
-
+  if(!player)return{matches:[],total:0};
+  const sorted=(player.matches||[]).slice().sort((a,b)=>num(b.fantasy)-num(a.fantasy));
+  const matches=sorted.slice(0,2);
+  return{matches,total:matches.reduce((s,m)=>s+num(m.fantasy),0)};
 }
 
-/* ============================================================
-   LOAD PLAYER
-============================================================ */
+async function refreshPlayer(){
+  if(!player)return;
 
-async function refreshMyPlayer(){
-
-  if(!myPlayer)
-    return;
-
-  if(loading)
-    return;
-
-  loading=true;
-
-  setLoadingUI(
-    true,
-    0,
-    2,
-    "Получаю последние матчи..."
-  );
+  player.loading=true;
+  player.loadingCurrent=0;
+  player.loadingTotal=2;
+  player.loadingText="Получаем последние матчи...";
+  render();
 
   try{
+    const history=await getHistory(player.accountId);
+    if(!history.length)throw new Error("У игрока нет доступной истории матчей");
 
-    const history =
-      await getHistory(
-        myPlayer.accountId
-      );
+    const target=history.slice(0,2).map(x=>String(x.match_id));
+    const existing=new Map((player.matches||[]).map(m=>[String(m.matchId),m]));
+    const need=target.filter(id=>!existing.has(id));
 
-    if(!history.length){
-
-      throw new Error(
-        "У игрока пока нет доступной истории матчей"
-      );
-
-    }
-
-    const ids =
-      history
-        .map(
-          item=>
-            String(
-              item.match_id
-            )
-        );
-
-    const cache =
-      new Map(
-        (
-          myPlayer.matches || []
-        )
-        .map(
-          match=>[
-            String(
-              match.matchId
-            ),
-            match
-          ]
-        )
-      );
-
-    /*
-      Главное ускорение:
-      уже рассчитанные матчи вообще
-      не запрашиваем повторно.
-    */
-
-    const need =
-      ids.filter(
-        id=>
-          !cache.has(id)
-      );
-
-    if(!need.length){
-
-      myPlayer.matches =
-        ids
-          .map(
-            id=>
-              cache.get(id)
-          )
-          .filter(Boolean);
-
-      updateScore();
-
-      await saveMyUser();
-
-      setLoadingUI(
-        false
-      );
-
-      loading=false;
-
-      renderPlayers();
-
-      return;
-
-    }
-
-    setLoadingUI(
-      true,
-      0,
-      need.length,
-      "Загружаю матчи..."
-    );
-
-    const fresh =
-      await loadMatches(
-        need,
-        myPlayer.accountId,
-        myPlayer.card,
-        (
-          current,
-          total
-        )=>{
-
-          setLoadingUI(
-            true,
-            current,
-            total,
-            `Матч ${current}/${total}`
-          );
-
+    if(need.length){
+      const fresh=await loadLimited(
+        need,player.accountId,player.card,
+        (current,total,id)=>{
+          player.loadingCurrent=current;
+          player.loadingTotal=total;
+          player.loadingText=`Матч ${current}/${total} · ${id}`;
+          render();
         }
       );
+      fresh.forEach(m=>existing.set(String(m.matchId),m));
+    }
 
-    fresh.forEach(
-      match=>{
+    player.matches=target.map(id=>existing.get(id)).filter(Boolean);
+    player.lastRefresh=Date.now();
 
-        cache.set(
-          String(match.matchId),
-          match
-        );
-
+    /* Если бонусы изменились, пересчитаем сохранённые матчи без API. */
+    if(player.matches.length){
+      for(const m of player.matches){
+        /* baseFantasy уже хранит базу, поэтому пересчёт быстрый. */
+        const final=applyBonuses(m.baseFantasy,player.card.bonuses);
+        m.finalFantasy=final;
+        m.fantasy=Number(Object.values(final).reduce((s,v)=>s+num(v),0).toFixed(2));
       }
-    );
-
-    myPlayer.matches =
-      ids
-        .map(
-          id=>
-            cache.get(id)
-        )
-        .filter(Boolean);
-
-    updateScore();
-
-    myPlayer.updatedAt =
-      Date.now();
-
-    await saveMyUser();
-
-    setLoadingUI(
-      false
-    );
-
-    loading=false;
-
-    /*
-      Только теперь один раз
-      перерисовываем карточку.
-    */
-
-    renderPlayers();
-
-    /*
-      И обновляем мировой рейтинг.
-    */
-
-    loadLeaderboard(
-      true
-    );
-
-    showNotice(
-      "✓ Матчи обновлены.",
-      "ok"
-    );
-
-  }catch(error){
-
-    setLoadingUI(
-      false
-    );
-
-    loading=false;
-
-    showNotice(
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-/* ============================================================
-   SCORE
-============================================================ */
-
-function updateScore(){
-
-  const best =
-    bestTwo();
-
-  myPlayer.score =
-    Number(
-      best.total.toFixed(2)
-    );
-
-}
-
-/* ============================================================
-   PROGRESS WITHOUT RERENDER
-============================================================ */
-
-function setLoadingUI(
-  active,
-  current=0,
-  total=0,
-  text=""
-){
-
-  const box =
-    document.getElementById(
-      "playerLoading"
-    );
-
-  if(!box)
-    return;
-
-  if(!active){
-
-    box.style.display =
-      "none";
-
-    return;
-
-  }
-
-  box.style.display =
-    "block";
-
-  const label =
-    box.querySelector(
-      "[data-loading-text]"
-    );
-
-  const counter =
-    box.querySelector(
-      "[data-loading-counter]"
-    );
-
-  const bar =
-    box.querySelector(
-      "i"
-    );
-
-  if(label)
-    label.textContent =
-      text;
-
-  if(counter)
-    counter.textContent =
-      `${current}/${total}`;
-
-  if(bar){
-
-    bar.style.width =
-      total
-        ?(
-          current/
-          total*
-          100
-        )+"%"
-        :"0%";
-
-  }
-
-}
-
-/* ============================================================
-   PLAYER CARD
-============================================================ */
-
-function renderPlayerCard(){
-
-  if(!myPlayer){
-
-    content.innerHTML=`
-
-      <div class="empty">
-
-        <h2>
-          Привяжи свою Dota 2 карту
-        </h2>
-
-        <p>
-          Один Telegram-аккаунт =
-          один Dota 2 игрок.
-          После привязки изменить игрока
-          через приложение будет нельзя.
-        </p>
-
-        <button
-          class="btn primary"
-          id="linkBtn"
-        >
-          Привязать Dota 2
-        </button>
-
-      </div>
-
-    `;
-
-    document
-      .getElementById("linkBtn")
-      .onclick=
-      openLinkModal;
-
-    return;
-
-  }
-
-  const best =
-    bestTwo();
-
-  const matches =
-    myPlayer.matches || [];
-
-  const matchHtml =
-    matches.length
-      ?matches
-        .map(
-          match=>`
-
-            <div class="match">
-
-              <div class="match-top">
-
-                <span class="match-id">
-                  #${esc(
-                    match.matchId
-                  )}
-                </span>
-
-                <span class="match-score">
-                  ${fmt(
-                    match.fantasy
-                  )}
-                </span>
-
-              </div>
-
-              <div class="match-info">
-
-                <span
-                  class="${
-                    match.win
-                      ?"win"
-                      :"loss"
-                  }"
-                >
-                  ${
-                    match.win
-                      ?"ПОБЕДА"
-                      :"ПОРАЖЕНИЕ"
-                  }
-                </span>
-
-                <span>
-                  ${match.kills}/
-                  ${match.deaths}/
-                  ${match.assists}
-                </span>
-
-                <span>
-                  GPM ${fmt(
-                    match.gpm
-                  )}
-                </span>
-
-              </div>
-
-            </div>
-
-          `
-        )
-        .join("")
-      :`
-
-        <div class="match">
-
-          <div class="match-info">
-            Матчи ещё не загружены.
-          </div>
-
-        </div>
-
-      `;
-
-  content.innerHTML=`
-
-    <article class="card mine">
-
-      <div class="card-head">
-
-        <span class="role">
-          ${
-            ROLES[
-              myPlayer.role
-            ]
-          }
-        </span>
-
-        <span class="mine-badge">
-          МОЯ КАРТА
-        </span>
-
-      </div>
-
-      <div class="photo">
-
-        ${
-          myPlayer.photo
-            ?`
-              <img
-                src="${esc(
-                  myPlayer.photo
-                )}"
-                loading="lazy"
-              >
-            `
-            :`
-              <div class="placeholder">
-                ${esc(
-                  initials(
-                    myPlayer.name
-                  )
-                )}
-              </div>
-            `
-        }
-
-        <div class="player-name">
-
-          <strong>
-            ${esc(
-              myPlayer.name
-            )}
-          </strong>
-
-          <span>
-            DOTA ACCOUNT
-            ${esc(
-              myPlayer.accountId
-            )}
-          </span>
-
-        </div>
-
-      </div>
-
-      <div class="card-summary">
-
-        <div>
-
-          <div class="rarity">
-            PLAYER CARD ·
-            ${
-              RARITIES[
-                myPlayer.card.rarity
-              ]
-            }
-          </div>
-
-          <div class="score-label">
-            BEST 2 MATCHES
-          </div>
-
-        </div>
-
-        <div class="score">
-          ${fmt(
-            best.total
-          )}
-        </div>
-
-      </div>
-
-      <div
-        class="loading"
-        id="playerLoading"
-        style="display:none"
-      >
-
-        <div class="loading-line">
-
-          <span data-loading-text>
-            Загрузка...
-          </span>
-
-          <span data-loading-counter>
-            0/0
-          </span>
-
-        </div>
-
-        <div class="progress">
-
-          <i></i>
-
-        </div>
-
-      </div>
-
-      <div class="matches">
-
-        ${matchHtml}
-
-      </div>
-
-      <div class="card-footer">
-
-        <button
-          class="btn"
-          id="calcBtn"
-        >
-          Расчёт
-        </button>
-
-        <button
-          class="btn green"
-          id="refreshMineBtn"
-        >
-          ↻ Обновить
-        </button>
-
-      </div>
-
-    </article>
-
-    <div
-      class="notice"
-      style="margin-top:15px"
-    >
-
-      <b>Telegram:</b>
-      ${esc(
-        getTelegramName() ||
-        "не определён"
-      )}
-
-      <br>
-
-      <b>Аккаунт:</b>
-      ${esc(
-        myPlayer.accountId
-      )}
-
-      <br>
-
-      <b>Статус:</b>
-      Карта навсегда привязана
-      к этому Telegram-аккаунту.
-
-    </div>
-
-  `;
-
-  document
-    .getElementById("calcBtn")
-    .onclick=
-    ()=>openCalculation();
-
-  document
-    .getElementById("refreshMineBtn")
-    .onclick=
-    refreshMyPlayer;
-
-}
-
-/* ============================================================
-   LINK MODAL
-============================================================ */
-
-function openLinkModal(){
-
-  if(!telegramUser){
-
-    showNotice(
-      "Приложение нужно открыть внутри Telegram.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  /*
-    Повторно создать карту нельзя.
-  */
-
-  if(myPlayer){
-
-    showNotice(
-      "У этого Telegram уже есть привязанная карта.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  modalRoot.innerHTML=`
-
-    <div class="overlay">
-
-      <div class="modal">
-
-        <button
-          class="close"
-          id="closeLink"
-        >
-          ×
-        </button>
-
-        <h2>
-          Привязка Dota 2
-        </h2>
-
-        <div class="modal-desc">
-
-          Telegram-аккаунт:
-
-          <b>
-            ${esc(
-              getTelegramName()
-            )}
-          </b>
-
-          <br>
-
-          После сохранения этот Dota 2 аккаунт
-          станет твоим постоянным игроком.
-          Изменить его через приложение будет нельзя.
-
-        </div>
-
-        <div class="field">
-
-          <label>
-            DOTA 2 ACCOUNT ID / DOTABUFF
-          </label>
-
-          <input
-            id="accountInput"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="117905733"
-          >
-
-        </div>
-
-        <div
-          id="linkError"
-        ></div>
-
-        <div class="modal-actions">
-
-          <button
-            class="btn"
-            id="cancelLink"
-          >
-            Отмена
-          </button>
-
-          <button
-            class="btn primary"
-            id="confirmLink"
-          >
-            Привязать
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-
-  document
-    .getElementById("closeLink")
-    .onclick=
-    closeModal;
-
-  document
-    .getElementById("cancelLink")
-    .onclick=
-    closeModal;
-
-  document
-    .getElementById("confirmLink")
-    .onclick=
-    createPlayer;
-
-}
-
-/* ============================================================
-   CREATE PLAYER
-============================================================ */
-
-async function createPlayer(){
-
-  if(myPlayer){
-
-    closeModal();
-
-    return;
-
-  }
-
-  const input =
-    document.getElementById(
-      "accountInput"
-    );
-
-  const errorBox =
-    document.getElementById(
-      "linkError"
-    );
-
-  const account =
-    accountIdFrom(
-      input.value
-    );
-
-  if(!account){
-
-    errorBox.innerHTML=`
-
-      <div class="notice error">
-        Укажи корректный Dota 2 Account ID.
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  const button =
-    document.getElementById(
-      "confirmLink"
-    );
-
-  button.disabled=true;
-
-  button.textContent=
-    "Проверка...";
-
-  try{
-
-    /*
-      Повторная проверка Firebase
-      перед созданием.
-    */
-
-    const remote =
-      await loadMyUser();
-
-    if(remote){
-
-      myPlayer =
-        remote;
-
-      saveLocal();
-
-      closeModal();
-
-      render();
-
-      showNotice(
-        "Эта Telegram-учётка уже имеет Dota-карту.",
-        "ok"
-      );
-
-      return;
-
     }
 
-    /*
-      Проверяем Account ID через OpenDota.
-    */
-
-    const profile =
-      await api(
-        `/players/${account}`
-      );
-
-    if(
-      !profile ||
-      !profile.profile
-    ){
-
-      throw new Error(
-        "Dota 2 игрок не найден."
-      );
-
-    }
-
-    const name =
-      (
-        profile.profile.personaname ||
-        getTelegramName() ||
-        "Dota Player"
-      );
-
-    const photo =
-      profile.profile.avatarfull ||
-      getTelegramPhoto() ||
-      null;
-
-    myPlayer =
-      normalizePlayer({
-
-        accountId:
-          String(account),
-
-        name,
-
-        role:"carry",
-
-        photo,
-
-        telegramUserId:
-          getTelegramId(),
-
-        telegramUsername:
-          telegramUser &&
-          telegramUser.username
-            ?telegramUser.username
-            :null,
-
-        telegramName:
-          getTelegramName(),
-
-        card:
-          defaultCard(),
-
-        matches:[],
-
-        score:0,
-
-        createdAt:
-          Date.now(),
-
-        updatedAt:
-          Date.now()
-
-      });
-
-    /*
-      Сохраняем сразу.
-      После этого Telegram уже имеет
-      одну постоянную карту.
-    */
-
-    await createMyUser(
-      myPlayer
-    );
-
-    saveLocal();
-
-    /*
-      КРИТИЧНО:
-      окно закрывается ДО загрузки матчей.
-    */
-
-    closeModal();
-
+    delete player.loading;delete player.loadingCurrent;delete player.loadingTotal;delete player.loadingText;
+    await saveOwner();
     render();
-
-    showNotice(
-      "✓ Dota 2 аккаунт привязан. Загружаю матчи в фоне...",
-      "ok"
-    );
-
-    /*
-      Матчи грузятся уже после закрытия окна.
-    */
-
-    await refreshMyPlayer();
-
-  }catch(error){
-
-    button.disabled=false;
-
-    button.textContent=
-      "Привязать";
-
-    errorBox.innerHTML=`
-
-      <div class="notice error">
-        ${esc(
-          error.message
-        )}
-      </div>
-
-    `;
-
+    showNotice("✓ Данные обновлены","ok");
+  }catch(e){
+    delete player.loading;delete player.loadingCurrent;delete player.loadingTotal;delete player.loadingText;
+    render();
+    showNotice("Ошибка: "+e.message,"error");
   }
-
-}
-
-/* ============================================================
-   CALCULATION
-============================================================ */
-
-function openCalculation(){
-
-  if(!myPlayer)
-    return;
-
-  const best =
-    bestTwo();
-
-  modalRoot.innerHTML=`
-
-    <div class="overlay">
-
-      <div class="modal">
-
-        <button
-          class="close"
-          id="closeCalc"
-        >
-          ×
-        </button>
-
-        <h2>
-          ${esc(
-            myPlayer.name
-          )}
-        </h2>
-
-        <div class="modal-desc">
-
-          ${
-            RARITIES[
-              myPlayer.card.rarity
-            ]
-          }
-          PLAYER CARD
-
-          · бонусы применяются
-          после базового расчёта.
-
-        </div>
-
-        ${
-          best.matches.length
-            ?best.matches
-              .map(
-                match=>
-                  calculationBlock(
-                    match
-                  )
-              )
-              .join("")
-            :`
-              <div class="notice">
-                Матчи ещё не загружены.
-              </div>
-            `
-        }
-
-        <div class="calc-total">
-
-          <span>
-            BEST 2 TOTAL
-          </span>
-
-          <strong>
-            ${fmt(
-              best.total
-            )}
-          </strong>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-
-  document
-    .getElementById("closeCalc")
-    .onclick=
-    closeModal;
-
-}
-
-function calculationBlock(
-  match
-){
-
-  const rows =
-    BONUS_FIELDS
-      .map(
-        ([key,label])=>{
-
-          const base =
-            number(
-              match.baseFantasy &&
-              match.baseFantasy[key]
-            );
-
-          const bonus =
-            number(
-              myPlayer.card.bonuses &&
-              myPlayer.card.bonuses[key]
-            );
-
-          const final =
-            number(
-              match.finalFantasy &&
-              match.finalFantasy[key]
-            );
-
-          return `
-
-            <tr>
-
-              <td>
-                ${esc(label)}
-              </td>
-
-              <td>
-                ${base.toFixed(3)}
-              </td>
-
-              <td>
-                +${bonus}%
-              </td>
-
-              <td>
-                ${final.toFixed(3)}
-              </td>
-
-            </tr>
-
-          `;
-
-        }
-      )
-      .join("");
-
-  return `
-
-    <div
-      style="
-        border:1px solid var(--line);
-        margin-top:12px;
-      "
-    >
-
-      <div
-        style="
-          display:flex;
-          justify-content:space-between;
-          padding:9px;
-          border-bottom:1px solid var(--line);
-          font:9px IBM Plex Mono;
-        "
-      >
-
-        <span>
-          MATCH #${esc(
-            match.matchId
-          )}
-        </span>
-
-        <strong
-          style="color:var(--gold)"
-        >
-          ${fmt(
-            match.fantasy
-          )}
-        </strong>
-
-      </div>
-
-      <table class="calc-table">
-
-        <thead>
-
-          <tr>
-
-            <th>
-              Показатель
-            </th>
-
-            <th>
-              Base
-            </th>
-
-            <th>
-              Card
-            </th>
-
-            <th>
-              Final
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          ${rows}
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-}
-
-/* ============================================================
-   GLOBAL LEADERBOARD
-============================================================ */
-
-/*
-  Загружаем только верхнюю часть рейтинга.
-  Это гораздо быстрее, чем тащить всех пользователей
-  при каждом открытии приложения.
-*/
-
-async function loadLeaderboard(
-  silent=false
-){
-
-  if(!db)
-    return;
-
-  try{
-
-    const snapshot =
-      await db
-        .collection(
-          COLLECTION
-        )
-        .orderBy(
-          "score",
-          "desc"
-        )
-        .limit(100)
-        .get();
-
-    leaderboard =
-      snapshot.docs
-        .map(
-          doc=>
-            normalizePlayer(
-              doc.data()
-            )
-        );
-
-    if(
-      activeTab==="rating"
-    ){
-
-      renderRating();
-
-    }
-
-  }catch(error){
-
-    /*
-      Если composite/index ещё не создан,
-      пробуем простой запрос.
-    */
-
-    try{
-
-      const snapshot =
-        await db
-          .collection(
-            COLLECTION
-          )
-          .limit(100)
-          .get();
-
-      leaderboard =
-        snapshot.docs
-          .map(
-            doc=>
-              normalizePlayer(
-                doc.data()
-              )
-          )
-          .sort(
-            (a,b)=>
-              number(b.score)-
-              number(a.score)
-          );
-
-      if(
-        activeTab==="rating"
-      ){
-
-        renderRating();
-
-      }
-
-    }catch(error2){
-
-      if(!silent){
-
-        showNotice(
-          "Не удалось загрузить мировой рейтинг.",
-          "error"
-        );
-
-      }
-
-    }
-
-  }
-
-}
-
-/* ============================================================
-   RATING
-============================================================ */
-
-function renderRating(){
-
-  const rows =
-    leaderboard
-      .slice()
-      .sort(
-        (a,b)=>
-          number(b.score)-
-          number(a.score)
-      );
-
-  if(!rows.length){
-
-    content.innerHTML=`
-
-      <div class="empty">
-
-        <h2>
-          Мировой рейтинг пока пуст
-        </h2>
-
-        <p>
-          После появления игроков здесь
-          будет общий рейтинг Fantasy Points.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  let myIndex =
-    rows.findIndex(
-      player=>
-        myPlayer &&
-        String(
-          player.telegramUserId || ""
-        )===
-        String(
-          myPlayer.telegramUserId || ""
-        )
-    );
-
-  const myRank =
-    myIndex>=0
-      ?myIndex+1
-      :"—";
-
-  const myScore =
-    myPlayer
-      ?number(myPlayer.score)
-      :0;
-
-  const leaderScore =
-    rows.length
-      ?number(rows[0].score)
-      :0;
-
-  const difference =
-    leaderScore-
-    myScore;
-
-  content.innerHTML=`
-
-    ${
-      myPlayer
-        ?`
-
-          <div class="my-rank">
-
-            <div class="rank-box">
-
-              <span>
-                МОЁ МЕСТО
-              </span>
-
-              <strong>
-                #${myRank}
-              </strong>
-
-            </div>
-
-            <div class="rank-box">
-
-              <span>
-                МОИ ОЧКИ
-              </span>
-
-              <strong>
-                ${fmt(myScore)}
-              </strong>
-
-            </div>
-
-            <div class="rank-box">
-
-              <span>
-                ДО ЛИДЕРА
-              </span>
-
-              <strong>
-                ${fmt(
-                  Math.max(
-                    0,
-                    difference
-                  )
-                )}
-              </strong>
-
-            </div>
-
-          </div>
-
-        `
-        :""
-    }
-
-    <div class="notice">
-
-      🌍 <b>МИРОВОЙ РЕЙТИНГ</b>
-
-      <br>
-
-      Все Telegram-пользователи
-      используют одну таблицу очков.
-
-      <br>
-
-      В рейтинге показываются лучшие
-      доступные игроки.
-
-    </div>
-
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-
-          <tr>
-
-            <th>
-              #
-            </th>
-
-            <th>
-              Игрок
-            </th>
-
-            <th>
-              Fantasy
-            </th>
-
-            <th>
-              Статус
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          ${
-            rows
-              .map(
-                (player,index)=>{
-
-                  const isMe =
-                    myPlayer &&
-                    String(
-                      player.telegramUserId || ""
-                    )===
-                    String(
-                      myPlayer.telegramUserId || ""
-                    );
-
-                  return `
-
-                    <tr
-                      ${
-                        isMe
-                          ?`style="
-                              outline:1px solid var(--gold2);
-                            "`
-                          :""
-                      }
-                    >
-
-                      <td>
-                        ${
-                          index<3
-                            ?(
-                              index===0
-                                ?"🥇"
-                                :index===1
-                                  ?"🥈"
-                                  :"🥉"
-                            )
-                            :index+1
-                        }
-                      </td>
-
-                      <td>
-
-                        <div
-                          class="player-cell"
-                        >
-
-                          <div
-                            class="avatar-small"
-                          >
-
-                            ${
-                              player.photo
-                                ?`
-                                  <img
-                                    src="${esc(
-                                      player.photo
-                                    )}"
-                                    loading="lazy"
-                                  >
-                                `
-                                :esc(
-                                  initials(
-                                    player.name
-                                  )
-                                )
-                            }
-
-                          </div>
-
-                          <div>
-
-                            <strong>
-                              ${esc(
-                                player.name
-                              )}
-                            </strong>
-
-                            <div
-                              style="
-                                color:#675c4a;
-                                font:8px IBM Plex Mono;
-                              "
-                            >
-                              ${
-                                isMe
-                                  ?"ТЫ"
-                                  :"DOTA PLAYER"
-                              }
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                      </td>
-
-                      <td
-                        class="table-score"
-                        style="font-size:14px"
-                      >
-                        ${fmt(
-                          player.score
-                        )}
-                      </td>
-
-                      <td>
-
-                        ${
-                          isMe
-                            ?`
-                              <span
-                                style="
-                                  color:var(--gold);
-                                  font:8px IBM Plex Mono;
-                                "
-                              >
-                                ТВОЯ КАРТА
-                              </span>
-                            `
-                            :`
-                              <span
-                                style="
-                                  color:var(--muted);
-                                  font:8px IBM Plex Mono;
-                                "
-                              >
-                                МИР
-                              </span>
-                            `
-                        }
-
-                      </td>
-
-                    </tr>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-}
-
-/* ============================================================
-   STATUS
-============================================================ */
-
-function renderStatus(){
-
-  const score =
-    myPlayer
-      ?number(myPlayer.score)
-      :0;
-
-  status.innerHTML=`
-
-    <div class="status-item">
-
-      TELEGRAM
-
-      <b>
-        ${
-          telegramUser
-            ?"CONNECTED"
-            :"GUEST"
-        }
-      </b>
-
-    </div>
-
-    <div class="status-item">
-
-      МОЯ КАРТА
-
-      <b>
-        ${
-          myPlayer
-            ?"LINKED"
-            :"NOT LINKED"
-        }
-      </b>
-
-    </div>
-
-    ${
-      myPlayer
-        ?`
-
-          <div class="status-item">
-
-            FANTASY
-
-            <b>
-              ${fmt(score)}
-            </b>
-
-          </div>
-
-        `
-        :""
-    }
-
-    <div class="status-item">
-
-      FIREBASE
-
-      <b>
-        ${
-          db
-            ?"ONLINE"
-            :"LOCAL"
-        }
-      </b>
-
-    </div>
-
-  `;
-
-}
-
-/* ============================================================
-   NOTICE
-============================================================ */
-
-function showNotice(
-  text,
-  type=""
-){
-
-  notice.innerHTML=`
-
-    <div
-      class="
-        notice
-        ${type}
-      "
-    >
-      ${esc(text)}
-    </div>
-
-  `;
-
-  setTimeout(
-    ()=>{
-
-      notice.innerHTML="";
-
-    },
-    6000
-  );
-
 }
 
 /* ============================================================
    RENDER
 ============================================================ */
+function showNotice(text,type=""){
+  notice.innerHTML=`<div class="notice ${type}">${esc(text)}</div>`;
+  setTimeout(()=>{notice.innerHTML=""},5000);
+}
 
-function renderPlayers(){
+function avatar(){
+  if(player&&player.photo){
+    return `<img src="${esc(player.photo)}" loading="lazy" onerror="this.style.display='none'">`;
+  }
+  return `<div class="placeholder">${esc(initials(player&&player.name))}</div>`;
+}
 
-  renderPlayerCard();
+function renderStatus(){
+  const best=bestTwo();
+  status.innerHTML=`
+    <div class="status-item">TELEGRAM <b>${telegramId?"CONNECTED":"NOT FOUND"}</b></div>
+    <div class="status-item">КАРТА <b>${player?"CREATED":"NOT CREATED"}</b></div>
+    <div class="status-item">ACCOUNT <b>${player?esc(player.accountId):"—"}</b></div>
+    <div class="status-item">BEST 2 <b>${fmt(best.total)}</b></div>
+    <div class="status-item">FIREBASE <b>${db?"ONLINE":"LOCAL"}</b></div>
+  `;
+}
 
+function renderPlayer(){
+  if(!player){
+    content.innerHTML=`
+      <div class="empty">
+        <h2>Твоя карта ещё не создана</h2>
+        <p>
+          Один Telegram-аккаунт может создать только одну Dota 2 карту.
+          После создания изменить Dota Account ID уже нельзя.
+        </p>
+        <button class="btn primary" id="createBtn">＋ Создать мою карту</button>
+      </div>`;
+    document.getElementById("createBtn").onclick=openCreateModal;
+    return;
+  }
+
+  const best=bestTwo();
+  const matches=player.matches||[];
+
+  content.innerHTML=`
+    <div class="cards">
+      <article class="card mine">
+        <div class="card-head">
+          <span class="role">${esc(ROLES[player.role]||"ИГРОК")}</span>
+          <span class="mine-badge">МОЯ КАРТА</span>
+        </div>
+
+        <div class="photo">
+          ${avatar()}
+          <div class="player-name">
+            <strong>${esc(player.name)}</strong>
+            <span>ACCOUNT ${esc(player.accountId)}</span>
+          </div>
+        </div>
+
+        <div class="card-summary">
+          <div>
+            <div class="rarity">${esc(RARITIES[player.card.rarity])} · PLAYER CARD</div>
+            <div class="score-label">ЛУЧШИЕ 2 МАТЧА</div>
+          </div>
+          <div class="score">${fmt(best.total)}</div>
+        </div>
+
+        ${player.loading?`
+          <div class="loading">
+            <div class="loading-line">
+              <span>${esc(player.loadingText||"Загрузка...")}</span>
+              <span>${num(player.loadingCurrent)}/${num(player.loadingTotal)}</span>
+            </div>
+            <div class="progress"><i style="width:${player.loadingTotal?num(player.loadingCurrent)/num(player.loadingTotal)*100:0}%"></i></div>
+          </div>`:""}
+
+        <div class="matches">
+          ${matches.length?matches.map(m=>`
+            <div class="match">
+              <div class="match-top">
+                <span class="match-id">#${esc(m.matchId)}</span>
+                <span class="match-score">${fmt(m.fantasy)}</span>
+              </div>
+              <div class="match-info">
+                <span class="${m.win?"win":"loss"}">${m.win?"ПОБЕДА":"ПОРАЖЕНИЕ"}</span>
+                <span>${m.kills}/${m.deaths}/${m.assists}</span>
+                <span>GPM ${fmt(m.gpm)}</span>
+              </div>
+            </div>`).join(""):`<div class="match"><div class="match-info">Матчи ещё не загружены</div></div>`}
+        </div>
+
+        <div class="card-footer">
+          <button class="btn" id="calcBtn">Расчёт</button>
+          <button class="btn" id="editBtn">Карта</button>
+          <button class="btn primary" id="refreshMine">↻</button>
+        </div>
+      </article>
+    </div>`;
+  document.getElementById("calcBtn").onclick=()=>openCalculation();
+  document.getElementById("editBtn").onclick=()=>openEditModal();
+  document.getElementById("refreshMine").onclick=refreshPlayer;
+}
+
+function renderRating(){
+  if(!player){
+    content.innerHTML=`<div class="empty"><h2>Нет данных</h2><p>Сначала создай свою карту.</p></div>`;
+    return;
+  }
+  const best=bestTwo();
+  content.innerHTML=`
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Игрок</th><th>Матч 1</th><th>Матч 2</th><th>BEST 2</th><th>Карта</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>${esc(player.name)}</strong><div style="color:#675c4a;font:8px monospace">${esc(player.accountId)}</div></td>
+            <td style="color:var(--gold);font-family:monospace">${best.matches[0]?fmt(best.matches[0].fantasy):"—"}</td>
+            <td style="color:var(--gold);font-family:monospace">${best.matches[1]?fmt(best.matches[1].fantasy):"—"}</td>
+            <td style="color:var(--gold);font:bold 14px monospace">${fmt(best.total)}</td>
+            <td>${esc(RARITIES[player.card.rarity])}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice">Глобальный рейтинг и рейтинг друзей подключаются отдельно: здесь намеренно нет списка чужих игроков и кнопки «добавить игрока». Чужие карточки принадлежат их Telegram-аккаунтам.</div>`;
 }
 
 function render(){
-
   renderStatus();
-
-  diag.classList.toggle(
-    "open",
-    activeTab==="diagnostics"
-  );
-
-  if(
-    activeTab==="players"
-  ){
-
-    renderPlayers();
-
-  }
-
-  else if(
-    activeTab==="rating"
-  ){
-
-    renderRating();
-
-  }
-
+  diag.classList.toggle("open",activeTab==="diagnostics");
+  if(activeTab==="players")renderPlayer();
+  else if(activeTab==="rating")renderRating();
   else{
-
-    content.innerHTML=`
-
-      <div class="notice">
-
-        <b>OpenDota</b>
-
-        <br><br>
-
-        Запрашиваются только последние
-        2 матча.
-
-        <br>
-
-        Уже загруженные матчи
-        берутся из локального/Firebase-кэша.
-
-        <br>
-
-        Максимум 2 сетевых запроса
-        одновременно.
-
-        <br><br>
-
-        <b>Telegram</b>
-
-        <br>
-
-        ${
-          telegramUser
-            ?`
-              ${esc(
-                getTelegramName()
-              )}
-              · ID
-              ${esc(
-                getTelegramId()
-              )}
-            `
-            :"Telegram WebApp не найден"
-        }
-
-      </div>
-
-    `;
-
+    content.innerHTML=`<div class="notice">
+      Telegram ID: <b>${telegramId?esc(telegramId):"не найден"}</b><br><br>
+      Владелец Firestore: <b>${telegramId?"owners/"+esc(telegramId):"—"}</b><br><br>
+      Один Telegram ID = одна карта.
+    </div>`;
     renderDiagnostics();
+  }
+}
 
+/* ============================================================
+   MODALS
+============================================================ */
+function closeModal(){modalRoot.innerHTML=""}
+
+function openCreateModal(){
+  /* Никаких повторных созданий. */
+  if(player){
+    showNotice("У тебя уже есть карта. Второго игрока создать нельзя.","error");
+    return;
   }
 
+  if(!telegramId){
+    /* Не блокируем навсегда: если Telegram API ещё не успел отдать user,
+       пробуем обновить состояние. */
+    initTelegram();
+  }
+
+  if(!telegramId){
+    showNotice("Открой эту страницу именно через Telegram WebApp бота. Telegram ID нужен для привязки карты.","error");
+    return;
+  }
+
+  renderForm(false);
 }
 
-/* ============================================================
-   MODAL
-============================================================ */
-
-function closeModal(){
-
-  modalRoot.innerHTML="";
-
+function openEditModal(){
+  if(!player)return;
+  renderForm(true);
 }
 
-/* ============================================================
-   TABS
-============================================================ */
+function renderForm(edit){
+  const card=player?player.card:defaultCard();
+  let role=player?player.role:"carry";
+  let rarity=card.rarity;
 
-document
-  .querySelectorAll(".tab")
-  .forEach(
-    tab=>{
+  modalRoot.innerHTML=`
+    <div class="overlay">
+      <div class="modal">
+        <button class="close" id="closeModal">×</button>
+        <h2>${edit?"Моя карта":"Создать мою карту"}</h2>
+        <div class="modal-desc">
+          Telegram: <b>${esc(tgName()||"пользователь")}</b><br>
+          Telegram ID: <b>${esc(telegramId)}</b><br><br>
+          Эта карта навсегда привязывается к этому Telegram ID.
+          ${edit?"Dota Account ID изменить нельзя.":""}
+        </div>
 
-      tab.onclick=()=>{
+        <div class="field">
+          <label>ИМЯ ИГРОКА</label>
+          <input id="playerName" value="${esc(player?player.name:tgName())}" placeholder="Имя">
+        </div>
 
-        document
-          .querySelectorAll(".tab")
-          .forEach(
-            item=>
-              item.classList
-                .remove("active")
-          );
+        <div class="field">
+          <label>DOTA 2 ACCOUNT ID</label>
+          <input id="playerAccount" value="${esc(player?player.accountId:"")}" placeholder="117905733" ${edit?"readonly":""}>
+        </div>
 
-        tab.classList.add("active");
+        <div class="field">
+          <label>РОЛЬ</label>
+          <div class="roles" id="roleGrid">
+            ${Object.entries(ROLES).map(([k,v])=>`
+              <div class="role-option ${role===k?"selected":""}" data-role="${k}">
+                <strong>${v}</strong><span>Fantasy</span>
+              </div>`).join("")}
+          </div>
+        </div>
 
-        activeTab =
-          tab.dataset.tab;
+        <div class="field">
+          <label>РЕДКОСТЬ</label>
+          <div class="rarity-grid">
+            ${Object.entries(RARITIES).map(([k,v])=>`
+              <div class="rarity-option ${rarity===k?"selected":""}" data-rarity="${k}">${v}</div>
+            `).join("")}
+          </div>
+        </div>
 
-        render();
+        <div class="field">
+          <label>БОНУСЫ PLAYER CARD</label>
+          <div class="bonus-grid">
+            ${BONUS_FIELDS.map(([k,v])=>`
+              <div class="bonus">
+                <label>${v}</label>
+                <input type="number" min="-100" max="100" step="1" data-bonus="${k}" value="${num(card.bonuses[k])}">
+              </div>`).join("")}
+          </div>
+        </div>
 
-        if(
-          activeTab==="rating"
-        ){
+        <div id="modalError"></div>
 
-          loadLeaderboard();
+        <div class="modal-actions">
+          <button class="btn" id="cancelModal">Отмена</button>
+          <button class="btn primary" id="savePlayer">${edit?"Сохранить":"Создать карту"}</button>
+        </div>
+      </div>
+    </div>`;
 
-        }
+  document.getElementById("closeModal").onclick=closeModal;
+  document.getElementById("cancelModal").onclick=closeModal;
 
-      };
+  document.querySelectorAll("[data-role]").forEach(el=>el.onclick=()=>{
+    role=el.dataset.role;
+    document.querySelectorAll("[data-role]").forEach(x=>x.classList.remove("selected"));
+    el.classList.add("selected");
+  });
+  document.querySelectorAll("[data-rarity]").forEach(el=>el.onclick=()=>{
+    rarity=el.dataset.rarity;
+    document.querySelectorAll("[data-rarity]").forEach(x=>x.classList.remove("selected"));
+    el.classList.add("selected");
+  });
 
+  document.getElementById("savePlayer").onclick=async()=>{
+    const err=document.getElementById("modalError");
+    err.innerHTML="";
+
+    if(!telegramId){
+      err.innerHTML=`<div class="notice error">Telegram ID не найден. Открой WebApp через Telegram.</div>`;
+      return;
     }
-  );
 
-/* ============================================================
-   BUTTONS
-============================================================ */
+    const name=document.getElementById("playerName").value.trim();
+    const account=accountIdFrom(document.getElementById("playerAccount").value);
 
-document
-  .getElementById("myBtn")
-  .onclick=()=>{
+    if(!name){
+      err.innerHTML=`<div class="notice error">Укажи имя.</div>`;
+      return;
+    }
+    if(!account){
+      err.innerHTML=`<div class="notice error">Неверный Dota Account ID.</div>`;
+      return;
+    }
 
-    activeTab="players";
+    /* Жёсткое клиентское правило: существующую карту нельзя заменить новой. */
+    if(!edit && player){
+      err.innerHTML=`<div class="notice error">У тебя уже есть карта. Вторую создать нельзя.</div>`;
+      return;
+    }
 
-    document
-      .querySelectorAll(".tab")
-      .forEach(
-        tab=>{
-          tab.classList.toggle(
-            "active",
-            tab.dataset.tab==="players"
-          );
-        }
-      );
+    const bonuses=defaultBonuses();
+    document.querySelectorAll("[data-bonus]").forEach(i=>bonuses[i.dataset.bonus]=num(i.value));
 
+    if(!edit){
+      player={
+        accountId:String(account),
+        name,
+        role,
+        photo:tgPhoto(),
+        telegramUserId:String(telegramId),
+        telegramUsername:telegramUser&&telegramUser.username?telegramUser.username:null,
+        card:{rarity,bonuses},
+        matches:[],
+        lastRefresh:null,
+        createdAt:Date.now()
+      };
+    }else{
+      /* accountId и telegramUserId НЕ меняются. */
+      player.name=name;
+      player.role=role;
+      player.card={rarity,bonuses};
+    }
+
+    normalize(player);
+    await saveOwner();
+
+    /* Закрываем окно сразу после сохранения. */
+    closeModal();
     render();
 
+    /* И только потом тихо догружаем матчи. */
+    refreshPlayer();
   };
+}
 
-document
-  .getElementById("refreshBtn")
-  .onclick=
-  refreshMyPlayer;
+function openCalculation(){
+  if(!player)return;
+  const best=bestTwo();
+
+  modalRoot.innerHTML=`
+    <div class="overlay">
+      <div class="modal">
+        <button class="close" id="closeModal">×</button>
+        <h2>Расчёт · ${esc(player.name)}</h2>
+        <div class="modal-desc">${esc(RARITIES[player.card.rarity])} PLAYER CARD</div>
+        ${best.matches.length?best.matches.map(m=>`
+          <div style="border:1px solid var(--line);margin-top:12px">
+            <div style="display:flex;justify-content:space-between;padding:9px;border-bottom:1px solid var(--line);font:9px monospace">
+              <span>MATCH #${esc(m.matchId)}</span><strong style="color:var(--gold)">${fmt(m.fantasy)}</strong>
+            </div>
+            <table class="calc-table">
+              <thead><tr><th>Показатель</th><th>Base</th><th>Card</th><th>Final</th></tr></thead>
+              <tbody>
+                ${BONUS_FIELDS.map(([k,l])=>`
+                  <tr>
+                    <td>${esc(l)}</td>
+                    <td>${num(m.baseFantasy[k]).toFixed(3)}</td>
+                    <td>+${num(player.card.bonuses[k])}%</td>
+                    <td>${num(m.finalFantasy[k]).toFixed(3)}</td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>`).join(""):`<div class="notice">Нет загруженных матчей.</div>`}
+        <div class="calc-total"><span>BEST 2 TOTAL</span><strong>${fmt(best.total)}</strong></div>
+      </div>
+    </div>`;
+
+  document.getElementById("closeModal").onclick=closeModal;
+}
+
+/* ============================================================
+   TABS / BUTTONS
+============================================================ */
+document.querySelectorAll(".tab").forEach(tab=>tab.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  tab.classList.add("active");
+  activeTab=tab.dataset.tab;
+  render();
+});
+document.getElementById("myBtn").onclick=()=>{
+  activeTab="players";
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab==="players"));
+  render();
+};
+document.getElementById("refreshBtn").onclick=async()=>{
+  const b=document.getElementById("refreshBtn");
+  b.disabled=true;b.textContent="Загрузка...";
+  try{await refreshPlayer()}finally{b.disabled=false;b.textContent="↻ Обновить"}
+};
 
 /* ============================================================
    BOOT
 ============================================================ */
-
 async function boot(){
+  /* Сначала мгновенно показываем локальную карту. */
+  player=loadLocal();
 
-  /*
-    Сначала мгновенно показываем
-    локального пользователя.
-  */
-
-  if(telegramUser){
-
-    myPlayer =
-      loadLocal();
-
-    if(myPlayer){
-
-      render();
-
-    }else{
-
-      render();
-
-    }
-
-    /*
-      Потом тихо проверяем Firebase.
-    */
-
-    const remote =
-      await loadMyUser();
-
-    if(remote){
-
-      myPlayer =
-        remote;
-
-      saveLocal();
-
-      render();
-
-      /*
-        Если score/матчи уже есть —
-        ничего не грузим.
-      */
-
-      if(
-        !myPlayer.matches ||
-        myPlayer.matches.length<2
-      ){
-
-        refreshMyPlayer();
-
-      }
-
-    }
-
-    else{
-
-      /*
-        Новый Telegram пользователь.
-      */
-
-      render();
-
-    }
-
-  }else{
-
-    render();
-
-    showNotice(
-      "Открой приложение внутри Telegram, чтобы создать свою карту.",
-      "error"
-    );
-
+  if(player && String(player.telegramUserId)!==String(telegramId)){
+    /* Локальная карта другого Telegram аккаунта не используется. */
+    player=null;
   }
 
+  render();
+
+  /* Затем подтягиваем ровно одну карту владельца. */
+  await loadOwner();
+
+  if(player){
+    showNotice(`✓ Вход выполнен. Твоя карта: ${player.name}`,"ok");
+  }else if(!telegramId){
+    showNotice("Telegram ID не получен. Открой WebApp через кнопку бота.","error");
+  }
 }
-
-/* ============================================================
-   START
-============================================================ */
-
 boot();
-
 </script>
-
 </body>
 </html>
