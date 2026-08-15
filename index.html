@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090806">
+<meta name="theme-color" content="#0a0705">
 <title>Fantasy Registry</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -11,286 +11,307 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 
 <style>
+/* ============================================================
+   TOKENS
+   Palette: warm near-black base, aged gold frame, three stat
+   "guild" colors lifted from the roster reference (blood maroon
+   for combat, moss green for economy, indigo for objectives),
+   plus a teal spark used only for the idle card ornament.
+============================================================ */
 :root{
-  --bg:#080706;
-  --panel:#12100d;
-  --panel2:#19150f;
-  --panel3:#211a11;
-  --gold:#d7b449;
-  --gold2:#987927;
-  --text:#eee4d0;
-  --muted:#8d806a;
-  --muted2:#665c4c;
-  --line:#30271c;
-  --green:#69bb83;
-  --red:#c95b68;
-  --shadow:0 18px 55px rgba(0,0,0,.45);
+  --bg:#0a0704;
+  --bg-2:#050403;
+  --panel:#151009;
+  --panel-2:#1c150c;
+  --panel-3:#241a0f;
+  --gold:#e2bd5c;
+  --gold-dim:#a3813a;
+  --gold-line:#4a3a1e;
+  --text:#f1e6cf;
+  --muted:#9c8d72;
+  --muted-2:#6e6250;
+  --line:#2c2213;
+  --teal:#5fd9c9;
+  --green:#6fc48e;
+  --red:#d9707c;
+
+  --combat-bg:#341018;
+  --combat-ac:#e0707c;
+  --farm-bg:#132c1f;
+  --farm-ac:#6fcf94;
+  --obj-bg:#1b1638;
+  --obj-ac:#a89af2;
+  --vision-bg:#0f2836;
+  --vision-ac:#66c3e0;
+
+  --shadow:0 20px 60px rgba(0,0,0,.55);
+  --radius:10px;
 }
 
 *{box-sizing:border-box}
 
-html,body{
-  margin:0;
-  min-height:100%;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(177,135,37,.10),transparent 34%),
-    var(--bg);
-}
+html,body{margin:0;min-height:100%}
 
 body{
+  background:
+    radial-gradient(circle at 15% -10%,rgba(226,189,92,.08),transparent 32%),
+    radial-gradient(circle at 85% 110%,rgba(95,217,201,.05),transparent 38%),
+    var(--bg);
   color:var(--text);
-  padding:15px 11px 70px;
+  padding:16px 12px 80px;
   font-family:Georgia,"Times New Roman",serif;
   -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
 }
 
 button,input{font:inherit}
-button{cursor:pointer}
+button{cursor:pointer;font-family:inherit}
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms!important;transition-duration:.001ms!important} }
 
 .wrap{width:100%;max-width:1180px;margin:auto}
+.mono{font-family:"Courier New",monospace}
 
-/* HEADER */
-.header{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:10px 0 17px;border-bottom:1px solid var(--line)}
-.logo h1{margin:0;font-size:25px;letter-spacing:1.5px}
-.logo p{margin:5px 0 0;color:var(--muted);font:9px monospace;letter-spacing:1px}
+/* ---------- HEADER ---------- */
+.header{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:6px 0 16px;border-bottom:1px solid var(--line)}
+.logo h1{margin:0;font-size:24px;letter-spacing:1.4px;color:var(--text)}
+.logo p{margin:5px 0 0;color:var(--muted-2);font:9px/1.4 "Courier New",monospace;letter-spacing:1.6px;text-transform:uppercase}
 .actions{display:flex;gap:7px;flex-wrap:wrap}
-.btn{border:1px solid var(--gold2);background:linear-gradient(180deg,#1e1810,#15110c);color:var(--text);padding:9px 12px;border-radius:4px;font:9px monospace;letter-spacing:.8px;text-transform:uppercase;transition:.15s}
-.btn:hover{border-color:var(--gold);background:var(--panel3)}
-.btn.primary{background:linear-gradient(180deg,#ad8927,#765a18);border-color:var(--gold);color:#171206;font-weight:bold}
-.btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* TABS */
-.tabs{display:flex;gap:25px;border-bottom:1px solid var(--line);margin-bottom:15px}
-.tab{position:relative;border:0;background:none;color:var(--muted);padding:12px 1px;font:9px monospace;letter-spacing:1.4px;text-transform:uppercase}
+.btn{
+  border:1px solid var(--gold-line);
+  background:linear-gradient(180deg,#211808,#160f06);
+  color:var(--text);
+  padding:9px 13px;border-radius:5px;
+  font:9px "Courier New",monospace;letter-spacing:1px;text-transform:uppercase;
+  transition:border-color .15s,transform .1s,background .15s;
+}
+.btn:hover{border-color:var(--gold);background:var(--panel-3)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(180deg,#caa03f,#8a6a21);border-color:var(--gold);color:#1a1206;font-weight:bold}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent}
+
+/* ---------- TABS ---------- */
+.tabs{display:flex;gap:26px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{position:relative;border:0;background:none;color:var(--muted);padding:12px 1px;font:9px "Courier New",monospace;letter-spacing:1.6px;text-transform:uppercase}
 .tab.active{color:var(--gold)}
-.tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--gold)}
+.tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal))}
 
-/* STATUS */
-.status{display:flex;flex-wrap:wrap;gap:6px;margin:13px 0}
-.status-item{border:1px solid var(--line);background:rgba(255,255,255,.018);padding:6px 8px;border-radius:3px;color:var(--muted);font:8px monospace}
+/* ---------- STATUS ---------- */
+.status{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 6px}
+.status-item{border:1px solid var(--line);background:rgba(255,255,255,.02);padding:6px 9px;border-radius:3px;color:var(--muted-2);font:8px "Courier New",monospace;letter-spacing:.4px}
 .status-item b{color:var(--gold)}
 
-/* NOTICE */
-.notice{border:1px solid #55451f;background:rgba(160,125,30,.07);color:#c9ba96;padding:10px 12px;margin:12px 0;border-radius:4px;font:9px/1.6 monospace}
-.notice.ok{border-color:#315c40;background:rgba(55,125,75,.08);color:#9bd1aa}
-.notice.error{border-color:#68313a;background:rgba(145,30,45,.09);color:#e2a2aa}
+/* ---------- NOTICE ---------- */
+.notice{border:1px solid #55451f;background:rgba(160,125,30,.08);color:#c9ba96;padding:10px 12px;margin:12px 0;border-radius:5px;font:10px/1.6 "Courier New",monospace;animation:slideIn .25s ease}
+.notice.ok{border-color:#2f6146;background:rgba(60,150,95,.09);color:#a9dab9}
+.notice.error{border-color:#6c333e;background:rgba(150,35,50,.10);color:#e6adb5}
 .notice.warn{border-color:#5c4a1f;background:rgba(160,125,30,.10);color:#e0c98f}
+@keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
-/* HERO */
-.hero{padding:22px;margin-bottom:16px;border:1px solid var(--line);border-radius:6px;background:radial-gradient(circle at 80% 20%,rgba(194,150,46,.09),transparent 30%),linear-gradient(145deg,#17130e,#0f0d0a);box-shadow:var(--shadow)}
-.hero-kicker{color:var(--gold);font:8px monospace;letter-spacing:2px}
-.hero h2{margin:8px 0 7px;font-size:25px}
-.hero p{margin:0;max-width:680px;color:#988c75;font-size:12px;line-height:1.6}
-.hero-actions{margin-top:17px;display:flex;gap:7px;flex-wrap:wrap}
+/* ---------- HERO ---------- */
+.hero{
+  padding:26px 24px;margin-bottom:16px;border:1px solid var(--line);border-radius:12px;
+  background:
+    radial-gradient(circle at 82% 15%,rgba(226,189,92,.10),transparent 32%),
+    radial-gradient(circle at 10% 90%,rgba(95,217,201,.06),transparent 30%),
+    linear-gradient(150deg,#18130b,#0d0a06);
+  box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.hero-kicker{color:var(--gold);font:8px "Courier New",monospace;letter-spacing:2.4px}
+.hero h2{margin:9px 0 8px;font-size:27px;line-height:1.2}
+.hero p{margin:0;max-width:640px;color:#a9987b;font-size:12.5px;line-height:1.65}
+.hero-actions{margin-top:19px;display:flex;gap:8px;flex-wrap:wrap}
 
-/* ===================== FANTASY CARD (screen 2 style) ===================== */
+/* ============================================================
+   FANTASY CARD — the signature element.
+   Perspective wrapper + tilt-responsive inner layer + a pointer
+   -following glare, plus a slow idle holo sweep so it always
+   reads as "foil".
+============================================================ */
+
+.fcard-stage{max-width:520px;margin:0 auto;perspective:1400px}
 
 .fcard{
-  border:1px solid var(--gold2);
-  border-radius:10px;
+  position:relative;
+  border:1px solid var(--gold-line);
+  border-radius:14px;
   overflow:hidden;
   background:
-    radial-gradient(circle at 80% -10%,rgba(200,155,45,.10),transparent 40%),
-    linear-gradient(160deg,#1b1610,#0d0b08 65%);
+    radial-gradient(circle at 80% -10%,rgba(226,189,92,.12),transparent 42%),
+    linear-gradient(160deg,#201809,#0c0906 68%);
   box-shadow:var(--shadow);
-  max-width:520px;
+  transform-style:preserve-3d;
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s;
+  will-change:transform;
+}
+.fcard:hover{box-shadow:0 26px 70px rgba(0,0,0,.6),0 0 40px rgba(226,189,92,.08)}
+
+.fcard-glare{
+  position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,15%), rgba(255,255,255,.5), transparent 42%);
+  opacity:var(--glare,0);mix-blend-mode:overlay;transition:opacity .2s;
+}
+.fcard-holo{
+  position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:color-dodge;opacity:.16;
+  background:repeating-linear-gradient(115deg,#ff9ad6 0%,#ffe29a 12%,#8fffcf 24%,#9ad4ff 36%,#c79aff 48%,#ff9ad6 60%);
+  background-size:340% 340%;
+  animation:holoSweep 7s ease-in-out infinite;
+}
+@keyframes holoSweep{
+  0%,100%{background-position:0% 30%}
+  50%{background-position:100% 70%}
 }
 
 .fcard-banner{
-  padding:14px 16px;
-  background:linear-gradient(180deg,#241c10,#171008);
-  border-bottom:1px solid var(--gold2);
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:10px;
+  padding:14px 16px;position:relative;z-index:2;
+  background:linear-gradient(180deg,#2a2011,#181008);
+  border-bottom:1px solid var(--gold-line);
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
 }
+.fcard-title{font-size:21px;color:var(--gold);letter-spacing:.3px;line-height:1.15}
+.fcard-subtitle{font:9px "Courier New",monospace;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase;white-space:nowrap}
 
-.fcard-title{
-  font-size:20px;
-  color:var(--gold);
-  letter-spacing:.3px;
+.fcard-photo{position:relative;height:220px;overflow:hidden;background:#0b0907;z-index:1}
+.fcard-photo img.main{width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(0)}
+.fcard-photo .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#4a3f2c;font-size:64px;background:radial-gradient(circle,#241c10,#0d0a06)}
+.fcard-photo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.96),rgba(0,0,0,0) 64%)}
+
+.fcard-photo-tag{position:absolute;z-index:2;left:14px;bottom:12px;font:9px "Courier New",monospace;letter-spacing:1px;color:#cdbf99}
+.fcard-photo-badge{position:absolute;z-index:2;top:12px;right:12px;padding:5px 10px;border-radius:4px;font:8px "Courier New",monospace;font-weight:bold;letter-spacing:.8px;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.fcard-photo-badge.rarity-bronze{background:linear-gradient(180deg,#c98a52,#8a5a2e);color:#241505}
+.fcard-photo-badge.rarity-silver{background:linear-gradient(180deg,#d7d7d7,#8f8f8f);color:#1c1c1c}
+.fcard-photo-badge.rarity-gold{background:linear-gradient(180deg,#f3d372,#b3862c);color:#241a05}
+
+.fcard-hero-chip{
+  position:absolute;z-index:3;top:12px;left:12px;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(10,8,5,.72);border:1px solid var(--gold-line);
+  padding:4px 8px 4px 4px;border-radius:20px;backdrop-filter:blur(2px);
 }
-
-.fcard-subtitle{
-  font:9px monospace;
-  letter-spacing:1.4px;
-  color:var(--muted);
-  text-transform:uppercase;
-  white-space:nowrap;
-}
-
-.fcard-photo{
-  position:relative;
-  height:210px;
-  overflow:hidden;
-  background:#0b0907;
-}
-
-.fcard-photo img{width:100%;height:100%;object-fit:cover}
-
-.fcard-photo .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#463c2c;font-size:64px}
-
-.fcard-photo:after{
-  content:"";
-  position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,0) 62%);
-}
-
-.fcard-photo-tag{
-  position:absolute;z-index:2;left:14px;bottom:12px;
-  font:9px monospace;letter-spacing:1px;color:#c8bb9a;
-}
-
-.fcard-photo-badge{
-  position:absolute;z-index:2;top:12px;right:12px;
-  padding:5px 9px;border-radius:3px;
-  background:var(--gold);color:#171206;
-  font:8px monospace;font-weight:bold;letter-spacing:.6px;
-}
+.fcard-hero-chip img{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--gold-dim)}
+.fcard-hero-chip span{font:8px "Courier New",monospace;letter-spacing:.6px;color:#d9cba8;white-space:nowrap}
+.fcard-hero-chip.loading{opacity:.5}
 
 .fcard-total{
   display:flex;align-items:center;justify-content:space-between;
-  padding:15px 16px;
-  border-bottom:1px solid var(--line);
-  background:rgba(160,125,30,.06);
+  padding:15px 16px;border-bottom:1px solid var(--line);
+  background:rgba(226,189,92,.06);position:relative;z-index:2;
 }
+.fcard-total span{color:#b9a774;font:9px "Courier New",monospace;letter-spacing:1.8px;text-transform:uppercase}
+.fcard-total strong{color:var(--gold);font-size:31px;text-shadow:0 0 18px rgba(226,189,92,.25)}
 
-.fcard-total span{
-  color:#a99668;font:9px monospace;letter-spacing:1.6px;text-transform:uppercase;
-}
-
-.fcard-total strong{
-  color:var(--gold);font-size:30px;
-}
-
-.stat-rows{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1px;
-  background:var(--line);
-}
-
-.stat-row{
-  --sc:#d7b449;
-  background:#100e0b;
-  padding:9px 10px;
-  display:flex;
-  align-items:center;
-  gap:9px;
-  border-left:3px solid var(--sc);
-}
-
-.stat-icon{
-  width:26px;height:26px;flex:none;border-radius:5px;
-  display:flex;align-items:center;justify-content:center;
-  background:color-mix(in srgb, var(--sc) 22%, #100e0b);
-  color:var(--sc);
-  font-size:13px;
-}
-
+.stat-rows{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);position:relative;z-index:2}
+.stat-row{--rc:#e2bd5c;--rbg:#181209;background:var(--rbg);padding:9px 10px;display:flex;align-items:center;gap:9px;border-left:3px solid var(--rc)}
+.stat-icon{width:26px;height:26px;flex:none;border-radius:6px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--rc) 24%, #100e0b);color:var(--rc);font-size:13px}
 .stat-info{min-width:0;flex:1}
+.stat-label{font:8px "Courier New",monospace;letter-spacing:.6px;text-transform:uppercase;color:#c9bd9f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat-sub{margin-top:2px;font:7px "Courier New",monospace;color:#7a6f5b}
+.stat-value{color:var(--rc);font:bold 12px "Courier New",monospace;flex:none;min-width:34px;text-align:right}
 
-.stat-label{
-  font:8px monospace;letter-spacing:.6px;text-transform:uppercase;color:#c9bd9f;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
+/* skeleton loading */
+.skel{display:inline-block;height:10px;border-radius:3px;background:linear-gradient(90deg,#2a2214,#3c331d,#2a2214);background-size:200% 100%;animation:shimmer 1.3s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:180% 0}100%{background-position:-20% 0}}
+.stat-value .skel{width:26px}
+.fcard-total strong .skel{width:70px;height:22px}
 
-.stat-sub{
-  margin-top:2px;font:7px monospace;color:#6f6554;
-}
-
-.stat-value{
-  color:var(--sc);font:bold 12px monospace;flex:none;
-}
-
-.fmatches{padding:12px 16px;border-top:1px solid var(--line)}
-
-.fmatches-title{
-  color:var(--muted);font:8px monospace;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:8px;
-}
-
-.match{background:#100f0c;border:1px solid var(--line);padding:9px;margin-bottom:6px;border-radius:3px}
+.fmatches{padding:12px 16px;border-top:1px solid var(--line);position:relative;z-index:2}
+.fmatches-title{color:var(--muted);font:8px "Courier New",monospace;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:8px}
+.match{background:#12100b;border:1px solid var(--line);padding:9px 10px;margin-bottom:6px;border-radius:5px;transition:border-color .15s}
+.match:hover{border-color:var(--gold-line)}
 .match:last-child{margin-bottom:0}
 .match-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.match-id{color:#6e6555;font:8px monospace}
-.match-score{color:var(--gold);font:bold 12px monospace}
-.match-info{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;color:#766c5b;font:8px monospace}
-.win{color:var(--green)!important}
-.loss{color:var(--red)!important}
+.match-id{color:#71664f;font:8px "Courier New",monospace}
+.match-score{color:var(--gold);font:bold 12px "Courier New",monospace}
+.match-info{display:flex;gap:9px;flex-wrap:wrap;margin-top:5px;color:#847a63;font:8px "Courier New",monospace}
+.win{color:var(--green)!important;font-weight:bold}
+.loss{color:var(--red)!important;font-weight:bold}
 
-.fcard-footer{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--line)}
+.fcard-footer{display:flex;gap:6px;padding:12px 16px;border-top:1px solid var(--line);position:relative;z-index:2}
 .fcard-footer .btn{flex:1}
 
-@media(max-width:520px){
-  .stat-rows{grid-template-columns:1fr}
-}
+.fcard-hint{text-align:center;font:8px "Courier New",monospace;letter-spacing:.6px;color:var(--muted-2);margin-top:10px;opacity:.8}
 
-/* RANKING */
+@media(max-width:520px){ .stat-rows{grid-template-columns:1fr} }
+
+/* ---------- RANKING ---------- */
 .ranking{display:flex;flex-direction:column;gap:7px}
-.rank-row{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:12px;min-height:75px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:linear-gradient(100deg,#14110d,#0f0d0a);transition:.15s}
-.rank-row:hover{border-color:#58471f;transform:translateY(-1px)}
-.rank-row.me{border-color:#8a702b;background:linear-gradient(90deg,rgba(190,148,39,.10),transparent),#15110c}
-.rank-number{color:#776a54;font:bold 16px monospace;text-align:center}
-.rank-row:nth-child(1) .rank-number{color:#e4c75c}
-.rank-row:nth-child(2) .rank-number{color:#b8b7ae}
-.rank-row:nth-child(3) .rank-number{color:#bd895c}
+.rank-row{
+  display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:12px;min-height:75px;
+  padding:10px 12px;border:1px solid var(--line);border-radius:7px;
+  background:linear-gradient(100deg,#16110b,#0f0d0a);
+  transition:.15s;cursor:pointer;
+}
+.rank-row:hover{border-color:var(--gold-line);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.rank-row:active{transform:translateY(0)}
+.rank-row.me{border-color:var(--gold-dim);background:linear-gradient(90deg,rgba(226,189,92,.10),transparent),#171109}
+.rank-number{color:#7a6d54;font:bold 16px "Courier New",monospace;text-align:center}
+.rank-row:nth-child(1) .rank-number{color:#f0d060}
+.rank-row:nth-child(2) .rank-number{color:#c7c6bd}
+.rank-row:nth-child(3) .rank-number{color:#cf9868}
 .rank-person{display:flex;align-items:center;gap:10px;min-width:0}
-.rank-avatar{width:48px;height:48px;flex:none;border-radius:4px;overflow:hidden;border:1px solid var(--line);background:#0b0907}
+.rank-avatar{width:48px;height:48px;flex:none;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#0b0907;position:relative}
 .rank-avatar img{width:100%;height:100%;object-fit:cover}
 .rank-avatar-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#5c503e;font-size:19px}
 .rank-name{min-width:0}
 .rank-name strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-.rank-name span{display:block;margin-top:3px;color:#706652;font:7px monospace}
+.rank-name span{display:block;margin-top:3px;color:#78694f;font:7px "Courier New",monospace}
 .rank-score{text-align:right}
-.rank-score strong{display:block;color:var(--gold);font:bold 17px monospace}
-.rank-score span{color:#655b4a;font:7px monospace}
+.rank-score strong{display:block;color:var(--gold);font:bold 17px "Courier New",monospace}
+.rank-score span{color:#6c604a;font:7px "Courier New",monospace}
+.rank-caret{color:var(--muted-2);font-size:11px;margin-left:4px}
 
 .search{width:100%;margin-bottom:10px}
 .search input{width:100%}
 
-/* EMPTY */
-.empty{padding:50px 18px;text-align:center;border:1px dashed var(--line);color:var(--muted);border-radius:5px}
+.empty{padding:50px 18px;text-align:center;border:1px dashed var(--line);color:var(--muted);border-radius:8px}
 .empty h2{margin:0 0 8px;color:var(--text)}
 .empty p{max-width:560px;margin:0 auto 17px;line-height:1.6;font-size:12px}
 
-/* MODAL */
-.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.86);backdrop-filter:blur(5px)}
-.modal{width:100%;max-width:560px;max-height:93vh;overflow:auto;position:relative;padding:20px;border:1px solid var(--gold2);border-radius:6px;background:radial-gradient(circle at 100% 0,rgba(188,145,35,.08),transparent 35%),var(--panel);box-shadow:var(--shadow)}
-.close{position:absolute;top:7px;right:10px;border:0;background:none;color:var(--muted);font-size:24px}
+/* ---------- MODAL ---------- */
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.86);backdrop-filter:blur(6px);animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:100%;max-width:560px;max-height:93vh;overflow:auto;position:relative;padding:20px;border:1px solid var(--gold-line);border-radius:10px;background:radial-gradient(circle at 100% 0,rgba(226,189,92,.08),transparent 35%),var(--panel);box-shadow:var(--shadow);animation:popIn .2s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal.card-modal{max-width:520px;padding:0;background:transparent;border:none;box-shadow:none;overflow:visible}
+.close{position:absolute;top:7px;right:10px;border:0;background:none;color:var(--muted);font-size:24px;z-index:10}
+.close.on-card{top:-38px;right:0;color:var(--text)}
 .modal h2{margin:0 0 6px}
-.modal-desc{color:#9b8e75;font-size:11px;line-height:1.55;margin-bottom:16px}
+.modal-desc{color:#9b8e75;font-size:11px;line-height:1.6;margin-bottom:16px}
 .field{margin-bottom:13px}
-.field label{display:block;margin-bottom:5px;color:#968a73;font:8px monospace;letter-spacing:1px}
-input{width:100%;padding:10px;border:1px solid var(--line);border-radius:3px;outline:none;background:#0d0b09;color:var(--text);font:11px monospace}
-input:focus{border-color:var(--gold2)}
-input[readonly]{opacity:.65}
-.roles,.rarity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.role-option,.rarity-option{padding:10px;text-align:center;border:1px solid var(--line);background:#11100d;border-radius:3px;cursor:pointer}
-.role-option.selected,.rarity-option.selected{border-color:var(--gold);color:var(--gold)}
-.role-option strong{display:block;font:9px monospace}
+.field label{display:block;margin-bottom:5px;color:#a3946f;font:8px "Courier New",monospace;letter-spacing:1.2px}
+input{width:100%;padding:10px;border:1px solid var(--line);border-radius:4px;outline:none;background:#0d0b09;color:var(--text);font:11px "Courier New",monospace;transition:border-color .15s}
+input:focus{border-color:var(--gold-dim)}
+input[readonly]{opacity:.6}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.role-option{padding:11px 6px;text-align:center;border:1px solid var(--line);background:#13110c;border-radius:5px;cursor:pointer;transition:.12s}
+.role-option:hover{border-color:var(--gold-line)}
+.role-option.selected{border-color:var(--gold);color:var(--gold);background:rgba(226,189,92,.08)}
+.role-option strong{display:block;font:9px "Courier New",monospace;letter-spacing:.6px}
 .role-option span{display:block;margin-top:3px;color:#6f6554;font-size:9px}
-.bonus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-.bonus{padding:8px;border:1px solid var(--line);background:#100e0b;border-radius:3px}
-.bonus label{margin-bottom:4px;font-size:7px;display:block;color:#968a73;letter-spacing:1px}
-.bonus input{padding:7px}
+.locked-note{display:flex;gap:8px;align-items:flex-start;padding:10px 11px;border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:6px;font:9px/1.6 "Courier New",monospace;color:#9c8f74;margin-top:4px}
+.locked-note b{color:var(--gold)}
 .modal-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:16px}
 
-/* CALC */
-.calc-table{width:100%;border-collapse:collapse;margin-top:12px}
+/* ---------- CALC ---------- */
+.calc-table{width:100%;border-collapse:collapse;margin-top:10px}
 .calc-table th,.calc-table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:8px}
-.calc-table th{color:var(--muted);background:var(--panel2);font:7px monospace}
+.calc-table th{color:var(--muted);background:var(--panel-2);font:7px "Courier New",monospace}
 .calc-table td{background:#100e0b}
-.calc-total{margin-top:10px;padding:12px;border:1px solid var(--gold2);background:rgba(160,125,30,.08);display:flex;justify-content:space-between;align-items:center}
-.calc-total span{color:#988a6d;font:9px monospace}
+.calc-total{margin-top:10px;padding:12px;border:1px solid var(--gold-line);background:rgba(226,189,92,.08);display:flex;justify-content:space-between;align-items:center;border-radius:6px}
+.calc-total span{color:#988a6d;font:9px "Courier New",monospace}
 .calc-total strong{color:var(--gold);font-size:23px}
 
-/* LOADER */
-.loader{display:flex;justify-content:center;align-items:center;padding:38px;color:var(--gold);font:9px monospace;letter-spacing:1px}
-.loader:after{content:"";width:12px;height:12px;margin-left:10px;border:2px solid #493c20;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+/* ---------- LOADER ---------- */
+.loader{display:flex;justify-content:center;align-items:center;gap:10px;padding:40px;color:var(--gold);font:9px "Courier New",monospace;letter-spacing:1.4px}
+.spin{width:13px;height:13px;border:2px solid #493c20;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.mini-spin{display:inline-block;width:9px;height:9px;border:2px solid rgba(226,189,92,.25);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:5px}
 
-/* MOBILE */
+/* ---------- MOBILE ---------- */
 @media(max-width:650px){
   .header{flex-direction:column;align-items:flex-start}
   .actions{width:100%}
@@ -347,17 +368,21 @@ const FIREBASE_CONFIG = {
   measurementId:"G-9LZC0EZ0Y5"
 };
 
-const CACHE_PREFIX = "fantasy_registry_v21_";
+const CACHE_PREFIX = "fantasy_registry_v22_";
+const HERO_CACHE_KEY = "fantasy_registry_heroes_v1";
 
+/* Fantasy scoring weights. Re-tuned so every stat contributes a
+   comparable, meaningful share of the total instead of some
+   fields rounding to near-zero. */
 const FANTASY_RULES = {
   kills:.30,
-  deaths:-.30,
+  deaths:-.50,
   assists:.15,
   last_hits:.003,
   gpm:.002,
   tower_kills:1,
   roshan_kills:1,
-  teamfight:.03,
+  teamfight:15,      // teamfight_participation is a 0..1 fraction
   observer_placed:.50,
   camps_stacked:.50,
   runes_grabbed:.25,
@@ -366,36 +391,46 @@ const FANTASY_RULES = {
   deaths_base:3
 };
 
+/* Bonus percentages are IDENTICAL for every card. They are a
+   fixed ruleset, not something a player configures or rolls —
+   this keeps every Fantasy Card comparable and fair. */
+const FIXED_BONUSES = {
+  kills:100,
+  deaths:-10,
+  assists:60,
+  last_hits:40,
+  gpm:20,
+  tower_kills:150,
+  roshan_kills:120,
+  teamfight:60,
+  observer_placed:40,
+  camps_stacked:30,
+  runes_grabbed:20,
+  first_blood:20,
+  stuns:50
+};
+
 const BONUS_FIELDS = [
-  ["kills","Kills"],
-  ["deaths","Deaths"],
-  ["assists","Assists"],
-  ["last_hits","Last Hits"],
-  ["gpm","GPM"],
-  ["tower_kills","Tower Kills"],
-  ["roshan_kills","Roshan"],
-  ["teamfight","Teamfight"],
-  ["observer_placed","Observers"],
-  ["camps_stacked","Stacks"],
-  ["runes_grabbed","Runes"],
-  ["first_blood","First Blood"],
-  ["stuns","Stuns"]
+  ["kills","Kills","combat","⚔"],
+  ["deaths","Deaths","combat","☠"],
+  ["assists","Assists","combat","⛊"],
+  ["first_blood","First Blood","combat","✚"],
+  ["stuns","Stuns","combat","✹"],
+  ["last_hits","Last Hits","farm","⚒"],
+  ["gpm","GPM","farm","◆"],
+  ["camps_stacked","Stacks","farm","▣"],
+  ["runes_grabbed","Runes","farm","◈"],
+  ["tower_kills","Tower Kills","objective","⛰"],
+  ["roshan_kills","Roshan","objective","⚚"],
+  ["teamfight","Teamfight","objective","⚡"],
+  ["observer_placed","Observers","vision","◉"]
 ];
 
-const STAT_META = {
-  kills:{color:"#c95b68",icon:"⚔"},
-  deaths:{color:"#8d7563",icon:"☠"},
-  assists:{color:"#69bb83",icon:"⛊"},
-  last_hits:{color:"#d7b449",icon:"⚒"},
-  gpm:{color:"#4fb3d9",icon:"◆"},
-  tower_kills:{color:"#e08a4b",icon:"⛰"},
-  roshan_kills:{color:"#8a5cc9",icon:"⚚"},
-  teamfight:{color:"#c9a13b",icon:"⚡"},
-  observer_placed:{color:"#4f8ed9",icon:"◉"},
-  camps_stacked:{color:"#8a9b5c",icon:"▣"},
-  runes_grabbed:{color:"#5cb3d9",icon:"◈"},
-  first_blood:{color:"#c9425b",icon:"✚"},
-  stuns:{color:"#a15cc9",icon:"✹"}
+const CATEGORY_COLORS = {
+  combat:{bg:"var(--combat-bg)",ac:"var(--combat-ac)"},
+  farm:{bg:"var(--farm-bg)",ac:"var(--farm-ac)"},
+  objective:{bg:"var(--obj-bg)",ac:"var(--obj-ac)"},
+  vision:{bg:"var(--vision-bg)",ac:"var(--vision-ac)"}
 };
 
 const ROLES = {
@@ -404,28 +439,18 @@ const ROLES = {
   support:"ПОДДЕРЖКА"
 };
 
-const RARITIES = {
-  bronze:"BRONZE",
-  silver:"SILVER",
-  gold:"GOLD"
-};
+/* Rarity is a cosmetic badge computed automatically from a
+   player's own performance (Best-2 fantasy total). It cannot be
+   picked at creation. */
+const RARITY_TIERS = [
+  {key:"gold", min:260, label:"GOLD"},
+  {key:"silver", min:120, label:"SILVER"},
+  {key:"bronze", min:-Infinity, label:"BRONZE"}
+];
 
-/* Диапазоны случайного ролла бонусов (%) по редкости.
-   Игрок не выбирает точные значения — они выдаются случайно
-   один раз при создании карты и больше не меняются. */
-const RARITY_RANGES = {
-  bronze:[0,60],
-  silver:[20,100],
-  gold:[50,150]
-};
-
-function rollBonuses(rarity){
-  const range = RARITY_RANGES[rarity] || RARITY_RANGES.bronze;
-  const bonuses = {};
-  BONUS_FIELDS.forEach(([k])=>{
-    bonuses[k] = Math.round(range[0] + Math.random() * (range[1] - range[0]));
-  });
-  return bonuses;
+function rarityFor(total){
+  const t = RARITY_TIERS.find(r=>total>=r.min);
+  return t ? t.key : "bronze";
 }
 
 let db = null;
@@ -434,6 +459,8 @@ let telegramUser = null;
 let activeTab = "players";
 let ranking = [];
 let rankingLoaded = false;
+let isRefreshing = false;
+let heroesCache = null; // {byId:{id:{name,img}}}
 
 /* ============================================================
    TELEGRAM
@@ -455,10 +482,6 @@ initTelegram();
 
 /* ============================================================
    IDENTITY
-   Один Telegram-аккаунт = одна карта.
-   Если приложение открыто вне Telegram, используется локальный
-   идентификатор устройства — привязка "1 человек = 1 карта" в
-   этом случае не гарантирована (об этом выводится предупреждение).
 ============================================================ */
 
 function getLocalIdentity(){
@@ -525,22 +548,15 @@ function initials(v){
   return String(v || "?").trim().slice(0,1).toUpperCase();
 }
 
-function defaultBonuses(){
-  const x = {};
-  BONUS_FIELDS.forEach(([k])=>{ x[k] = 0; });
-  return x;
-}
+function defaultBonuses(){ return {...FIXED_BONUSES}; }
 
-function defaultCard(){
-  return { rarity:"bronze", bonuses:defaultBonuses() };
-}
+function defaultCard(){ return { rarity:"bronze", bonuses:defaultBonuses() }; }
 
 function normalizePlayer(p){
   p = p || {};
   p.card = p.card || defaultCard();
-  p.card.bonuses = p.card.bonuses || defaultBonuses();
-  BONUS_FIELDS.forEach(([k])=>{ p.card.bonuses[k] = num(p.card.bonuses[k]); });
-  if(!RARITIES[p.card.rarity]){ p.card.rarity = "bronze"; }
+  p.card.bonuses = {...FIXED_BONUSES}; // always fixed, never trust stored/user values
+  if(!RARITY_TIERS.some(r=>r.key===p.card.rarity)){ p.card.rarity = "bronze"; }
   if(!Array.isArray(p.bestMatches)){ p.bestMatches = []; }
   if(!Array.isArray(p.processedMatchIds)){ p.processedMatchIds = []; }
   return p;
@@ -576,9 +592,6 @@ function saveLocal(){
 
 /* ============================================================
    OWNER / PUBLIC / ACCOUNT-CLAIM STORAGE
-   owners/{OWNER_ID}          — полные данные владельца карты (1 запись на Telegram)
-   players/{OWNER_ID}         — публичная запись для лидерборда (тот же id => не может быть дублей)
-   accountClaims/{dotaId}     — какой OWNER_ID уже занял этот Dota Account ID
 ============================================================ */
 
 async function loadOwner(){
@@ -650,7 +663,7 @@ function calculateBaseFantasy(p){
 
   return {
     kills: kills * FANTASY_RULES.kills,
-    deaths: FANTASY_RULES.deaths_base + deaths * FANTASY_RULES.deaths,
+    deaths: Math.max(0, FANTASY_RULES.deaths_base + deaths * FANTASY_RULES.deaths),
     assists: assists * FANTASY_RULES.assists,
     last_hits: (lastHits + denies) * FANTASY_RULES.last_hits,
     gpm: gpm * FANTASY_RULES.gpm,
@@ -666,11 +679,16 @@ function calculateBaseFantasy(p){
 }
 
 function applyBonuses(base,bonuses){
+  const b = bonuses || FIXED_BONUSES;
   const out = {};
   BONUS_FIELDS.forEach(([k])=>{
-    out[k] = num(base[k]) * (1 + num(bonuses && bonuses[k]) / 100);
+    out[k] = num(base[k]) * (1 + num(b[k]) / 100);
   });
   return out;
+}
+
+function totalOf(finalObj){
+  return Object.values(finalObj || {}).reduce((s,v)=>s+num(v),0);
 }
 
 /* ============================================================
@@ -699,7 +717,7 @@ async function getHistory(accountId){
     .slice(0,15);
 }
 
-async function fetchMatchComputed(matchId, accountId, card){
+async function fetchMatchComputed(matchId, accountId){
   const match = await api(`/matches/${matchId}`);
   if(!match || !Array.isArray(match.players)){
     throw new Error(`Матч ${matchId}: players отсутствует`);
@@ -708,8 +726,8 @@ async function fetchMatchComputed(matchId, accountId, card){
   if(!p){ throw new Error(`Игрок не найден в матче ${matchId}`); }
 
   const base = calculateBaseFantasy(p);
-  const final = applyBonuses(base, card.bonuses);
-  const total = Object.values(final).reduce((s,v)=>s+num(v),0);
+  const final = applyBonuses(base, FIXED_BONUSES);
+  const total = totalOf(final);
   const radiant = num(p.player_slot) < 128;
   const win = Boolean(match.radiant_win) === radiant;
 
@@ -718,6 +736,7 @@ async function fetchMatchComputed(matchId, accountId, card){
     startTime:num(match.start_time),
     duration:num(match.duration),
     win,
+    heroId:num(p.hero_id),
     kills:num(p.kills),
     deaths:num(p.deaths),
     assists:num(p.assists),
@@ -739,15 +758,56 @@ async function fetchMatchComputed(matchId, accountId, card){
 }
 
 /* ============================================================
-   BEST-2 (ROLLING)
-   Изначально "лучшие 2" = первые 2 обработанных матча.
-   Каждый следующий матч заменяет худший из текущих двух,
-   только если его фэнтези-очки больше.
+   HEROES (for the "last hero played" chip on the card)
 ============================================================ */
 
-function bestTwo(){
-  if(!player) return {matches:[],total:0};
-  const matches = (player.bestMatches || []).slice().sort((a,b)=>num(b.fantasy)-num(a.fantasy));
+async function loadHeroes(){
+  if(heroesCache) return heroesCache;
+
+  try{
+    const raw = localStorage.getItem(HERO_CACHE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.byId && Object.keys(parsed.byId).length){
+        heroesCache = parsed;
+        return heroesCache;
+      }
+    }
+  }catch(_){}
+
+  try{
+    const list = await api("/heroes");
+    const byId = {};
+    (list || []).forEach(h=>{
+      const shortname = String(h.name || "").replace("npc_dota_hero_","");
+      byId[h.id] = {
+        name: h.localized_name || shortname,
+        img: `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${shortname}.png`
+      };
+    });
+    heroesCache = {byId};
+    try{ localStorage.setItem(HERO_CACHE_KEY, JSON.stringify(heroesCache)); }catch(_){}
+    return heroesCache;
+  }catch(e){
+    console.warn("Heroes load failed:",e);
+    heroesCache = {byId:{}};
+    return heroesCache;
+  }
+}
+
+function heroInfo(heroId){
+  if(!heroesCache || !heroId) return null;
+  return heroesCache.byId[heroId] || null;
+}
+
+/* ============================================================
+   BEST-2 (ROLLING)
+============================================================ */
+
+function bestTwo(p){
+  const src = p || player;
+  if(!src) return {matches:[],total:0};
+  const matches = (src.bestMatches || []).slice().sort((a,b)=>num(b.fantasy)-num(a.fantasy));
   return { matches, total: matches.reduce((s,m)=>s+num(m.fantasy),0) };
 }
 
@@ -770,9 +830,11 @@ function updateBestMatches(p, newMatch){
   return false;
 }
 
-function aggregatedFinal(){
-  const out = defaultBonuses();
-  (player.bestMatches || []).forEach(m=>{
+function aggregatedFinal(p){
+  const src = p || player;
+  const out = {};
+  BONUS_FIELDS.forEach(([k])=>{ out[k]=0; });
+  (src.bestMatches || []).forEach(m=>{
     BONUS_FIELDS.forEach(([k])=>{
       out[k] += num(m.finalFantasy && m.finalFantasy[k]);
     });
@@ -781,12 +843,14 @@ function aggregatedFinal(){
 }
 
 /* ============================================================
-   PUBLISH PUBLIC PLAYER (лидерборд)
+   PUBLISH PUBLIC PLAYER (лидерборд + friend-card view)
 ============================================================ */
 
 async function publishPlayer(){
   if(!db || !player) return;
   const best = bestTwo();
+  const rarity = rarityFor(best.total);
+  player.card.rarity = rarity;
 
   const publicPlayer = {
     ownerId:OWNER_ID,
@@ -794,17 +858,23 @@ async function publishPlayer(){
     name:player.name,
     photo:player.photo || null,
     role:player.role,
-    rarity:player.card.rarity,
-    bonuses:player.card.bonuses,
+    rarity,
+    bonuses:FIXED_BONUSES,
+    lastHeroId:player.lastHeroId || null,
+    /* store the FULL per-stat breakdown so a friend can inspect
+       exactly why the points were awarded */
     bestMatches:best.matches.map(m=>({
       matchId:m.matchId,
       fantasy:m.fantasy,
       win:m.win,
+      heroId:m.heroId || null,
       kills:m.kills,
       deaths:m.deaths,
       assists:m.assists,
       gpm:m.gpm,
-      startTime:m.startTime
+      startTime:m.startTime,
+      baseFantasy:m.baseFantasy,
+      finalFantasy:m.finalFantasy
     })),
     fantasy:Number(best.total.toFixed(2)),
     registeredAt:player.createdAt || Date.now(),
@@ -820,13 +890,19 @@ async function publishPlayer(){
 
 async function refreshPlayer(){
   if(!player) return;
+  isRefreshing = true;
   render();
 
   try{
+    loadHeroes(); // fire and forget, cached for chip rendering
+
     const recent = await getHistory(player.accountId);
     if(!recent.length){
       throw new Error("У игрока нет доступных матчей.");
     }
+
+    // most recent match's hero = "last hero played"
+    player.lastHeroId = num(recent[0].hero_id) || player.lastHeroId || null;
 
     player.processedMatchIds = player.processedMatchIds || [];
     const processedSet = new Set(player.processedMatchIds.map(String));
@@ -840,28 +916,29 @@ async function refreshPlayer(){
     for(const stub of newOnes){
       const id = String(stub.match_id);
       try{
-        const computed = await fetchMatchComputed(id, player.accountId, player.card);
+        const computed = await fetchMatchComputed(id, player.accountId);
         if(updateBestMatches(player, computed)) changed = true;
       }catch(e){
         console.warn("Match:",id,e);
       }
       player.processedMatchIds.push(id);
-      render();
     }
 
-    /* Пересчитываем best-матчи с учётом текущих бонусов карточки */
+    // recompute with the fixed rule set (in case rules changed)
     (player.bestMatches || []).forEach(m=>{
-      const final = applyBonuses(m.baseFantasy, player.card.bonuses);
+      const final = applyBonuses(m.baseFantasy, FIXED_BONUSES);
       m.finalFantasy = final;
-      m.fantasy = Number(Object.values(final).reduce((s,v)=>s+num(v),0).toFixed(2));
+      m.fantasy = Number(totalOf(final).toFixed(2));
     });
 
+    player.card.rarity = rarityFor(bestTwo().total);
     player.lastRefresh = Date.now();
 
     saveLocal();
     await saveOwner();
     await publishPlayer();
 
+    isRefreshing = false;
     render();
 
     showNotice(
@@ -873,6 +950,7 @@ async function refreshPlayer(){
 
   }catch(e){
     console.error(e);
+    isRefreshing = false;
     render();
     showNotice("Ошибка обновления: " + e.message,"error");
   }
@@ -897,6 +975,7 @@ async function loadWorldRanking(){
       photo:data.photo || null,
       role:data.role || "carry",
       rarity:data.rarity || "bronze",
+      lastHeroId:data.lastHeroId || null,
       fantasy:num(data.fantasy),
       bestMatches:Array.isArray(data.bestMatches) ? data.bestMatches : [],
       updatedAt:data.updatedAt || null
@@ -904,6 +983,7 @@ async function loadWorldRanking(){
   });
 
   rankingLoaded = true;
+  loadHeroes();
 }
 
 /* ============================================================
@@ -916,7 +996,7 @@ function renderStatus(){
   status.innerHTML = `
     <div class="status-item">КАРТА <b>${player ? "CREATED" : "NOT CREATED"}</b></div>
     <div class="status-item">ACCOUNT <b>${player ? esc(player.accountId) : "—"}</b></div>
-    <div class="status-item">BEST 2 <b>${fmt(best.total)}</b></div>
+    <div class="status-item">BEST 2 <b>${player && (isRefreshing && !best.matches.length) ? "…" : fmt(best.total)}</b></div>
     <div class="status-item">TELEGRAM PHOTO <b>${telegramPhoto() ? "AVAILABLE" : "OPTIONAL"}</b></div>
     <div class="status-item">IDENTITY <b>${IS_TELEGRAM_IDENTITY ? "TELEGRAM" : "LOCAL"}</b></div>
     <div class="status-item">FIREBASE <b>${db ? "ONLINE" : "OFFLINE"}</b></div>
@@ -929,32 +1009,174 @@ function renderStatus(){
 
 function avatarHTML(p){
   if(p && p.photo){
-    return `<img src="${esc(p.photo)}" loading="lazy" onerror="this.style.display='none'">`;
+    return `<img class="main" src="${esc(p.photo)}" loading="lazy" onerror="this.style.display='none'">`;
   }
   return `<div class="placeholder">${esc(initials(p && p.name))}</div>`;
+}
+
+function heroChipHTML(heroId){
+  const info = heroInfo(heroId);
+  if(!heroId){
+    return "";
+  }
+  if(!info){
+    return `<div class="fcard-hero-chip loading"><span class="mini-spin"></span><span>ГЕРОЙ…</span></div>`;
+  }
+  return `
+    <div class="fcard-hero-chip" title="Последний герой">
+      <img src="${esc(info.img)}" loading="lazy" onerror="this.style.display='none'">
+      <span>${esc(info.name)}</span>
+    </div>
+  `;
 }
 
 /* ============================================================
    STAT ROW
 ============================================================ */
 
-function statRowHTML(key,label,value,bonusPct){
-  const meta = STAT_META[key] || {color:"#d7b449",icon:"•"};
+function statRowHTML(key,label,category,icon,value,bonusPct,loading){
+  const c = CATEGORY_COLORS[category] || CATEGORY_COLORS.combat;
   const sign = bonusPct >= 0 ? "+" : "";
+  const valueHTML = loading
+    ? `<span class="skel"></span>`
+    : fmt(value);
   return `
-    <div class="stat-row" style="--sc:${meta.color}">
-      <div class="stat-icon">${meta.icon}</div>
+    <div class="stat-row" style="--rc:${c.ac};--rbg:${c.bg}">
+      <div class="stat-icon">${icon}</div>
       <div class="stat-info">
         <div class="stat-label">${esc(label)}</div>
         <div class="stat-sub">Бонус ${sign}${fmt(bonusPct)}%</div>
       </div>
-      <div class="stat-value">${fmt(value)}</div>
+      <div class="stat-value">${valueHTML}</div>
     </div>
   `;
 }
 
 /* ============================================================
-   PLAYER
+   FANTASY CARD (reusable — self view + friend view)
+============================================================ */
+
+let tiltAttached = new WeakSet();
+
+function fantasyCardHTML(p, opts){
+  opts = opts || {};
+  const readOnly = !!opts.readOnly;
+  const loadingStats = !!opts.loadingStats && !(p.bestMatches && p.bestMatches.length);
+
+  const best = bestTwo(p);
+  const agg = aggregatedFinal(p);
+  const rarity = p.card ? p.card.rarity : (p.rarity || "bronze");
+
+  return `
+    <div class="fcard-stage">
+      <div class="fcard" id="${opts.cardId || 'fcardMain'}">
+        <div class="fcard-holo"></div>
+        <div class="fcard-glare"></div>
+
+        <div class="fcard-banner">
+          <div class="fcard-title">${esc(p.name)}</div>
+          <div class="fcard-subtitle">${esc(ROLES[p.role] || "ИГРОК")}</div>
+        </div>
+
+        <div class="fcard-photo">
+          ${avatarHTML(p)}
+          ${heroChipHTML(p.lastHeroId)}
+          <div class="fcard-photo-badge rarity-${esc(rarity)}">${esc(rarity.toUpperCase())}</div>
+          <div class="fcard-photo-tag">DOTA ACCOUNT ${esc(p.accountId)}</div>
+        </div>
+
+        <div class="fcard-total">
+          <span>Fantasy Points (Best 2)</span>
+          <strong>${loadingStats ? `<span class="skel"></span>` : fmt(best.total)}</strong>
+        </div>
+
+        <div class="stat-rows">
+          ${BONUS_FIELDS.map(([k,label,cat,icon])=>
+            statRowHTML(k,label,cat,icon,agg[k],FIXED_BONUSES[k],loadingStats)
+          ).join("")}
+        </div>
+
+        <div class="fmatches">
+          <div class="fmatches-title">Лучшие 2 матча</div>
+          ${
+            loadingStats
+            ? `<div class="match"><div class="match-info"><span class="mini-spin"></span> Загружаем матчи с OpenDota…</div></div>`
+            : (best.matches.length
+              ? best.matches.map(m=>`
+                <div class="match">
+                  <div class="match-top">
+                    <span class="match-id">#${esc(m.matchId)}</span>
+                    <span class="match-score">${fmt(m.fantasy)}</span>
+                  </div>
+                  <div class="match-info">
+                    <span class="${m.win ? "win" : "loss"}">${m.win ? "ПОБЕДА" : "ПОРАЖЕНИЕ"}</span>
+                    <span>${m.kills}/${m.deaths}/${m.assists}</span>
+                    <span>GPM ${fmt(m.gpm)}</span>
+                  </div>
+                </div>
+              `).join("")
+              : `<div class="match"><div class="match-info">Матчи ещё не загружены.</div></div>`)
+          }
+        </div>
+
+        ${
+          readOnly
+          ? `<div class="fcard-footer"><button class="btn" data-calc-friend="1">Расчёт очков</button></div>`
+          : `<div class="fcard-footer">
+              <button class="btn" id="calcBtn">Расчёт</button>
+              <button class="btn" id="editBtn">Карта</button>
+              <button class="btn primary" id="refreshMine">↻ Обновить</button>
+            </div>`
+        }
+      </div>
+      <div class="fcard-hint">Крути карточку мышью или пальцем ✦</div>
+    </div>
+  `;
+}
+
+function attachTilt(cardEl){
+  if(!cardEl || tiltAttached.has(cardEl)) return;
+  tiltAttached.add(cardEl);
+
+  let raf = null;
+
+  function apply(px,py){
+    const rx = (py - 0.5) * -12;
+    const ry = (px - 0.5) * 12;
+    if(raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(()=>{
+      cardEl.style.setProperty("--rx", rx.toFixed(2)+"deg");
+      cardEl.style.setProperty("--ry", ry.toFixed(2)+"deg");
+      cardEl.style.setProperty("--mx", (px*100).toFixed(1)+"%");
+      cardEl.style.setProperty("--my", (py*100).toFixed(1)+"%");
+      cardEl.style.setProperty("--sc", "1.02");
+      cardEl.style.setProperty("--glare", "1");
+    });
+  }
+
+  function fromEvent(e){
+    const rect = cardEl.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    apply((clientX-rect.left)/rect.width, (clientY-rect.top)/rect.height);
+  }
+
+  function reset(){
+    cardEl.style.setProperty("--rx","0deg");
+    cardEl.style.setProperty("--ry","0deg");
+    cardEl.style.setProperty("--sc","1");
+    cardEl.style.setProperty("--glare","0");
+  }
+
+  cardEl.addEventListener("mousemove", fromEvent);
+  cardEl.addEventListener("mouseleave", reset);
+  cardEl.addEventListener("touchmove", fromEvent, {passive:true});
+  cardEl.addEventListener("touchend", reset);
+  cardEl.addEventListener("touchcancel", reset);
+}
+
+/* ============================================================
+   PLAYER (self view)
 ============================================================ */
 
 function renderPlayer(){
@@ -979,6 +1201,8 @@ function renderPlayer(){
           Зарегистрируй своего игрока, получи Fantasy Card и попади
           в мировой рейтинг. Один Telegram-аккаунт — одна карта,
           один Dota Account ID можно привязать только один раз.
+          Все бонусы очков одинаковы для всех карт — редкость
+          карты определяется автоматически по результатам игрока.
         </p>
         <div class="hero-actions">
           <button class="btn primary" id="createBtn">＋ Создать карту</button>
@@ -997,67 +1221,16 @@ function renderPlayer(){
     return;
   }
 
-  const best = bestTwo();
-  const agg = aggregatedFinal();
+  content.innerHTML = fantasyCardHTML(player, {loadingStats:isRefreshing, cardId:"fcardMain"});
 
-  content.innerHTML = `
-    <div class="fcard">
+  const calcBtn = document.getElementById("calcBtn");
+  const editBtn = document.getElementById("editBtn");
+  const refreshBtn = document.getElementById("refreshMine");
+  if(calcBtn) calcBtn.onclick = ()=>openCalculation(player, {readOnly:false});
+  if(editBtn) editBtn.onclick = openEditModal;
+  if(refreshBtn) refreshBtn.onclick = refreshPlayer;
 
-      <div class="fcard-banner">
-        <div class="fcard-title">${esc(player.name)}</div>
-        <div class="fcard-subtitle">${esc(ROLES[player.role] || "ИГРОК")}</div>
-      </div>
-
-      <div class="fcard-photo">
-        ${avatarHTML(player)}
-        <div class="fcard-photo-badge">${esc(RARITIES[player.card.rarity])}</div>
-        <div class="fcard-photo-tag">DOTA ACCOUNT ${esc(player.accountId)}</div>
-      </div>
-
-      <div class="fcard-total">
-        <span>Fantasy Points (Best 2)</span>
-        <strong>${fmt(best.total)}</strong>
-      </div>
-
-      <div class="stat-rows">
-        ${BONUS_FIELDS.map(([k,label])=>
-          statRowHTML(k,label,agg[k],player.card.bonuses[k])
-        ).join("")}
-      </div>
-
-      <div class="fmatches">
-        <div class="fmatches-title">Лучшие 2 матча</div>
-        ${
-          best.matches.length
-          ? best.matches.map(m=>`
-            <div class="match">
-              <div class="match-top">
-                <span class="match-id">#${esc(m.matchId)}</span>
-                <span class="match-score">${fmt(m.fantasy)}</span>
-              </div>
-              <div class="match-info">
-                <span class="${m.win ? "win" : "loss"}">${m.win ? "ПОБЕДА" : "ПОРАЖЕНИЕ"}</span>
-                <span>${m.kills}/${m.deaths}/${m.assists}</span>
-                <span>GPM ${fmt(m.gpm)}</span>
-              </div>
-            </div>
-          `).join("")
-          : `<div class="match"><div class="match-info">Матчи ещё не загружены. Нажми «↻».</div></div>`
-        }
-      </div>
-
-      <div class="fcard-footer">
-        <button class="btn" id="calcBtn">Расчёт</button>
-        <button class="btn" id="editBtn">Карта</button>
-        <button class="btn primary" id="refreshMine">↻ Обновить</button>
-      </div>
-
-    </div>
-  `;
-
-  document.getElementById("calcBtn").onclick = openCalculation;
-  document.getElementById("editBtn").onclick = openEditModal;
-  document.getElementById("refreshMine").onclick = refreshPlayer;
+  attachTilt(document.getElementById("fcardMain"));
 }
 
 /* ============================================================
@@ -1072,7 +1245,7 @@ function renderRating(){
   }
 
   if(!rankingLoaded){
-    content.innerHTML = `<div class="loader">ЗАГРУЗКА МИРОВОГО РЕЙТИНГА</div>`;
+    content.innerHTML = `<div class="loader"><span class="spin"></span> ЗАГРУЗКА МИРОВОГО РЕЙТИНГА</div>`;
     loadWorldRanking()
       .then(render)
       .catch(e=>{
@@ -1116,7 +1289,7 @@ function renderRankingList(){
   list.innerHTML = data.map(p=>{
     const isMe = player && p.id === OWNER_ID;
     return `
-      <div class="rank-row ${isMe ? "me" : ""}">
+      <div class="rank-row ${isMe ? "me" : ""}" data-friend-id="${esc(p.id)}">
         <div class="rank-number">#${p.rank}</div>
         <div class="rank-person">
           <div class="rank-avatar">
@@ -1127,17 +1300,65 @@ function renderRankingList(){
             }
           </div>
           <div class="rank-name">
-            <strong>${esc(p.name)}</strong>
-            <span>${esc(ROLES[p.role] || "PLAYER")} · ${esc(RARITIES[p.rarity] || "BRONZE")} · ${esc(p.accountId)}</span>
+            <strong>${esc(p.name)}${isMe ? " · вы" : ""}</strong>
+            <span>${esc(ROLES[p.role] || "PLAYER")} · ${esc((p.rarity||"bronze").toUpperCase())} · ${esc(p.accountId)}</span>
           </div>
         </div>
         <div class="rank-score">
           <strong>${fmt(p.fantasy)}</strong>
-          <span>BEST 2</span>
+          <span>BEST 2 <span class="rank-caret">›</span></span>
         </div>
       </div>
     `;
   }).join("");
+
+  list.querySelectorAll("[data-friend-id]").forEach(row=>{
+    row.onclick = ()=>{
+      const id = row.dataset.friendId;
+      const entry = ranking.find(x=>x.id===id);
+      if(entry) openFriendCard(entry);
+    };
+  });
+}
+
+/* ============================================================
+   FRIEND CARD MODAL (read-only)
+============================================================ */
+
+function openFriendCard(entry){
+  loadHeroes().then(()=>{ // ensure hero chip can render immediately if cached
+    const chip = document.querySelector('[data-friend-modal] .fcard-hero-chip');
+    if(chip) { /* re-render handles it via full render below */ }
+  });
+
+  const friendPlayer = {
+    name: entry.name,
+    role: entry.role,
+    accountId: entry.accountId,
+    photo: entry.photo,
+    lastHeroId: entry.lastHeroId,
+    card:{ rarity: entry.rarity, bonuses: FIXED_BONUSES },
+    bestMatches: entry.bestMatches || []
+  };
+
+  modalRoot.innerHTML = `
+    <div class="overlay" data-friend-modal>
+      <div class="modal card-modal">
+        <button class="close on-card" id="closeModal">×</button>
+        ${fantasyCardHTML(friendPlayer, {readOnly:true, cardId:"fcardFriend"})}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("closeModal").onclick = closeModal;
+  document.querySelector('[data-friend-modal]').addEventListener("click",(e)=>{
+    if(e.target.hasAttribute("data-friend-modal")) closeModal();
+  });
+
+  const calcBtn = document.querySelector('[data-calc-friend]');
+  if(calcBtn) calcBtn.onclick = ()=>openCalculation(friendPlayer, {readOnly:true});
+
+  attachTilt(document.getElementById("fcardFriend"));
 }
 
 /* ============================================================
@@ -1182,9 +1403,7 @@ function openEditModal(){
 
 function renderForm(edit){
 
-  const card = player ? player.card : defaultCard();
   let role = player ? player.role : "carry";
-  let rarity = card.rarity;
 
   modalRoot.innerHTML = `
     <div class="overlay">
@@ -1236,23 +1455,14 @@ function renderForm(edit){
         </div>
 
         <div class="field">
-          <label>РЕДКОСТЬ</label>
-          <div class="rarity-grid">
-            ${Object.entries(RARITIES).map(([k,v])=>`
-              <div class="rarity-option ${rarity===k?"selected":""}" data-rarity="${k}">${v}</div>
-            `).join("")}
-          </div>
-        </div>
-
-        <div class="field">
-          <label>БОНУСЫ PLAYER CARD (%)</label>
-          <div class="bonus-grid">
-            ${BONUS_FIELDS.map(([k,v])=>`
-              <div class="bonus">
-                <label>${v}</label>
-                <input type="number" min="-100" max="100" step="1" data-bonus="${k}" value="${num(card.bonuses[k])}">
-              </div>
-            `).join("")}
+          <div class="locked-note">
+            <span>ⓘ</span>
+            <div>
+              <b>Бонусы очков и редкость карты фиксированы</b> и одинаковы
+              для всех игроков — их нельзя выбрать вручную. Редкость
+              (BRONZE / SILVER / GOLD) присваивается автоматически, по
+              мере роста твоего Best-2 фэнтези-счёта.
+            </div>
           </div>
         </div>
 
@@ -1278,18 +1488,11 @@ function renderForm(edit){
     };
   });
 
-  document.querySelectorAll("[data-rarity]").forEach(el=>{
-    el.onclick = ()=>{
-      rarity = el.dataset.rarity;
-      document.querySelectorAll("[data-rarity]").forEach(x=>x.classList.remove("selected"));
-      el.classList.add("selected");
-    };
-  });
-
   document.getElementById("savePlayer").onclick = async()=>{
 
     const err = document.getElementById("modalError");
     err.innerHTML = "";
+    const saveBtn = document.getElementById("savePlayer");
 
     const name = document.getElementById("playerName").value.trim();
     const account = accountIdFrom(document.getElementById("playerAccount").value);
@@ -1304,18 +1507,21 @@ function renderForm(edit){
       return;
     }
 
-    /* Жёсткое правило: второй игрок на этот Telegram создать нельзя. */
     if(!edit && player){
       err.innerHTML = `<div class="notice error">Карта уже создана.</div>`;
       return;
     }
 
-    /* Жёсткое правило: один Dota Account ID — одна Telegram-карта. */
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Сохраняем…";
+
     if(!edit && db){
       try{
         const claim = await checkAccountClaim(account);
         if(claim && claim.ownerId && claim.ownerId !== OWNER_ID){
           err.innerHTML = `<div class="notice error">Этот Dota Account ID уже зарегистрирован другим игроком.</div>`;
+          saveBtn.disabled = false;
+          saveBtn.textContent = edit ? "Сохранить" : "Создать карту";
           return;
         }
       }catch(e){
@@ -1323,18 +1529,14 @@ function renderForm(edit){
       }
     }
 
-    const bonuses = defaultBonuses();
-    document.querySelectorAll("[data-bonus]").forEach(input=>{
-      bonuses[input.dataset.bonus] = num(input.value);
-    });
-
     if(!edit){
       player = {
         accountId:String(account),
         name,
         role,
         photo:telegramPhoto(),
-        card:{rarity,bonuses},
+        lastHeroId:null,
+        card:{rarity:"bronze", bonuses:defaultBonuses()},
         bestMatches:[],
         processedMatchIds:[],
         lastRefresh:null,
@@ -1343,7 +1545,6 @@ function renderForm(edit){
     }else{
       player.name = name;
       player.role = role;
-      player.card = {rarity,bonuses};
       if(telegramPhoto()){ player.photo = telegramPhoto(); }
     }
 
@@ -1357,6 +1558,8 @@ function renderForm(edit){
     }catch(e){
       console.error(e);
       err.innerHTML = `<div class="notice error">Не удалось сохранить карту: ${esc(e.message)}</div>`;
+      saveBtn.disabled = false;
+      saveBtn.textContent = edit ? "Сохранить" : "Создать карту";
       return;
     }
 
@@ -1372,13 +1575,14 @@ function renderForm(edit){
 }
 
 /* ============================================================
-   CALCULATION MODAL
+   CALCULATION MODAL (works for self and friend)
 ============================================================ */
 
-function openCalculation(){
-  if(!player) return;
+function openCalculation(p, opts){
+  opts = opts || {};
+  if(!p) return;
 
-  const best = bestTwo();
+  const best = bestTwo(p);
 
   modalRoot.innerHTML = `
     <div class="overlay">
@@ -1386,28 +1590,28 @@ function openCalculation(){
 
         <button class="close" id="closeModal">×</button>
 
-        <h2>Расчёт · ${esc(player.name)}</h2>
+        <h2>Расчёт · ${esc(p.name)}</h2>
 
-        <div class="modal-desc">${esc(RARITIES[player.card.rarity])} PLAYER CARD</div>
+        <div class="modal-desc">${esc((p.card ? p.card.rarity : "bronze").toUpperCase())} PLAYER CARD · бонусы одинаковы у всех</div>
 
         ${
           best.matches.length
           ? best.matches.map(m=>`
-            <div style="border:1px solid var(--line);margin-top:12px">
-              <div style="display:flex;justify-content:space-between;padding:9px;border-bottom:1px solid var(--line);font:9px monospace">
-                <span>MATCH #${esc(m.matchId)}</span>
+            <div style="border:1px solid var(--line);margin-top:12px;border-radius:6px;overflow:hidden">
+              <div style="display:flex;justify-content:space-between;padding:9px;border-bottom:1px solid var(--line);font:9px 'Courier New',monospace">
+                <span>MATCH #${esc(m.matchId)} ${m.win ? '<span class="win">WIN</span>' : '<span class="loss">LOSS</span>'}</span>
                 <strong style="color:var(--gold)">${fmt(m.fantasy)}</strong>
               </div>
               <table class="calc-table">
                 <thead>
-                  <tr><th>Показатель</th><th>Base</th><th>Card</th><th>Final</th></tr>
+                  <tr><th>Показатель</th><th>Base</th><th>Бонус</th><th>Final</th></tr>
                 </thead>
                 <tbody>
                   ${BONUS_FIELDS.map(([k,l])=>`
                     <tr>
                       <td>${esc(l)}</td>
                       <td>${num(m.baseFantasy[k]).toFixed(3)}</td>
-                      <td>${num(player.card.bonuses[k])}%</td>
+                      <td>${num(FIXED_BONUSES[k])}%</td>
                       <td>${num(m.finalFantasy[k]).toFixed(3)}</td>
                     </tr>
                   `).join("")}
@@ -1457,7 +1661,7 @@ document.getElementById("myBtn").onclick = ()=>{
 document.getElementById("refreshBtn").onclick = async()=>{
   const b = document.getElementById("refreshBtn");
   b.disabled = true;
-  b.textContent = "Загрузка...";
+  b.innerHTML = `<span class="mini-spin"></span> Загрузка...`;
   try{
     if(player){ await refreshPlayer(); }
     else{ showNotice("Сначала создай карту.","error"); }
@@ -1473,11 +1677,12 @@ document.getElementById("refreshBtn").onclick = async()=>{
 
 async function boot(){
 
-  /* 1. Мгновенно берём локальный кэш для этого владельца. */
   player = loadLocal();
+  if(player) normalizePlayer(player);
   render();
 
-  /* 2. Если Firebase доступен — подтягиваем актуальную карту владельца. */
+  loadHeroes().then(()=>{ if(activeTab==="players" && player) renderPlayer(); });
+
   if(db){
     const remote = await loadOwner();
     if(remote){
