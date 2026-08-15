@@ -132,38 +132,45 @@ button{cursor:pointer;font-family:inherit}
    reads as "foil".
 ============================================================ */
 
-.fcard-stage{max-width:520px;margin:0 auto;perspective:1400px}
+.fcard-stage{max-width:520px;margin:0 auto;perspective:1400px;position:relative;padding:22px 6px 0}
+
+.fcard-stage:before{
+  content:"";position:absolute;z-index:0;left:10%;right:10%;top:38px;bottom:20px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(226,189,92,.16),transparent 68%);
+  filter:blur(26px);pointer-events:none;
+}
 
 .fcard{
-  position:relative;
+  position:relative;z-index:1;
   border:1px solid var(--gold-line);
   border-radius:14px;
   overflow:hidden;
   background:
     radial-gradient(circle at 80% -10%,rgba(226,189,92,.12),transparent 42%),
     linear-gradient(160deg,#201809,#0c0906 68%);
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow), inset 0 0 0 1px rgba(226,189,92,.08), inset 0 0 0 5px rgba(6,4,2,.55);
   transform-style:preserve-3d;
   transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));
   transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s;
   will-change:transform;
 }
-.fcard:hover{box-shadow:0 26px 70px rgba(0,0,0,.6),0 0 40px rgba(226,189,92,.08)}
+.fcard:hover{box-shadow:0 26px 70px rgba(0,0,0,.6),0 0 30px rgba(226,189,92,.10), inset 0 0 0 1px rgba(226,189,92,.14), inset 0 0 0 5px rgba(6,4,2,.55)}
 
 .fcard-glare{
   position:absolute;inset:0;z-index:5;pointer-events:none;
-  background:radial-gradient(circle at var(--mx,50%) var(--my,15%), rgba(255,255,255,.5), transparent 42%);
-  opacity:var(--glare,0);mix-blend-mode:overlay;transition:opacity .2s;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,15%), rgba(255,247,225,.30), transparent 46%);
+  opacity:var(--glare,0);mix-blend-mode:soft-light;transition:opacity .2s;
 }
+/* Quiet gold/teal duotone sheen instead of a full rainbow foil */
 .fcard-holo{
-  position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:color-dodge;opacity:.16;
-  background:repeating-linear-gradient(115deg,#ff9ad6 0%,#ffe29a 12%,#8fffcf 24%,#9ad4ff 36%,#c79aff 48%,#ff9ad6 60%);
-  background-size:340% 340%;
-  animation:holoSweep 7s ease-in-out infinite;
+  position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:soft-light;opacity:.10;
+  background:repeating-linear-gradient(120deg,rgba(226,189,92,0) 0%,rgba(226,189,92,.9) 12%,rgba(95,217,201,.7) 22%,rgba(226,189,92,0) 34%);
+  background-size:280% 280%;
+  animation:holoSweep 11s ease-in-out infinite;
 }
 @keyframes holoSweep{
-  0%,100%{background-position:0% 30%}
-  50%{background-position:100% 70%}
+  0%,100%{background-position:0% 20%}
+  50%{background-position:100% 80%}
 }
 
 .fcard-banner{
@@ -186,15 +193,16 @@ button{cursor:pointer;font-family:inherit}
 .fcard-photo-badge.rarity-silver{background:linear-gradient(180deg,#d7d7d7,#8f8f8f);color:#1c1c1c}
 .fcard-photo-badge.rarity-gold{background:linear-gradient(180deg,#f3d372,#b3862c);color:#241a05}
 
-.fcard-hero-chip{
-  position:absolute;z-index:3;top:12px;left:12px;
-  display:flex;align-items:center;gap:6px;
-  background:rgba(10,8,5,.72);border:1px solid var(--gold-line);
-  padding:4px 8px 4px 4px;border-radius:20px;backdrop-filter:blur(2px);
+.fcard-hero-badge{
+  position:absolute;z-index:3;right:12px;bottom:12px;
+  width:56px;height:56px;border-radius:50%;overflow:hidden;
+  border:3px solid var(--gold);
+  background:#0b0907;
+  box-shadow:0 6px 16px rgba(0,0,0,.55), 0 0 0 3px rgba(6,4,2,.6);
 }
-.fcard-hero-chip img{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--gold-dim)}
-.fcard-hero-chip span{font:8px "Courier New",monospace;letter-spacing:.6px;color:#d9cba8;white-space:nowrap}
-.fcard-hero-chip.loading{opacity:.5}
+.fcard-hero-badge img{width:100%;height:100%;object-fit:cover;display:block}
+.fcard-hero-badge.loading{display:flex;align-items:center;justify-content:center}
+.fcard-hero-badge .mini-spin{margin:0}
 
 .fcard-total{
   display:flex;align-items:center;justify-content:space-between;
@@ -272,13 +280,19 @@ button{cursor:pointer;font-family:inherit}
 .empty p{max-width:560px;margin:0 auto 17px;line-height:1.6;font-size:12px}
 
 /* ---------- MODAL ---------- */
-.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.86);backdrop-filter:blur(6px);animation:fadeIn .18s ease}
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:flex-start;justify-content:center;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:28px 12px 56px;
+  background:rgba(0,0,0,.86);backdrop-filter:blur(6px);animation:fadeIn .18s ease
+}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{width:100%;max-width:560px;max-height:93vh;overflow:auto;position:relative;padding:20px;border:1px solid var(--gold-line);border-radius:10px;background:radial-gradient(circle at 100% 0,rgba(226,189,92,.08),transparent 35%),var(--panel);box-shadow:var(--shadow);animation:popIn .2s cubic-bezier(.2,.9,.3,1.2)}
+.modal{width:100%;max-width:560px;position:relative;padding:20px;border:1px solid var(--gold-line);border-radius:10px;background:radial-gradient(circle at 100% 0,rgba(226,189,92,.08),transparent 35%),var(--panel);box-shadow:var(--shadow);animation:popIn .2s cubic-bezier(.2,.9,.3,1.2);margin:auto}
 @keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .modal.card-modal{max-width:520px;padding:0;background:transparent;border:none;box-shadow:none;overflow:visible}
 .close{position:absolute;top:7px;right:10px;border:0;background:none;color:var(--muted);font-size:24px;z-index:10}
-.close.on-card{top:-38px;right:0;color:var(--text)}
+.close.on-card{top:18px;right:16px;color:#fff;background:rgba(10,8,5,.6);width:30px;height:30px;border-radius:50%;line-height:28px;text-align:center;border:1px solid var(--gold-line)}
 .modal h2{margin:0 0 6px}
 .modal-desc{color:#9b8e75;font-size:11px;line-height:1.6;margin-bottom:16px}
 .field{margin-bottom:13px}
@@ -558,7 +572,7 @@ function normalizePlayer(p){
   p.card.bonuses = {...FIXED_BONUSES}; // always fixed, never trust stored/user values
   if(!RARITY_TIERS.some(r=>r.key===p.card.rarity)){ p.card.rarity = "bronze"; }
   if(!Array.isArray(p.bestMatches)){ p.bestMatches = []; }
-  if(!Array.isArray(p.processedMatchIds)){ p.processedMatchIds = []; }
+  if(!p.matchCache || typeof p.matchCache !== "object"){ p.matchCache = {}; }
   return p;
 }
 
@@ -801,33 +815,20 @@ function heroInfo(heroId){
 }
 
 /* ============================================================
-   BEST-2 (ROLLING)
+   BEST-2
+   Recomputed from scratch every refresh, over the player's most
+   recent OpenDota matches (not just "whatever was last played").
+   Already-fetched matches are cached by id so re-refreshing is
+   cheap and doesn't re-hit OpenDota for matches we already scored.
 ============================================================ */
+
+const RECENT_POOL_SIZE = 15;
 
 function bestTwo(p){
   const src = p || player;
   if(!src) return {matches:[],total:0};
   const matches = (src.bestMatches || []).slice().sort((a,b)=>num(b.fantasy)-num(a.fantasy));
   return { matches, total: matches.reduce((s,m)=>s+num(m.fantasy),0) };
-}
-
-function updateBestMatches(p, newMatch){
-  p.bestMatches = p.bestMatches || [];
-  if(p.bestMatches.length < 2){
-    p.bestMatches.push(newMatch);
-    p.bestMatches.sort((a,b)=>num(b.fantasy)-num(a.fantasy));
-    return true;
-  }
-  let minIdx = 0;
-  p.bestMatches.forEach((m,i)=>{
-    if(num(m.fantasy) < num(p.bestMatches[minIdx].fantasy)) minIdx = i;
-  });
-  if(num(newMatch.fantasy) > num(p.bestMatches[minIdx].fantasy)){
-    p.bestMatches[minIdx] = newMatch;
-    p.bestMatches.sort((a,b)=>num(b.fantasy)-num(a.fantasy));
-    return true;
-  }
-  return false;
 }
 
 function aggregatedFinal(p){
@@ -861,8 +862,11 @@ async function publishPlayer(){
     rarity,
     bonuses:FIXED_BONUSES,
     lastHeroId:player.lastHeroId || null,
-    /* store the FULL per-stat breakdown so a friend can inspect
-       exactly why the points were awarded */
+    /* Keep the public doc lean — matchId + accountId are enough to
+       recompute the full per-stat breakdown live from OpenDota
+       whenever someone opens this player's friend card. That way
+       the breakdown is never stale or missing, regardless of what
+       shape older documents were saved in. */
     bestMatches:best.matches.map(m=>({
       matchId:m.matchId,
       fantasy:m.fantasy,
@@ -872,9 +876,7 @@ async function publishPlayer(){
       deaths:m.deaths,
       assists:m.assists,
       gpm:m.gpm,
-      startTime:m.startTime,
-      baseFantasy:m.baseFantasy,
-      finalFantasy:m.finalFantasy
+      startTime:m.startTime
     })),
     fantasy:Number(best.total.toFixed(2)),
     registeredAt:player.createdAt || Date.now(),
@@ -894,9 +896,9 @@ async function refreshPlayer(){
   render();
 
   try{
-    loadHeroes(); // fire and forget, cached for chip rendering
+    loadHeroes(); // fire and forget, cached for badge rendering
 
-    const recent = await getHistory(player.accountId);
+    const recent = await getHistory(player.accountId); // up to 15 most recent, newest first
     if(!recent.length){
       throw new Error("У игрока нет доступных матчей.");
     }
@@ -904,32 +906,49 @@ async function refreshPlayer(){
     // most recent match's hero = "last hero played"
     player.lastHeroId = num(recent[0].hero_id) || player.lastHeroId || null;
 
-    player.processedMatchIds = player.processedMatchIds || [];
-    const processedSet = new Set(player.processedMatchIds.map(String));
+    player.matchCache = player.matchCache || {};
+    const pool = recent.slice(0, RECENT_POOL_SIZE);
 
-    const newOnes = recent
-      .filter(x=>!processedSet.has(String(x.match_id)))
-      .slice(0,5);
+    const prevBestIds = new Set((player.bestMatches || []).map(m=>String(m.matchId)));
 
-    let changed = false;
+    let fetchedNew = 0;
+    const computedList = [];
 
-    for(const stub of newOnes){
+    for(const stub of pool){
       const id = String(stub.match_id);
-      try{
-        const computed = await fetchMatchComputed(id, player.accountId);
-        if(updateBestMatches(player, computed)) changed = true;
-      }catch(e){
-        console.warn("Match:",id,e);
+      let entry = player.matchCache[id];
+      if(!entry){
+        try{
+          entry = await fetchMatchComputed(id, player.accountId);
+          player.matchCache[id] = entry;
+          fetchedNew++;
+        }catch(e){
+          console.warn("Match:",id,e);
+          continue;
+        }
       }
-      player.processedMatchIds.push(id);
+      computedList.push(entry);
     }
 
-    // recompute with the fixed rule set (in case rules changed)
-    (player.bestMatches || []).forEach(m=>{
-      const final = applyBonuses(m.baseFantasy, FIXED_BONUSES);
-      m.finalFantasy = final;
-      m.fantasy = Number(totalOf(final).toFixed(2));
+    if(!computedList.length){
+      throw new Error("Не удалось загрузить статистику по последним матчам.");
+    }
+
+    // drop cached matches that fell out of the recent window, so an old
+    // (and possibly re-scored-under-old-rules) match can never linger
+    const keepIds = new Set(pool.map(s=>String(s.match_id)));
+    Object.keys(player.matchCache).forEach(id=>{
+      if(!keepIds.has(id)) delete player.matchCache[id];
     });
+
+    // The Best 2 out of the recent pool — recalculated fresh every time,
+    // never "whichever games happened to be processed first".
+    const top2 = computedList.slice().sort((a,b)=>num(b.fantasy)-num(a.fantasy)).slice(0,2);
+    player.bestMatches = top2;
+
+    const newBestIds = new Set(top2.map(m=>String(m.matchId)));
+    const changed = newBestIds.size !== prevBestIds.size ||
+      [...newBestIds].some(id=>!prevBestIds.has(id));
 
     player.card.rarity = rarityFor(bestTwo().total);
     player.lastRefresh = Date.now();
@@ -942,9 +961,7 @@ async function refreshPlayer(){
     render();
 
     showNotice(
-      newOnes.length
-        ? `✓ Проверено новых матчей: ${newOnes.length}. ${changed ? "Лучшие 2 матча обновлены." : "Лучшие 2 матча без изменений."}`
-        : "✓ Новых матчей не найдено.",
+      `✓ Проверено матчей: ${computedList.length}${fetchedNew ? ` (новых: ${fetchedNew})` : ""}. ${changed ? "Лучшие 2 матча обновлены." : "Лучшие 2 матча без изменений."}`,
       "ok"
     );
 
@@ -1014,20 +1031,23 @@ function avatarHTML(p){
   return `<div class="placeholder">${esc(initials(p && p.name))}</div>`;
 }
 
-function heroChipHTML(heroId){
+function heroBadgeHTML(heroId){
+  if(!heroId){ return ""; }
   const info = heroInfo(heroId);
-  if(!heroId){
-    return "";
-  }
   if(!info){
-    return `<div class="fcard-hero-chip loading"><span class="mini-spin"></span><span>ГЕРОЙ…</span></div>`;
+    return `<div class="fcard-hero-badge loading" title="Последний герой"><span class="mini-spin"></span></div>`;
   }
   return `
-    <div class="fcard-hero-chip" title="Последний герой">
+    <div class="fcard-hero-badge" title="Последний герой: ${esc(info.name)}">
       <img src="${esc(info.img)}" loading="lazy" onerror="this.style.display='none'">
-      <span>${esc(info.name)}</span>
     </div>
   `;
+}
+
+function heroNameFor(heroId){
+  if(!heroId) return "";
+  const info = heroInfo(heroId);
+  return info ? info.name : "…";
 }
 
 /* ============================================================
@@ -1080,9 +1100,9 @@ function fantasyCardHTML(p, opts){
 
         <div class="fcard-photo">
           ${avatarHTML(p)}
-          ${heroChipHTML(p.lastHeroId)}
+          ${heroBadgeHTML(p.lastHeroId)}
           <div class="fcard-photo-badge rarity-${esc(rarity)}">${esc(rarity.toUpperCase())}</div>
-          <div class="fcard-photo-tag">DOTA ACCOUNT ${esc(p.accountId)}</div>
+          <div class="fcard-photo-tag">DOTA ${esc(p.accountId)}${p.lastHeroId ? " · " + esc(heroNameFor(p.lastHeroId)) : ""}</div>
         </div>
 
         <div class="fcard-total">
@@ -1112,6 +1132,7 @@ function fantasyCardHTML(p, opts){
                     <span class="${m.win ? "win" : "loss"}">${m.win ? "ПОБЕДА" : "ПОРАЖЕНИЕ"}</span>
                     <span>${m.kills}/${m.deaths}/${m.assists}</span>
                     <span>GPM ${fmt(m.gpm)}</span>
+                    ${m.unavailable ? '<span style="color:var(--muted-2)">разбивка временно недоступна</span>' : ''}
                   </div>
                 </div>
               `).join("")
@@ -1325,27 +1346,14 @@ function renderRankingList(){
    FRIEND CARD MODAL (read-only)
 ============================================================ */
 
-function openFriendCard(entry){
-  loadHeroes().then(()=>{ // ensure hero chip can render immediately if cached
-    const chip = document.querySelector('[data-friend-modal] .fcard-hero-chip');
-    if(chip) { /* re-render handles it via full render below */ }
-  });
+let friendCardToken = 0;
 
-  const friendPlayer = {
-    name: entry.name,
-    role: entry.role,
-    accountId: entry.accountId,
-    photo: entry.photo,
-    lastHeroId: entry.lastHeroId,
-    card:{ rarity: entry.rarity, bonuses: FIXED_BONUSES },
-    bestMatches: entry.bestMatches || []
-  };
-
+function paintFriendModal(friendPlayer, loading){
   modalRoot.innerHTML = `
     <div class="overlay" data-friend-modal>
       <div class="modal card-modal">
         <button class="close on-card" id="closeModal">×</button>
-        ${fantasyCardHTML(friendPlayer, {readOnly:true, cardId:"fcardFriend"})}
+        ${fantasyCardHTML(friendPlayer, {readOnly:true, loadingStats:loading, cardId:"fcardFriend"})}
       </div>
     </div>
   `;
@@ -1359,6 +1367,67 @@ function openFriendCard(entry){
   if(calcBtn) calcBtn.onclick = ()=>openCalculation(friendPlayer, {readOnly:true});
 
   attachTilt(document.getElementById("fcardFriend"));
+}
+
+async function openFriendCard(entry){
+
+  const myToken = ++friendCardToken;
+
+  const friendPlayer = {
+    name: entry.name,
+    role: entry.role,
+    accountId: entry.accountId,
+    photo: entry.photo,
+    lastHeroId: entry.lastHeroId,
+    card:{ rarity: entry.rarity, bonuses: FIXED_BONUSES },
+    bestMatches: [] // filled in below with a LIVE recompute
+  };
+
+  // Show the card immediately with skeletons instead of a blank/zeroed card.
+  paintFriendModal(friendPlayer, true);
+  loadHeroes().then(()=>{
+    // hero badge/name may now be resolvable — repaint quietly if still open
+    if(friendCardToken === myToken && document.querySelector('[data-friend-modal]') && friendPlayer.bestMatches.length){
+      paintFriendModal(friendPlayer, false);
+    }
+  });
+
+  const stubs = entry.bestMatches || [];
+  const results = [];
+
+  for(const stub of stubs){
+    try{
+      // Recompute the FULL per-stat breakdown straight from OpenDota using
+      // the stored matchId + accountId. This is what actually fixes friend
+      // cards showing all zeros: we never trust a possibly-stale/lean
+      // Firestore snapshot for the breakdown, only for which matches count.
+      const computed = await fetchMatchComputed(stub.matchId, entry.accountId);
+      results.push(computed);
+    }catch(e){
+      console.warn("Friend match recompute failed:", stub.matchId, e);
+      results.push({
+        matchId: stub.matchId,
+        fantasy: num(stub.fantasy),
+        win: !!stub.win,
+        heroId: stub.heroId || null,
+        kills: num(stub.kills),
+        deaths: num(stub.deaths),
+        assists: num(stub.assists),
+        gpm: num(stub.gpm),
+        baseFantasy: {},
+        finalFantasy: {},
+        unavailable: true
+      });
+    }
+  }
+
+  results.sort((a,b)=>num(b.fantasy)-num(a.fantasy));
+  friendPlayer.bestMatches = results;
+
+  // Only repaint if the user hasn't already closed this modal / opened another.
+  if(friendCardToken === myToken && document.querySelector('[data-friend-modal]')){
+    paintFriendModal(friendPlayer, false);
+  }
 }
 
 /* ============================================================
@@ -1538,7 +1607,7 @@ function renderForm(edit){
         lastHeroId:null,
         card:{rarity:"bronze", bonuses:defaultBonuses()},
         bestMatches:[],
-        processedMatchIds:[],
+        matchCache:{},
         lastRefresh:null,
         createdAt:Date.now()
       };
